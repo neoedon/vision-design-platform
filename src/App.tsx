@@ -104,6 +104,7 @@ const THEME_STORAGE_KEY = "vision-design-platform.theme-configs.ui3.ghostty.v2";
 const THEME_MODE_STORAGE_KEY = "vision-design-platform.theme-mode.ui3.ghostty.v2";
 const ACTIVE_THEME_STORAGE_KEY = "vision-design-platform.active-theme.ui3.ghostty.v2";
 const DEFAULT_THEME_ID: ThemePresetId = "ghostty-carbon";
+const TEAM_ICON_SRC = `${import.meta.env.BASE_URL}team-icon.png`;
 
 const monoStack =
   "SF Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace";
@@ -884,7 +885,7 @@ export function App() {
       <header className="l1Bar">
         <div className="brandCluster">
           <span className="brandMark" aria-hidden="true">
-            <img src="/team-icon.png" alt="" />
+            <img src={TEAM_ICON_SRC} alt="" />
           </span>
           <button className="workspaceMenu" type="button">
             <span>vision</span>
