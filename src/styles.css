@@ -950,6 +950,7 @@ svg {
 }
 
 .settingsPage {
+  container: settings-page / inline-size;
   display: grid;
   gap: 12px;
   width: 100%;
@@ -964,9 +965,10 @@ svg {
 
 .themeOverview {
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) auto minmax(520px, 1.5fr);
+  grid-template-columns: minmax(220px, 1fr) auto minmax(360px, 1.5fr);
   gap: 12px;
   align-items: stretch;
+  min-width: 0;
   padding: 12px;
 }
 
@@ -974,6 +976,7 @@ svg {
   display: grid;
   align-content: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .themeOverviewCopy strong,
@@ -993,6 +996,7 @@ svg {
 .modeSwitch {
   align-content: center;
   align-self: center;
+  flex-wrap: nowrap;
   gap: 4px;
   height: 32px;
   padding: 3px;
@@ -1012,6 +1016,7 @@ svg {
   border-radius: var(--radius-control);
   background: transparent;
   font-size: 11px;
+  white-space: nowrap;
 }
 
 .modeSwitch button:hover {
@@ -1085,12 +1090,14 @@ svg {
 
 .settingsGrid {
   display: grid;
-  grid-template-columns: minmax(420px, 1.6fr) minmax(320px, 1fr);
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
   gap: 12px;
   align-items: start;
+  min-width: 0;
 }
 
 .settingsCard {
+  min-width: 0;
   overflow: visible;
 }
 
@@ -1098,21 +1105,28 @@ svg {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
+  min-width: 0;
   min-height: 48px;
   padding: 8px 12px;
   border-bottom: var(--stroke-width) solid var(--border);
 }
 
 .settingsCardHeader > div:first-child {
+  flex: 1 1 220px;
   display: grid;
   gap: 4px;
   min-width: 0;
 }
 
 .settingsCardActions {
+  display: inline-flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 6px;
+  min-width: 0;
 }
 
 .settingsCardActions .saveButton span,
@@ -1178,8 +1192,8 @@ svg {
 }
 
 .settingsRow {
-  grid-template-columns: minmax(180px, 1fr) minmax(240px, 320px);
-  gap: 16px;
+  grid-template-columns: minmax(140px, 0.75fr) minmax(0, 1fr);
+  gap: 12px;
   min-height: 46px;
   padding: 8px 12px;
   border-bottom: var(--stroke-width) solid var(--border);
@@ -1770,6 +1784,58 @@ svg {
   .themeOverview,
   .settingsGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@container settings-page (max-width: 1100px) {
+  .themeOverview,
+  .settingsGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .themeOverviewCopy {
+    align-content: start;
+  }
+
+  .modeSwitch {
+    justify-self: start;
+  }
+
+  .codeCompare {
+    width: 100%;
+  }
+}
+
+@container settings-page (max-width: 620px) {
+  .settingsCardHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .settingsCardActions {
+    justify-content: flex-start;
+  }
+
+  .themePresetSelect {
+    width: min(180px, 100%);
+  }
+
+  .settingsRow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .rangeControl {
+    grid-template-columns: minmax(0, 1fr) 38px;
+  }
+
+  .codeCompare {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .codePane + .codePane {
+    border-top: var(--stroke-width) solid var(--border);
+    border-left: 0;
   }
 }
 

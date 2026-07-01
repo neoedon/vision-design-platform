@@ -1493,12 +1493,6 @@ function SettingsPanel({
               <h3>字体与渲染</h3>
               <span>这些值会立即作用在当前 UI3 工作台 shell。</span>
             </div>
-            <div className="settingsCardActions">
-              <button className="barButton saveButton" type="button" onClick={saveSettings}>
-                <Save size={14} />
-                <span>{saved ? "saved" : "save settings"}</span>
-              </button>
-            </div>
           </header>
 
           <div className="settingsTable">
