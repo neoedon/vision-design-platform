@@ -8,6 +8,9 @@ import {
   ChevronDown,
   Copy,
   Database,
+  Download,
+  ExternalLink,
+  FileText,
   Folder,
   KeyRound,
   Layers3,
@@ -103,6 +106,32 @@ const THEME_MODE_STORAGE_KEY = "vision-design-platform.theme-mode.ui3.ghostty.v2
 const ACTIVE_THEME_STORAGE_KEY = "vision-design-platform.active-theme.ui3.ghostty.v2";
 const DEFAULT_THEME_ID: ThemePresetId = "ghostty-carbon";
 const TEAM_ICON_SRC = `${import.meta.env.BASE_URL}team-icon.png`;
+const BRAND_GUIDELINE_PDF_SRC = `${import.meta.env.BASE_URL}brand-assets/viaim-visual-guidelines-260309-internal-draft.pdf`;
+
+const brandGuidelineAsset = {
+  id: "viaim-visual-guidelines-260309",
+  title: "Viaim 品牌视觉规范",
+  version: "260309 Internal Draft",
+  status: "latest",
+  format: "PDF",
+  size: "82 MB",
+  owner: "viaim brand",
+  updatedAt: "2026-07-05",
+  sourceDate: "2026-03-09",
+  href: BRAND_GUIDELINE_PDF_SRC,
+  summary:
+    "最新品牌视觉规范。支持在线预览和下载，后续版本会继续追加到版本更新历史。",
+};
+
+const brandGuidelineVersions = [
+  {
+    version: "260309 Internal Draft",
+    date: "2026-07-05",
+    status: "current",
+    note: "新增到公开品牌资料库，作为当前最新品牌视觉规范。",
+    href: BRAND_GUIDELINE_PDF_SRC,
+  },
+];
 
 const monoStack =
   "SF Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace";
@@ -1530,6 +1559,10 @@ export function App() {
       );
     }
 
+    if (activeRoute.surface === "resource-library") {
+      return <BrandResourceWorkbench activePackage={activePackage} />;
+    }
+
     if (activeRoute.surface === "appearance-settings") {
       return (
         <SettingsPanel
@@ -1777,6 +1810,102 @@ function RoutePlaceholder({ route, activePackage }: RoutePlaceholderProps) {
             <small>{item.note}</small>
           </div>
         ))}
+      </section>
+    </div>
+  );
+}
+
+type BrandResourceWorkbenchProps = {
+  activePackage: L3Package;
+};
+
+function BrandResourceWorkbench({ activePackage }: BrandResourceWorkbenchProps) {
+  if (activePackage.id !== "brand-guidelines") {
+    return (
+      <RoutePlaceholder
+        activePackage={activePackage}
+        route={getRouteById("brand-assets.public-library")}
+      />
+    );
+  }
+
+  return (
+    <div className="resourceWorkbench">
+      <section className="resourceDetailPanel">
+        <header className="resourceHeader">
+          <span className="sectionKicker">brand guideline</span>
+          <h2>{brandGuidelineAsset.title}</h2>
+          <p>{brandGuidelineAsset.summary}</p>
+        </header>
+
+        <div className="resourceActions">
+          <a
+            className="primaryButton"
+            href={brandGuidelineAsset.href}
+            download="Viaim 260309 Internal Draft.pdf"
+          >
+            <Download size={15} />
+            <span>download pdf</span>
+          </a>
+          <a
+            className="barButton"
+            href={brandGuidelineAsset.href}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <ExternalLink size={15} />
+            <span>open preview</span>
+          </a>
+        </div>
+
+        <div className="resourceMetaGrid">
+          <InspectorRow label="version" value={brandGuidelineAsset.version} />
+          <InspectorRow label="status" value={brandGuidelineAsset.status} />
+          <InspectorRow label="format" value={brandGuidelineAsset.format} />
+          <InspectorRow label="size" value={brandGuidelineAsset.size} />
+          <InspectorRow label="source date" value={brandGuidelineAsset.sourceDate} />
+          <InspectorRow label="added" value={brandGuidelineAsset.updatedAt} />
+        </div>
+
+        <section className="versionHistory" aria-label="Version history">
+          <header>
+            <span>version history</span>
+            <strong>{brandGuidelineVersions.length} release</strong>
+          </header>
+          <div className="versionList">
+            {brandGuidelineVersions.map((item) => (
+              <a className="versionItem" href={item.href} key={item.version}>
+                <FileText size={16} />
+                <span>
+                  <strong>{item.version}</strong>
+                  <small>{item.date} / {item.note}</small>
+                </span>
+                <i>{item.status}</i>
+              </a>
+            ))}
+          </div>
+        </section>
+      </section>
+
+      <section className="pdfPreviewPanel">
+        <header>
+          <span>pdf preview</span>
+          <strong>{brandGuidelineAsset.version}</strong>
+        </header>
+        <object
+          aria-label={brandGuidelineAsset.title}
+          className="pdfFrame"
+          data={brandGuidelineAsset.href}
+          type="application/pdf"
+        >
+          <div className="pdfFallback">
+            <FileText size={18} />
+            <span>PDF preview unavailable</span>
+            <a href={brandGuidelineAsset.href} download="Viaim 260309 Internal Draft.pdf">
+              download pdf
+            </a>
+          </div>
+        </object>
       </section>
     </div>
   );
