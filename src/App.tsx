@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
+  AppWindow,
   Archive,
   BarChart3,
   CheckCircle2,
@@ -19,8 +20,10 @@ import {
   Palette,
   RotateCcw,
   Save,
+  Scissors,
   SearchCheck,
   ShieldCheck,
+  SlidersHorizontal,
   Sparkles,
   Sun,
   UserRound,
@@ -28,13 +31,8 @@ import {
   X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { AccountRole, ToolId } from "./data/tools";
-import {
-  canAccessTool,
-  getToolById,
-  roles,
-  toolItems,
-} from "./data/tools";
+import type { AccountRole } from "./data/tools";
+import { roles } from "./data/tools";
 import {
   buildFeishuOAuthUrl,
   createDemoFeishuAccount,
@@ -358,151 +356,800 @@ const lightThemeConfigs: Record<ThemePresetId, ThemePalette> = {
   },
 };
 
-const primaryDomains: Array<{
-  id: string;
-  label: string;
-  icon: LucideIcon;
-}> = [
-  { id: "overview", label: "中台总览", icon: Activity },
-  { id: "asset-governance", label: "资产治理", icon: Database },
-  { id: "spec-system", label: "规范体系", icon: Library },
-  { id: "component-system", label: "组件系统", icon: Layers3 },
-  { id: "workflow", label: "流程协同", icon: Workflow },
-  { id: "insight", label: "数据洞察", icon: BarChart3 },
-];
+type L1DomainId =
+  | "brand-assets"
+  | "toolbox"
+  | "open-design"
+  | "figma-projects"
+  | "skill-platform"
+  | "design-daily"
+  | "system";
 
-const moduleItems: Array<{
+type RouteSurface =
+  | "resource-library"
+  | "slice-tool"
+  | "open-design-workspace"
+  | "ai-create"
+  | "integration"
+  | "figma-status"
+  | "member-management"
+  | "skill-library"
+  | "skill-tuning"
+  | "resource-extraction"
+  | "daily-browse"
+  | "daily-manage"
+  | "account-permission"
+  | "appearance-settings"
+  | "future-lab";
+
+type PackageKind =
+  | "tool"
+  | "integration"
+  | "library"
+  | "project"
+  | "automation"
+  | "settings";
+
+type InspectorSection =
+  | "selection"
+  | "account"
+  | "properties"
+  | "tokens"
+  | "status"
+  | "logs";
+
+type L3Package = {
   id: string;
   label: string;
   note: string;
+  kind: PackageKind;
   icon: LucideIcon;
-  toolId: ToolId;
+  minimumRole?: AccountRole;
+};
+
+type WorkspaceRoute = {
+  id: string;
+  l1Id: L1DomainId;
+  l2Id: string;
+  l2Label: string;
+  l2Note: string;
+  defaultL3Id: string;
+  minimumRole: AccountRole;
+  status: string;
+  queue: string;
+  quality: string;
+  workbenchLabel: string;
+  workbenchDescription: string;
+  surface: RouteSurface;
+  l3Packages: L3Package[];
+  inspectorSections: InspectorSection[];
+};
+
+const primaryDomains: Array<{
+  id: L1DomainId;
+  label: string;
+  icon: LucideIcon;
 }> = [
-  {
-    id: "asset-map",
-    label: "设计资产地图",
-    note: "files / owners / spaces",
-    icon: Database,
-    toolId: "open-design",
-  },
-  {
-    id: "token-governance",
-    label: "Token 管理",
-    note: "colors / type / radius",
-    icon: Palette,
-    toolId: "settings",
-  },
-  {
-    id: "component-governance",
-    label: "组件库治理",
-    note: "variants / risk / review",
-    icon: Layers3,
-    toolId: "figma-projects",
-  },
-  {
-    id: "templates",
-    label: "模板与页面",
-    note: "scenarios / publish",
-    icon: Library,
-    toolId: "templates",
-  },
-  {
-    id: "review",
-    label: "走查与标注",
-    note: "diffs / blocking / queue",
-    icon: SearchCheck,
-    toolId: "mage-gallery",
-  },
-  {
-    id: "release",
-    label: "发布与版本",
-    note: "release / hotfix",
-    icon: Archive,
-    toolId: "uploads",
-  },
-  {
-    id: "assistant",
-    label: "AI 规范助手",
-    note: "suggestions / naming",
-    icon: Sparkles,
-    toolId: "settings",
-  },
-  {
-    id: "data",
-    label: "数据监控",
-    note: "reuse / quality / trend",
-    icon: BarChart3,
-    toolId: "mage-gallery",
-  },
-  {
-    id: "access",
-    label: "权限与空间",
-    note: "teams / audit",
-    icon: ShieldCheck,
-    toolId: "settings",
-  },
+  { id: "brand-assets", label: "viaim 品牌资产", icon: Library },
+  { id: "toolbox", label: "工具箱", icon: Workflow },
+  { id: "open-design", label: "OpenDesign", icon: Sparkles },
+  { id: "figma-projects", label: "Figma 项目", icon: Layers3 },
+  { id: "skill-platform", label: "Skill 平台", icon: KeyRound },
+  { id: "design-daily", label: "设计日报", icon: BarChart3 },
+  { id: "system", label: "系统设置", icon: ShieldCheck },
 ];
 
-const toolWorkMeta: Record<
-  ToolId,
+const workspaceRoutes: WorkspaceRoute[] = [
   {
-    l2Label: string;
-    status: string;
-    queue: string;
-    quality: string;
-    description: string;
-  }
-> = {
-  "open-design": {
-    l2Label: "工作台",
-    status: "indexed",
-    queue: "12 assets",
-    quality: "ready",
-    description: "Open Design 仓库入口与项目编排位。",
+    id: "brand-assets.public-library",
+    l1Id: "brand-assets",
+    l2Id: "public-library",
+    l2Label: "公开资料库",
+    l2Note: "assets / preview / download",
+    defaultL3Id: "brand-guidelines",
+    minimumRole: "viewer",
+    status: "public",
+    queue: "download",
+    quality: "open",
+    workbenchLabel: "资源预览",
+    workbenchDescription:
+      "对所有权限开放的 viaim 品牌资料、产品资料、字体包、公开界面和品牌 skill。当前先保留为空白资源台，后续接入 PDF、PNG、SVG 和下载列表。",
+    surface: "resource-library",
+    inspectorSections: ["selection", "account", "properties", "tokens", "status"],
+    l3Packages: [
+      {
+        id: "brand-guidelines",
+        label: "品牌规范",
+        note: "pdf / rules / voice",
+        kind: "library",
+        icon: Library,
+      },
+      {
+        id: "visual-assets",
+        label: "视觉资产",
+        note: "png / svg / preview",
+        kind: "library",
+        icon: Palette,
+      },
+      {
+        id: "product-assets",
+        label: "产品素材",
+        note: "renders / documents",
+        kind: "library",
+        icon: Database,
+      },
+      {
+        id: "font-packages",
+        label: "字体包",
+        note: "fonts / licenses",
+        kind: "library",
+        icon: KeyRound,
+      },
+      {
+        id: "product-ui",
+        label: "产品界面",
+        note: "screens / public ui",
+        kind: "library",
+        icon: AppWindow,
+      },
+      {
+        id: "brand-skills",
+        label: "品牌 skill",
+        note: "skill files",
+        kind: "library",
+        icon: Sparkles,
+      },
+    ],
   },
-  "slice-export": {
-    l2Label: "资产地图",
-    status: "local tool",
+  {
+    id: "toolbox.image-tools",
+    l1Id: "toolbox",
+    l2Id: "image-tools",
+    l2Label: "图片工具",
+    l2Note: "import / slice / export",
+    defaultL3Id: "slice-adjust",
+    minimumRole: "viewer",
+    status: "local",
     queue: "image slices",
     quality: "ready",
-    description: "图片切片、预览和 ZIP 导出。",
+    workbenchLabel: "切图调整",
+    workbenchDescription: "本地图片导入、切图参数、生成预览和结果下载。",
+    surface: "slice-tool",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "slice-adjust",
+        label: "切图调整",
+        note: "import / preview / zip",
+        kind: "tool",
+        icon: Scissors,
+      },
+    ],
   },
-  "figma-projects": {
-    l2Label: "组件库",
-    status: "space linked",
-    queue: "4 projects",
-    quality: "viewer",
-    description: "Figma 项目、空间和权限治理入口。",
-  },
-  "mage-gallery": {
-    l2Label: "质量巡检",
-    status: "gallery",
-    queue: "review queue",
+  {
+    id: "open-design.workspace",
+    l1Id: "open-design",
+    l2Id: "workspace",
+    l2Label: "工作台",
+    l2Note: "projects / runs / agents",
+    defaultL3Id: "projects",
+    minimumRole: "designer",
+    status: "stub",
+    queue: "runtime",
     quality: "draft",
-    description: "Mage Gallery 资产巡检和灵感归档位。",
+    workbenchLabel: "OpenDesign 项目与运行",
+    workbenchDescription:
+      "OpenDesign 是开放的复杂一级域，后续承载项目、运行记录、agent、模板和设计系统能力。",
+    surface: "open-design-workspace",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "projects",
+        label: "Projects",
+        note: "repos / spaces",
+        kind: "project",
+        icon: Folder,
+      },
+      {
+        id: "runs",
+        label: "Runs",
+        note: "jobs / history",
+        kind: "automation",
+        icon: Activity,
+      },
+      {
+        id: "agents",
+        label: "Agents",
+        note: "codex / claude",
+        kind: "automation",
+        icon: Workflow,
+      },
+      {
+        id: "templates",
+        label: "Templates",
+        note: "patterns / kits",
+        kind: "library",
+        icon: Library,
+      },
+    ],
   },
-  templates: {
-    l2Label: "模板市场",
-    status: "template",
-    queue: "page kits",
+  {
+    id: "open-design.ai-create",
+    l1Id: "open-design",
+    l2Id: "ai-create",
+    l2Label: "AI 创作",
+    l2Note: "generate / reverse prompt",
+    defaultL3Id: "image-generate",
+    minimumRole: "designer",
+    status: "planned",
+    queue: "models",
     quality: "draft",
-    description: "模板、页面结构和复用标准的管理位。",
+    workbenchLabel: "AI 图片生成与拆解",
+    workbenchDescription:
+      "AI 生图、图片生成反向提示词和结构化拆分暂时归入 OpenDesign，后续与生成、agent、模板和设计上下文耦合。",
+    surface: "ai-create",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "image-generate",
+        label: "AI 生图",
+        note: "prompt / render",
+        kind: "tool",
+        icon: Sparkles,
+      },
+      {
+        id: "reverse-prompt",
+        label: "反向提示词",
+        note: "image to prompt",
+        kind: "tool",
+        icon: SearchCheck,
+      },
+      {
+        id: "structure-breakdown",
+        label: "结构化拆分",
+        note: "layers / tokens",
+        kind: "tool",
+        icon: Layers3,
+      },
+    ],
   },
-  uploads: {
-    l2Label: "发布流",
-    status: "upload",
-    queue: "pending",
+  {
+    id: "open-design.integrations",
+    l1Id: "open-design",
+    l2Id: "integrations",
+    l2Label: "集成",
+    l2Note: "github / runtime / export",
+    defaultL3Id: "github-repo",
+    minimumRole: "owner",
+    status: "restricted",
+    queue: "risk",
+    quality: "owner",
+    workbenchLabel: "OpenDesign 集成配置",
+    workbenchDescription:
+      "管理 GitHub 仓库、本地 runtime 和导出链路。这里涉及外部系统和风险操作，最低权限为 owner。",
+    surface: "integration",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "github-repo",
+        label: "GitHub Repo",
+        note: "repo / branches",
+        kind: "integration",
+        icon: Database,
+        minimumRole: "owner",
+      },
+      {
+        id: "local-runtime",
+        label: "Local Runtime",
+        note: "daemon / agents",
+        kind: "integration",
+        icon: Monitor,
+        minimumRole: "owner",
+      },
+      {
+        id: "export",
+        label: "Export",
+        note: "build / publish",
+        kind: "integration",
+        icon: Archive,
+        minimumRole: "owner",
+      },
+    ],
+  },
+  {
+    id: "figma-projects.file-status",
+    l1Id: "figma-projects",
+    l2Id: "file-status",
+    l2Label: "设计文件管理状态",
+    l2Note: "files / pages / changes",
+    defaultL3Id: "file-list",
+    minimumRole: "designer",
+    status: "stub",
+    queue: "figma files",
     quality: "draft",
-    description: "上传、发布和版本流转入口。",
+    workbenchLabel: "Figma 文件状态",
+    workbenchDescription:
+      "用于承载 Figma 文件表格、项目状态分析、页面状态、变更记录和权限状态。",
+    surface: "figma-status",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "file-list",
+        label: "文件列表",
+        note: "files / owners",
+        kind: "project",
+        icon: Folder,
+      },
+      {
+        id: "page-status",
+        label: "页面状态",
+        note: "pages / coverage",
+        kind: "project",
+        icon: Layers3,
+      },
+      {
+        id: "change-log",
+        label: "变更记录",
+        note: "diff / history",
+        kind: "project",
+        icon: Archive,
+      },
+      {
+        id: "permission-status",
+        label: "权限状态",
+        note: "shares / risks",
+        kind: "project",
+        icon: ShieldCheck,
+      },
+    ],
   },
-  settings: {
-    l2Label: "Token 管理",
+  {
+    id: "figma-projects.member-management",
+    l1Id: "figma-projects",
+    l2Id: "member-management",
+    l2Label: "成员管理",
+    l2Note: "members / roles / spaces",
+    defaultL3Id: "members",
+    minimumRole: "owner",
+    status: "restricted",
+    queue: "accounts",
+    quality: "owner",
+    workbenchLabel: "Figma 成员与权限",
+    workbenchDescription:
+      "用于承载成员表、角色分配、空间管理和文件权限核查。管理型操作需要 owner。",
+    surface: "member-management",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "members",
+        label: "成员",
+        note: "people / teams",
+        kind: "project",
+        icon: UserRound,
+        minimumRole: "owner",
+      },
+      {
+        id: "roles",
+        label: "角色",
+        note: "owner / designer / viewer",
+        kind: "settings",
+        icon: ShieldCheck,
+        minimumRole: "owner",
+      },
+      {
+        id: "spaces",
+        label: "空间",
+        note: "teams / projects",
+        kind: "project",
+        icon: Folder,
+        minimumRole: "owner",
+      },
+      {
+        id: "file-permissions",
+        label: "文件权限",
+        note: "access / audit",
+        kind: "settings",
+        icon: Lock,
+        minimumRole: "owner",
+      },
+    ],
+  },
+  {
+    id: "skill-platform.library",
+    l1Id: "skill-platform",
+    l2Id: "library",
+    l2Label: "skill 文件库",
+    l2Note: "brand / product / external",
+    defaultL3Id: "brand-skill-library",
+    minimumRole: "viewer",
+    status: "library",
+    queue: "skills",
+    quality: "open",
+    workbenchLabel: "Skill 文件浏览",
+    workbenchDescription:
+      "管理品牌 skill、产品设计 skill、外部 skill 和内部 skill 的来源、版本和适用范围。",
+    surface: "skill-library",
+    inspectorSections: ["selection", "account", "properties", "tokens", "status"],
+    l3Packages: [
+      {
+        id: "brand-skill-library",
+        label: "品牌 skill",
+        note: "brand rules",
+        kind: "library",
+        icon: Sparkles,
+      },
+      {
+        id: "product-design-skill",
+        label: "产品设计 skill",
+        note: "design workflows",
+        kind: "library",
+        icon: Layers3,
+      },
+      {
+        id: "external-skill",
+        label: "外部 skill",
+        note: "public sources",
+        kind: "library",
+        icon: Archive,
+      },
+      {
+        id: "internal-skill",
+        label: "内部 skill",
+        note: "private sources",
+        kind: "library",
+        icon: Lock,
+      },
+    ],
+  },
+  {
+    id: "skill-platform.tuning",
+    l1Id: "skill-platform",
+    l2Id: "tuning",
+    l2Label: "文件管理与调优",
+    l2Note: "edit / test / validate",
+    defaultL3Id: "product-skill-tuning",
+    minimumRole: "designer",
+    status: "draft",
+    queue: "validation",
+    quality: "designer",
+    workbenchLabel: "Skill 调优工作台",
+    workbenchDescription:
+      "用于 skill 编辑、Prompt 模板、调优测试和评估记录，产物进入草稿或待发布状态。",
+    surface: "skill-tuning",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "product-skill-tuning",
+        label: "产品设计 skill 调优",
+        note: "rules / examples",
+        kind: "tool",
+        icon: SlidersHorizontal,
+      },
+      {
+        id: "prompt-templates",
+        label: "Prompt 模板",
+        note: "templates / snippets",
+        kind: "library",
+        icon: Library,
+      },
+      {
+        id: "evaluation-records",
+        label: "评估记录",
+        note: "scores / diffs",
+        kind: "project",
+        icon: BarChart3,
+      },
+    ],
+  },
+  {
+    id: "skill-platform.resource-extraction",
+    l1Id: "skill-platform",
+    l2Id: "resource-extraction",
+    l2Label: "资源提取",
+    l2Note: "internal / external / queue",
+    defaultL3Id: "internal-resources",
+    minimumRole: "designer",
+    status: "queue",
+    queue: "imports",
+    quality: "draft",
+    workbenchLabel: "Skill 资源提取",
+    workbenchDescription:
+      "承载内部和外部资源提取、清洗、结构化入库与导入队列。",
+    surface: "resource-extraction",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "internal-resources",
+        label: "内部资源",
+        note: "local / private",
+        kind: "library",
+        icon: Lock,
+      },
+      {
+        id: "external-resources",
+        label: "外部资源",
+        note: "public / web",
+        kind: "library",
+        icon: Archive,
+      },
+      {
+        id: "import-queue",
+        label: "导入队列",
+        note: "clean / validate",
+        kind: "automation",
+        icon: Workflow,
+      },
+    ],
+  },
+  {
+    id: "design-daily.browse",
+    l1Id: "design-daily",
+    l2Id: "browse",
+    l2Label: "日报查阅",
+    l2Note: "latest / archive / topics",
+    defaultL3Id: "latest-daily",
+    minimumRole: "viewer",
+    status: "read",
+    queue: "daily",
+    quality: "open",
+    workbenchLabel: "设计日报阅读",
+    workbenchDescription:
+      "用于日报阅读、筛选、搜索、收藏和来源索引。当前先保留为空白阅读台。",
+    surface: "daily-browse",
+    inspectorSections: ["selection", "account", "properties", "status"],
+    l3Packages: [
+      {
+        id: "latest-daily",
+        label: "最新日报",
+        note: "today / week",
+        kind: "library",
+        icon: BarChart3,
+      },
+      {
+        id: "archive",
+        label: "历史归档",
+        note: "calendar / history",
+        kind: "library",
+        icon: Archive,
+      },
+      {
+        id: "topics",
+        label: "专题",
+        note: "collections",
+        kind: "library",
+        icon: Library,
+      },
+      {
+        id: "source-index",
+        label: "来源索引",
+        note: "feeds / refs",
+        kind: "library",
+        icon: SearchCheck,
+      },
+    ],
+  },
+  {
+    id: "design-daily.manage",
+    l1Id: "design-daily",
+    l2Id: "manage",
+    l2Label: "日报管理",
+    l2Note: "publish / draft / sources",
+    defaultL3Id: "publish-queue",
+    minimumRole: "owner",
+    status: "restricted",
+    queue: "publish",
+    quality: "owner",
+    workbenchLabel: "日报发布与来源管理",
+    workbenchDescription:
+      "承载发布队列、草稿和来源配置。发布、归档和来源配置需要 owner。",
+    surface: "daily-manage",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "publish-queue",
+        label: "发布队列",
+        note: "send / verify",
+        kind: "automation",
+        icon: Workflow,
+        minimumRole: "owner",
+      },
+      {
+        id: "drafts",
+        label: "草稿",
+        note: "edit / review",
+        kind: "project",
+        icon: Archive,
+        minimumRole: "owner",
+      },
+      {
+        id: "source-config",
+        label: "来源配置",
+        note: "feeds / rules",
+        kind: "settings",
+        icon: SlidersHorizontal,
+        minimumRole: "owner",
+      },
+    ],
+  },
+  {
+    id: "system.account-permission",
+    l1Id: "system",
+    l2Id: "account-permission",
+    l2Label: "账号与权限",
+    l2Note: "members / roles / audit",
+    defaultL3Id: "system-members",
+    minimumRole: "owner",
+    status: "restricted",
+    queue: "accounts",
+    quality: "owner",
+    workbenchLabel: "权限配置",
+    workbenchDescription: "成员、角色、授权和审计都属于 owner 级系统操作。",
+    surface: "account-permission",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "system-members",
+        label: "成员",
+        note: "people",
+        kind: "settings",
+        icon: UserRound,
+        minimumRole: "owner",
+      },
+      {
+        id: "system-roles",
+        label: "角色",
+        note: "owner / designer / viewer",
+        kind: "settings",
+        icon: ShieldCheck,
+        minimumRole: "owner",
+      },
+      {
+        id: "authorizations",
+        label: "授权",
+        note: "apps / scopes",
+        kind: "settings",
+        icon: KeyRound,
+        minimumRole: "owner",
+      },
+      {
+        id: "audit",
+        label: "审计",
+        note: "logs",
+        kind: "settings",
+        icon: Archive,
+        minimumRole: "owner",
+      },
+    ],
+  },
+  {
+    id: "system.appearance",
+    l1Id: "system",
+    l2Id: "appearance",
+    l2Label: "外观与 token",
+    l2Note: "theme / type / color / layout",
+    defaultL3Id: "theme",
+    minimumRole: "designer",
     status: "tokens",
     queue: "config table",
     quality: "live",
-    description: "颜色、字体、字号、导航状态和渲染 token。",
+    workbenchLabel: "主题配置",
+    workbenchDescription: "颜色、字体、字号、导航状态和渲染 token。",
+    surface: "appearance-settings",
+    inspectorSections: ["selection", "account", "tokens", "status"],
+    l3Packages: [
+      {
+        id: "theme",
+        label: "主题",
+        note: "light / dark / system",
+        kind: "settings",
+        icon: Palette,
+      },
+      {
+        id: "font-size",
+        label: "字号",
+        note: "ui / code",
+        kind: "settings",
+        icon: SlidersHorizontal,
+      },
+      {
+        id: "colors",
+        label: "颜色",
+        note: "tokens / presets",
+        kind: "settings",
+        icon: Database,
+      },
+      {
+        id: "layout-token",
+        label: "布局 token",
+        note: "rail / radius / stroke",
+        kind: "settings",
+        icon: Layers3,
+      },
+    ],
   },
+  {
+    id: "system.future-lab",
+    l1Id: "system",
+    l2Id: "future-lab",
+    l2Label: "扩展预留",
+    l2Note: "future tools / backlog",
+    defaultL3Id: "unclassified-tools",
+    minimumRole: "owner",
+    status: "planned",
+    queue: "backlog",
+    quality: "owner",
+    workbenchLabel: "未成熟工具登记",
+    workbenchDescription:
+      "未来大量扩展工具先进入这里登记、评估风险和归属，再迁移到稳定的一级域。",
+    surface: "future-lab",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "unclassified-tools",
+        label: "待归类工具",
+        note: "intake / triage",
+        kind: "tool",
+        icon: Folder,
+        minimumRole: "owner",
+      },
+      {
+        id: "experiments",
+        label: "实验功能",
+        note: "labs",
+        kind: "tool",
+        icon: Sparkles,
+        minimumRole: "owner",
+      },
+      {
+        id: "backlog",
+        label: "Backlog",
+        note: "ideas / decisions",
+        kind: "project",
+        icon: Archive,
+        minimumRole: "owner",
+      },
+    ],
+  },
+];
+
+const roleWeight: Record<AccountRole, number> = {
+  viewer: 1,
+  designer: 2,
+  owner: 3,
 };
+
+function canAccessRole(role: AccountRole | null, minimumRole: AccountRole) {
+  if (minimumRole === "viewer") {
+    return true;
+  }
+
+  if (!role) {
+    return false;
+  }
+
+  return roleWeight[role] >= roleWeight[minimumRole];
+}
+
+function getFirstRouteForDomain(domainId: L1DomainId) {
+  return (
+    workspaceRoutes.find((route) => route.l1Id === domainId) ??
+    workspaceRoutes[0]
+  );
+}
+
+function getRouteById(routeId: string) {
+  return (
+    workspaceRoutes.find((route) => route.id === routeId) ?? workspaceRoutes[0]
+  );
+}
+
+function getActivePackage(route: WorkspaceRoute, packageId?: string) {
+  return (
+    route.l3Packages.find((item) => item.id === packageId) ??
+    route.l3Packages.find((item) => item.id === route.defaultL3Id) ??
+    route.l3Packages[0]
+  );
+}
 
 function resolveThemeMode(mode: ThemeMode) {
   if (mode !== "system") {
@@ -758,8 +1405,10 @@ function makeThemeStyle(config: ThemeConfig) {
 }
 
 export function App() {
-  const [activeToolId, setActiveToolId] = useState<ToolId>("open-design");
-  const [activeDomain, setActiveDomain] = useState("asset-governance");
+  const [activeRouteId, setActiveRouteId] = useState(workspaceRoutes[0].id);
+  const [activePackageByRoute, setActivePackageByRoute] = useState<
+    Record<string, string>
+  >({});
   const [account, setAccount] = useState<FeishuAccount | null>(() =>
     loadFeishuAccount(),
   );
@@ -783,18 +1432,31 @@ export function App() {
     window.localStorage.setItem(THEME_MODE_STORAGE_KEY, themeMode);
   }, [themeMode]);
 
-  const activeTool = useMemo(() => getToolById(activeToolId), [activeToolId]);
+  const activeRoute = useMemo(() => getRouteById(activeRouteId), [activeRouteId]);
+  const activeDomain = activeRoute.l1Id;
+  const activeDomainConfig =
+    primaryDomains.find((domain) => domain.id === activeDomain) ??
+    primaryDomains[0];
+  const activeRoutesForDomain = workspaceRoutes.filter(
+    (route) => route.l1Id === activeDomain,
+  );
+  const activePackage = getActivePackage(
+    activeRoute,
+    activePackageByRoute[activeRoute.id],
+  );
   const role = account?.role ?? null;
-  const activeAllowed = canAccessTool(role, activeTool);
+  const activeRouteAllowed = canAccessRole(role, activeRoute.minimumRole);
+  const activePackageAllowed = canAccessRole(
+    role,
+    activePackage.minimumRole ?? activeRoute.minimumRole,
+  );
+  const activeAllowed = activeRouteAllowed && activePackageAllowed;
   const activeThemeConfig = themeConfigs[accentTheme];
   const themeTone = getThemeTone(activeThemeConfig, themeMode);
   const themeStyle = useMemo(
     () => makeThemeStyle(activeThemeConfig),
     [activeThemeConfig],
   );
-  const activeModule =
-    moduleItems.find((item) => item.toolId === activeToolId) ?? moduleItems[0];
-  const activeMeta = toolWorkMeta[activeToolId];
 
   function signIn(roleToUse: AccountRole) {
     setAccount(createDemoFeishuAccount(roleToUse));
@@ -842,8 +1504,33 @@ export function App() {
     window.localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(themeConfigs));
   }
 
+  function changeDomain(domainId: L1DomainId) {
+    const nextRoute = getFirstRouteForDomain(domainId);
+    setActiveRouteId(nextRoute.id);
+  }
+
+  function changeRoute(routeId: string) {
+    setActiveRouteId(routeId);
+  }
+
+  function changePackage(packageId: string) {
+    setActivePackageByRoute((previous) => ({
+      ...previous,
+      [activeRoute.id]: packageId,
+    }));
+  }
+
   function renderCanvas() {
-    if (activeToolId === "settings") {
+    if (!activeAllowed) {
+      return (
+        <button className="lockedPanel" type="button" onClick={() => setAuthOpen(true)}>
+          <Lock size={16} />
+          <span>{account ? "permission required" : "feishu login required"}</span>
+        </button>
+      );
+    }
+
+    if (activeRoute.surface === "appearance-settings") {
       return (
         <SettingsPanel
           activeTheme={accentTheme}
@@ -859,20 +1546,11 @@ export function App() {
       );
     }
 
-    if (!activeAllowed) {
-      return (
-        <button className="lockedPanel" type="button" onClick={() => setAuthOpen(true)}>
-          <Lock size={16} />
-          <span>{account ? "permission required" : "feishu login required"}</span>
-        </button>
-      );
-    }
-
-    if (activeToolId === "slice-export") {
+    if (activeRoute.surface === "slice-tool") {
       return <SliceTool />;
     }
 
-    return <ToolPlaceholder activeToolId={activeToolId} />;
+    return <RoutePlaceholder route={activeRoute} activePackage={activePackage} />;
   }
 
   return (
@@ -903,7 +1581,7 @@ export function App() {
                 className="l1NavItem"
                 type="button"
                 data-active={domain.id === activeDomain}
-                onClick={() => setActiveDomain(domain.id)}
+                onClick={() => changeDomain(domain.id)}
               >
                 <Icon size={14} />
                 <span>{domain.label}</span>
@@ -931,25 +1609,28 @@ export function App() {
         <div className="breadcrumb" aria-label="Current tool">
           <span>vision</span>
           <span>/</span>
-          <strong>{activeMeta.l2Label}</strong>
+          <strong>{activeRoute.l2Label}</strong>
         </div>
 
         <nav className="l2Tabs" aria-label="Secondary views">
-          {toolItems.map((tool) => {
-            const Icon = tool.icon;
-            const allowed = canAccessTool(role, tool);
+          {activeRoutesForDomain.map((route) => {
+            const domainIcon = activeDomainConfig.icon;
+            const allowed = canAccessRole(role, route.minimumRole);
 
             return (
               <button
-                key={tool.id}
+                key={route.id}
                 className="l2Tab"
                 type="button"
-                data-active={tool.id === activeToolId}
+                data-active={route.id === activeRoute.id}
                 data-disabled={!allowed}
-                onClick={() => setActiveToolId(tool.id)}
+                onClick={() => changeRoute(route.id)}
               >
-                <Icon size={18} />
-                <span>{tool.shortLabel}</span>
+                {(() => {
+                  const Icon = domainIcon;
+                  return <Icon size={14} />;
+                })()}
+                <span>{route.l2Label}</span>
                 {!allowed ? <Lock className="tabLock" size={11} /> : null}
               </button>
             );
@@ -958,7 +1639,7 @@ export function App() {
 
         <div className="l2Meta">
           <span className="stateChip" data-state="selected">
-            {activeMeta.status}
+            {activeRoute.status}
           </span>
           <span className="stateChip" data-state="neutral">
             {roleLabel(role)}
@@ -969,23 +1650,26 @@ export function App() {
       <main className="l3Workspace">
         <aside className="moduleRail" aria-label="Functional modules">
           <header className="railHeader">
-            <span>L3 modules</span>
-            <strong>设计工作台</strong>
+            <span>L3 packages</span>
+            <strong>{activeRoute.l2Label}</strong>
           </header>
 
           <nav className="moduleList">
-            {moduleItems.map((item) => {
+            {activeRoute.l3Packages.map((item) => {
               const Icon = item.icon;
-              const allowed = canAccessTool(role, getToolById(item.toolId));
+              const allowed = canAccessRole(
+                role,
+                item.minimumRole ?? activeRoute.minimumRole,
+              );
 
               return (
                 <button
                   key={item.id}
                   className="moduleButton"
                   type="button"
-                  data-active={item.id === activeModule.id}
+                  data-active={item.id === activePackage.id}
                   data-disabled={!allowed}
-                  onClick={() => setActiveToolId(item.toolId)}
+                  onClick={() => changePackage(item.id)}
                 >
                   <Icon size={18} />
                   <span>
@@ -999,36 +1683,35 @@ export function App() {
           </nav>
         </aside>
 
-        <section className="moduleCanvas" aria-label={`${activeTool.label} workspace`}>
+        <section className="moduleCanvas" aria-label={`${activeRoute.workbenchLabel} workspace`}>
           <header className="canvasHeader">
             <div>
-              <span>{activeModule.label}</span>
-              <h1>{activeTool.label}</h1>
+              <span>{activePackage.label}</span>
+              <h1>{activeRoute.workbenchLabel}</h1>
             </div>
             <div className="canvasActions">
               <span className="stateChip" data-state="success">
                 <CheckCircle2 size={12} />
-                {activeMeta.quality}
+                {activeRoute.quality}
               </span>
               <span className="stateChip" data-state="neutral">
-                {activeMeta.queue}
+                {activeRoute.queue}
               </span>
             </div>
           </header>
           <div
-            className={`canvasBody canvasBody-${activeToolId}`}
+            className={`canvasBody canvasBody-${activeRoute.surface}`}
             data-locked={!activeAllowed}
           >
             {renderCanvas()}
           </div>
         </section>
 
-        <InspectorPanel
+        <RouteInspectorPanel
           account={account}
-          activeMeta={activeMeta}
-          activeModule={activeModule}
           activeTheme={accentTheme}
-          activeToolId={activeToolId}
+          activePackage={activePackage}
+          activeRoute={activeRoute}
           config={activeThemeConfig}
           role={role}
           themeMode={themeMode}
@@ -1049,27 +1732,28 @@ export function App() {
   );
 }
 
-type ToolPlaceholderProps = {
-  activeToolId: ToolId;
+type RoutePlaceholderProps = {
+  route: WorkspaceRoute;
+  activePackage: L3Package;
 };
 
-function ToolPlaceholder({ activeToolId }: ToolPlaceholderProps) {
-  const tool = getToolById(activeToolId);
-  const meta = toolWorkMeta[activeToolId];
+function RoutePlaceholder({ route, activePackage }: RoutePlaceholderProps) {
   const rows = [
-    ["owner", "Design Platform"],
-    ["source", tool.label],
-    ["queue", meta.queue],
-    ["status", meta.status],
+    ["l1", primaryDomains.find((domain) => domain.id === route.l1Id)?.label ?? route.l1Id],
+    ["l2", route.l2Label],
+    ["l3", activePackage.label],
+    ["surface", route.surface],
+    ["permission", activePackage.minimumRole ?? route.minimumRole],
+    ["status", route.status],
   ];
 
   return (
     <div className="emptyWorkbench">
       <section className="emptyModulePanel">
         <div>
-          <span className="sectionKicker">module placeholder</span>
-          <h2>{tool.label}</h2>
-          <p>{meta.description}</p>
+          <span className="sectionKicker">{activePackage.kind} package</span>
+          <h2>{activePackage.label}</h2>
+          <p>{route.workbenchDescription}</p>
         </div>
         <div className="stateMatrix">
           {rows.map(([label, value]) => (
@@ -1082,17 +1766,15 @@ function ToolPlaceholder({ activeToolId }: ToolPlaceholderProps) {
       </section>
 
       <section className="canvasPreviewGrid" aria-label="Workbench preview">
-        {Array.from({ length: 9 }, (_, index) => (
-          <div className="previewCell" key={index}>
+        {route.l3Packages.map((item, index) => (
+          <div
+            className="previewCell"
+            key={item.id}
+            data-active={item.id === activePackage.id}
+          >
             <span>{String(index + 1).padStart(2, "0")}</span>
-            <strong>
-              {index % 3 === 0
-                ? "asset"
-                : index % 3 === 1
-                  ? "token"
-                  : "review"}
-            </strong>
-            <small>{index % 2 === 0 ? "ready" : "queued"}</small>
+            <strong>{item.label}</strong>
+            <small>{item.note}</small>
           </div>
         ))}
       </section>
@@ -1100,47 +1782,47 @@ function ToolPlaceholder({ activeToolId }: ToolPlaceholderProps) {
   );
 }
 
-type InspectorPanelProps = {
+type RouteInspectorPanelProps = {
   account: FeishuAccount | null;
-  activeMeta: (typeof toolWorkMeta)[ToolId];
-  activeModule: (typeof moduleItems)[number];
   activeTheme: ThemePresetId;
-  activeToolId: ToolId;
+  activePackage: L3Package;
+  activeRoute: WorkspaceRoute;
   config: ThemeConfig;
   role: AccountRole | null;
   themeMode: ThemeMode;
   onAuthOpen: () => void;
 };
 
-function InspectorPanel({
+function RouteInspectorPanel({
   account,
-  activeMeta,
-  activeModule,
   activeTheme,
-  activeToolId,
+  activePackage,
+  activeRoute,
   config,
   role,
   themeMode,
   onAuthOpen,
-}: InspectorPanelProps) {
-  const activeTool = getToolById(activeToolId);
-  const permissionRows = toolItems.slice(0, 5).map((tool) => ({
-    label: tool.shortLabel,
-    enabled: canAccessTool(role, tool),
+}: RouteInspectorPanelProps) {
+  const permissionRows = activeRoute.l3Packages.map((item) => ({
+    label: item.label,
+    enabled: canAccessRole(role, item.minimumRole ?? activeRoute.minimumRole),
   }));
+  const domainLabel =
+    primaryDomains.find((domain) => domain.id === activeRoute.l1Id)?.label ??
+    activeRoute.l1Id;
 
   return (
     <aside className="inspectorPanel" aria-label="Inspector">
       <section className="inspectorSection">
         <header>
           <span>selection</span>
-          <strong>{activeModule.label}</strong>
+          <strong>{activePackage.label}</strong>
         </header>
         <div className="inspectorRows">
-          <InspectorRow label="tool" value={activeTool.shortLabel} />
-          <InspectorRow label="state" value={activeMeta.status} />
-          <InspectorRow label="queue" value={activeMeta.queue} />
-          <InspectorRow label="quality" value={activeMeta.quality} />
+          <InspectorRow label="domain" value={domainLabel} />
+          <InspectorRow label="view" value={activeRoute.l2Label} />
+          <InspectorRow label="package" value={activePackage.label} />
+          <InspectorRow label="surface" value={activeRoute.surface} />
         </div>
       </section>
 
@@ -1175,6 +1857,22 @@ function InspectorPanel({
 
       <section className="inspectorSection">
         <header>
+          <span>properties</span>
+          <strong>{activePackage.kind}</strong>
+        </header>
+        <div className="inspectorRows">
+          <InspectorRow
+            label="minimum"
+            value={activePackage.minimumRole ?? activeRoute.minimumRole}
+          />
+          <InspectorRow label="package type" value={activePackage.kind} />
+          <InspectorRow label="queue" value={activeRoute.queue} />
+          <InspectorRow label="sections" value={activeRoute.inspectorSections.join(" / ")} />
+        </div>
+      </section>
+
+      <section className="inspectorSection">
+        <header>
           <span>tokens</span>
           <strong>{themePresets.find((item) => item.id === activeTheme)?.label}</strong>
         </header>
@@ -1189,9 +1887,10 @@ function InspectorPanel({
       <section className="inspectorSection">
         <header>
           <span>render</span>
-          <strong>{themeMode}</strong>
+          <strong>{activeRoute.status}</strong>
         </header>
         <div className="inspectorRows">
+          <InspectorRow label="mode" value={themeMode} />
           <InspectorRow label="ui size" value={`${config.uiFontSize}px`} />
           <InspectorRow label="code size" value={`${config.codeFontSize}px`} />
           <InspectorRow label="radius" value="4px" />
@@ -1893,11 +2592,11 @@ function AuthDialog({
           </div>
 
           <div className="permissionGrid">
-            {toolItems.map((tool) => {
-              const checked = canAccessTool(account?.role ?? selectedRole, tool);
+            {workspaceRoutes.map((route) => {
+              const checked = canAccessRole(account?.role ?? selectedRole, route.minimumRole);
               return (
-                <div className="permissionRow" key={tool.id} data-enabled={checked}>
-                  <span>{tool.shortLabel}</span>
+                <div className="permissionRow" key={route.id} data-enabled={checked}>
+                  <span>{route.l2Label}</span>
                   {checked ? <ShieldCheck size={14} /> : <Lock size={14} />}
                 </div>
               );
