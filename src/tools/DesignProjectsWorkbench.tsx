@@ -78,6 +78,11 @@ type ViewRecord = SnapshotRecord & {
 };
 
 type LoadState = "idle" | "loading" | "ready" | "error";
+type CountEntry = {
+  label: string;
+  count: number;
+  ratio: number;
+};
 
 const SNAPSHOT_HREF = `${import.meta.env.BASE_URL}data/feishu-base-snapshot.json`;
 
@@ -142,35 +147,38 @@ export function DesignProjectsWorkbench() {
   }, [loadSnapshot]);
 
   const records = useMemo<ViewRecord[]>(() => {
-    return (snapshot?.records ?? []).map((record) => {
-      const view = normalizeDerived(record);
-      const fieldText = Object.values(record.fields).map(valueToText).join(" ");
+    return (snapshot?.records ?? [])
+      .map((record) => {
+        const view = normalizeDerived(record);
+        const fieldText = Object.values(record.fields).map(valueToText).join(" ");
 
-      return {
-        ...record,
-        view,
-        searchIndex: [
-          record.id,
-          view.title,
-          view.status,
-          view.priority,
-          view.proposer,
-          view.supplier,
-          view.assignee,
-          view.department,
-          view.channel.join(" "),
-          view.product.join(" "),
-          view.medium.join(" "),
-          fieldText,
-        ]
-          .join(" ")
-          .toLowerCase(),
-      };
-    });
+        return {
+          ...record,
+          view,
+          searchIndex: [
+            record.id,
+            view.title,
+            view.status,
+            view.priority,
+            view.proposer,
+            view.supplier,
+            view.assignee,
+            view.department,
+            view.channel.join(" "),
+            view.product.join(" "),
+            view.medium.join(" "),
+            fieldText,
+          ]
+            .join(" ")
+            .toLowerCase(),
+        };
+      })
+      .sort(compareDesignProjectRecords);
   }, [snapshot]);
 
   const priorityOptions = useMemo(() => uniqueOptions(records, "priority"), [records]);
   const departmentOptions = useMemo(() => uniqueOptions(records, "department"), [records]);
+  const analytics = useMemo(() => buildDesignProjectAnalytics(records), [records]);
   const normalizedQuery = query.trim().toLowerCase();
 
   const filteredRecords = useMemo(() => {
@@ -317,6 +325,19 @@ export function DesignProjectsWorkbench() {
         </span>
       </section>
 
+      <section className="designProjectAnalytics" aria-label="Design project analytics">
+        <CompletionPanel
+          done={analytics.done}
+          open={analytics.open}
+          rate={analytics.completionRate}
+          total={analytics.total}
+        />
+        <DistributionPanel title="priority mix" entries={analytics.priorityEntries} />
+        <DistributionPanel title="department top" entries={analytics.departmentEntries} />
+        <DistributionPanel title="channel top" entries={analytics.channelEntries} />
+        <OpenQueuePanel records={analytics.openQueue} />
+      </section>
+
       <section className="designProjectContent">
         <aside className="designProjectListPanel" aria-label="设计项目需求列表">
           <header>
@@ -415,6 +436,87 @@ function MetricCell({ label, value }: MetricCellProps) {
     <div className="designProjectMetric">
       <span>{label}</span>
       <strong>{value}</strong>
+    </div>
+  );
+}
+
+type CompletionPanelProps = {
+  total: number;
+  open: number;
+  done: number;
+  rate: number;
+};
+
+function CompletionPanel({ total, open, done, rate }: CompletionPanelProps) {
+  return (
+    <div className="designProjectAnalyticsPanel">
+      <header>
+        <span>completion</span>
+        <strong>{total} tasks</strong>
+      </header>
+      <div className="designProjectCompletionValue">
+        <strong>{Math.round(rate)}%</strong>
+        <span>done rate</span>
+      </div>
+      <div className="designProjectProgressTrack" aria-hidden="true">
+        <i style={{ width: `${Math.max(2, rate)}%` }} />
+      </div>
+      <div className="designProjectAnalyticsSplit">
+        <span>open {open}</span>
+        <span>done {done}</span>
+      </div>
+    </div>
+  );
+}
+
+type DistributionPanelProps = {
+  title: string;
+  entries: CountEntry[];
+};
+
+function DistributionPanel({ title, entries }: DistributionPanelProps) {
+  return (
+    <div className="designProjectAnalyticsPanel">
+      <header>
+        <span>{title}</span>
+        <strong>{entries.length}</strong>
+      </header>
+      <div className="designProjectDistribution">
+        {entries.map((entry) => (
+          <div className="designProjectDistributionRow" key={entry.label}>
+            <span>{entry.label}</span>
+            <i aria-hidden="true">
+              <b style={{ width: `${Math.max(4, entry.ratio * 100)}%` }} />
+            </i>
+            <strong>{entry.count}</strong>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type OpenQueuePanelProps = {
+  records: ViewRecord[];
+};
+
+function OpenQueuePanel({ records }: OpenQueuePanelProps) {
+  return (
+    <div className="designProjectAnalyticsPanel">
+      <header>
+        <span>open queue</span>
+        <strong>{records.length}</strong>
+      </header>
+      <div className="designProjectOpenQueue">
+        {records.map((record) => (
+          <div className="designProjectOpenQueueRow" key={record.id}>
+            <strong>{record.view.title}</strong>
+            <span>
+              {formatDate(record.view.deadline)} / {record.view.priority}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -537,6 +639,93 @@ function normalizeDerived(record: SnapshotRecord): DerivedRecord {
     medium: normalizeStringArray(derived.medium),
     attachmentCount: Number(derived.attachmentCount ?? 0),
   };
+}
+
+function compareDesignProjectRecords(left: ViewRecord, right: ViewRecord) {
+  if (left.view.completed !== right.view.completed) {
+    return left.view.completed ? 1 : -1;
+  }
+
+  const rightTime = sortableProjectTime(right);
+  const leftTime = sortableProjectTime(left);
+
+  if (rightTime !== leftTime) {
+    return rightTime - leftTime;
+  }
+
+  return left.view.title.localeCompare(right.view.title, "zh-Hans-CN");
+}
+
+function buildDesignProjectAnalytics(records: ViewRecord[]) {
+  const total = records.length;
+  const done = records.filter((record) => record.view.completed).length;
+  const open = total - done;
+
+  return {
+    total,
+    done,
+    open,
+    completionRate: total ? (done / total) * 100 : 0,
+    priorityEntries: buildCountEntries(records, (record) => record.view.priority),
+    departmentEntries: buildCountEntries(records, (record) => record.view.department),
+    channelEntries: buildCountEntries(records, (record) => record.view.channel),
+    openQueue: records.filter((record) => !record.view.completed).slice(0, 5),
+  };
+}
+
+function buildCountEntries(
+  records: ViewRecord[],
+  getter: (record: ViewRecord) => string | string[],
+  limit = 5,
+): CountEntry[] {
+  const counts = new Map<string, number>();
+
+  records.forEach((record) => {
+    const rawValues = getter(record);
+    const values = Array.isArray(rawValues) ? rawValues : [rawValues];
+    const normalizedValues = values.map((value) => value.trim()).filter(Boolean);
+
+    if (normalizedValues.length === 0) {
+      counts.set("未设置", (counts.get("未设置") ?? 0) + 1);
+      return;
+    }
+
+    normalizedValues.forEach((value) => {
+      counts.set(value, (counts.get(value) ?? 0) + 1);
+    });
+  });
+
+  const sortedEntries = Array.from(counts.entries())
+    .sort((left, right) => {
+      if (right[1] !== left[1]) {
+        return right[1] - left[1];
+      }
+
+      return left[0].localeCompare(right[0], "zh-Hans-CN");
+    })
+    .slice(0, limit);
+  const maxCount = Math.max(...sortedEntries.map(([, count]) => count), 1);
+
+  return sortedEntries.map(([label, count]) => ({
+    label,
+    count,
+    ratio: count / maxCount,
+  }));
+}
+
+function sortableProjectTime(record: ViewRecord) {
+  return parseProjectTime(record.view.deadline) || parseProjectTime(record.view.createdAt);
+}
+
+function parseProjectTime(value: string) {
+  if (!value || value.startsWith("1970-01-01")) {
+    return 0;
+  }
+
+  const normalizedValue = value.includes("T") ? value : value.replace(" ", "T");
+  const timestamp = Date.parse(normalizedValue);
+
+  return Number.isNaN(timestamp) ? 0 : timestamp;
 }
 
 function uniqueOptions(records: ViewRecord[], key: keyof DerivedRecord) {

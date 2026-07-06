@@ -818,7 +818,7 @@ svg {
 
 .designProjectsWorkbench {
   display: grid;
-  grid-template-rows: 40px 44px 40px minmax(0, 1fr);
+  grid-template-rows: 40px 44px 40px 150px minmax(0, 1fr);
   height: 100%;
   min-height: 0;
   color: var(--text);
@@ -832,7 +832,8 @@ svg {
 
 .designProjectSyncBar,
 .designProjectMetricStrip,
-.designProjectToolbar {
+.designProjectToolbar,
+.designProjectAnalytics {
   border-bottom: var(--stroke-width) solid var(--border);
   background: var(--bg);
 }
@@ -1020,6 +1021,154 @@ svg {
   gap: 6px;
   margin-left: auto;
   white-space: nowrap;
+}
+
+.designProjectAnalytics {
+  display: grid;
+  grid-template-columns: 1.05fr repeat(3, minmax(0, 1fr)) 1.25fr;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.designProjectAnalyticsPanel {
+  display: grid;
+  grid-template-rows: 28px minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  padding: 10px 12px;
+  border-right: var(--stroke-width) solid var(--border);
+  background: var(--surface);
+}
+
+.designProjectAnalyticsPanel:last-child {
+  border-right: 0;
+}
+
+.designProjectAnalyticsPanel header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.designProjectAnalyticsPanel header span,
+.designProjectCompletionValue span,
+.designProjectAnalyticsSplit,
+.designProjectOpenQueueRow span {
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-caps: all-small-caps;
+}
+
+.designProjectAnalyticsPanel header strong {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.designProjectCompletionValue {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.designProjectCompletionValue strong {
+  color: var(--text);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.designProjectProgressTrack {
+  overflow: hidden;
+  width: 100%;
+  height: 6px;
+  margin-top: 10px;
+  border: var(--stroke-width) solid var(--accent-border);
+  border-radius: var(--radius-full);
+  background: var(--accent-faint);
+}
+
+.designProjectProgressTrack i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.designProjectAnalyticsSplit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.designProjectDistribution,
+.designProjectOpenQueue {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.designProjectDistributionRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(54px, 0.8fr) 24px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.designProjectDistributionRow span,
+.designProjectOpenQueueRow strong {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.designProjectDistributionRow i {
+  overflow: hidden;
+  height: 6px;
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface-soft);
+}
+
+.designProjectDistributionRow b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.designProjectDistributionRow strong {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 400;
+  text-align: right;
+}
+
+.designProjectOpenQueueRow {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding-bottom: 7px;
+  border-bottom: var(--stroke-width) solid var(--border);
+}
+
+.designProjectOpenQueueRow:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 
 .designProjectContent {
@@ -3124,6 +3273,11 @@ svg {
   .designProjectSummaryGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .designProjectAnalytics {
+    grid-template-columns: repeat(5, minmax(180px, 1fr));
+    overflow-x: auto;
+  }
 }
 
 @container settings-page (max-width: 1100px) {
@@ -3212,7 +3366,7 @@ svg {
   }
 
   .designProjectsWorkbench {
-    grid-template-rows: auto auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto minmax(0, 1fr);
   }
 
   .designProjectSyncBar,
@@ -3229,8 +3383,19 @@ svg {
   }
 
   .designProjectMetricStrip,
+  .designProjectAnalytics,
   .designProjectSummaryGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .designProjectAnalytics {
+    overflow: visible;
+  }
+
+  .designProjectAnalyticsPanel {
+    min-height: 136px;
+    border-right: var(--stroke-width) solid var(--border);
+    border-bottom: var(--stroke-width) solid var(--border);
   }
 
   .designProjectSearch {
