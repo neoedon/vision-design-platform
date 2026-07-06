@@ -90,6 +90,9 @@
     border: 0;
     border-radius: 0;
   }
+  body[data-embedded="true"] .status-bar {
+    display: none !important;
+  }
   body[data-embedded="true"] .source-section {
     margin-bottom: 16px;
     border-width: 0 0 1px;
@@ -98,6 +101,644 @@
   body[data-embedded="true"] #changelogView {
     min-height: 100vh;
     padding: 16px;
+  }
+  .embedded-actions {
+    display: none;
+  }
+  body[data-embedded="true"] .embedded-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+    margin-left: auto;
+  }
+  body[data-embedded="true"] .embedded-meta {
+    overflow: hidden;
+    max-width: min(58vw, 720px);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    min-height: 40px;
+    padding: 6px 16px;
+    gap: 8px;
+  }
+  body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header .embedded-actions {
+    grid-column: 1;
+    justify-self: end;
+    overflow: hidden;
+  }
+  body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header .embedded-meta {
+    max-width: min(42vw, 560px);
+  }
+  body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header > div:last-child {
+    grid-column: 2;
+    min-width: max-content;
+  }
+  body[data-embedded="true"] .source-section .embedded-actions {
+    flex-wrap: wrap;
+  }
+  body[data-embedded="true"] .page-map-access-chip.primary,
+  body[data-embedded="true"] .page-map-user-chip.primary {
+    color: var(--interactive);
+    border-color: var(--interactive);
+    background: var(--interactive-subtle);
+  }
+  body[data-embedded="true"] .page-map-user-chip {
+    color: var(--text-primary);
+    border-color: var(--border-visible);
+    background: var(--surface-raised);
+  }
+  body[data-embedded="true"] .page-map-user-chip.muted {
+    color: var(--text-secondary);
+    border-color: var(--border-visible);
+    background: var(--surface);
+  }
+  body[data-embedded="true"] {
+    --platform-ui-font: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --platform-code-font: var(--platform-ui-font);
+    --platform-ui-size: 14px;
+    --platform-code-size: 14px;
+    --platform-stroke: 0.5px;
+    --platform-radius-tiny: 2px;
+    --platform-radius: 4px;
+    --platform-radius-large: 13px;
+    --platform-radius-full: 9999px;
+    --platform-control-height: 24px;
+    --platform-control-height-large: 32px;
+    --platform-surface-soft: color-mix(in srgb, var(--surface) 70%, var(--black));
+    --platform-nav-active-bg: var(--interactive-subtle);
+    --platform-border-soft: color-mix(in srgb, var(--border) 74%, transparent);
+    --platform-danger-border: color-mix(in srgb, var(--accent) 46%, transparent);
+    --platform-success-border: color-mix(in srgb, var(--success) 46%, transparent);
+    font-family: var(--platform-ui-font);
+    font-size: var(--platform-ui-size);
+    line-height: 1.45;
+    background: var(--black);
+    color: var(--text-primary);
+  }
+  body[data-embedded="true"],
+  body[data-embedded="true"] button,
+  body[data-embedded="true"] input,
+  body[data-embedded="true"] select,
+  body[data-embedded="true"] textarea {
+    font-family: var(--platform-ui-font) !important;
+    letter-spacing: 0;
+  }
+  body[data-embedded="true"] button,
+  body[data-embedded="true"] a {
+    color: inherit;
+  }
+  body[data-embedded="true"] .page,
+  body[data-embedded="true"] #mapView,
+  body[data-embedded="true"] #changelogView,
+  body[data-embedded="true"] .map-view,
+  body[data-embedded="true"] .page-map-content {
+    background: var(--black);
+    color: var(--text-primary);
+  }
+  body[data-embedded="true"] #changelogView {
+    padding: 12px;
+  }
+  body[data-embedded="true"] section {
+    margin-bottom: 12px;
+  }
+  body[data-embedded="true"] .section-label,
+  body[data-embedded="true"] .filter-group-label,
+  body[data-embedded="true"] .day-header,
+  body[data-embedded="true"] .page-analysis-status,
+  body[data-embedded="true"] .page-map-count,
+  body[data-embedded="true"] .page-map-node,
+  body[data-embedded="true"] .page-map-user-label,
+  body[data-embedded="true"] .fv-pages-label,
+  body[data-embedded="true"] .file-current-page-count,
+  body[data-embedded="true"] .file-current-page-empty,
+  body[data-embedded="true"] .dialog-field label,
+  body[data-embedded="true"] .dialog-status,
+  body[data-embedded="true"] .header-meta,
+  body[data-embedded="true"] .version-time,
+  body[data-embedded="true"] .version-meta,
+  body[data-embedded="true"] .fv-time,
+  body[data-embedded="true"] .stat-label,
+  body[data-embedded="true"] .stat-sub,
+  body[data-embedded="true"] .user-detail-name,
+  body[data-embedded="true"] .user-detail-meta {
+    font-family: var(--platform-code-font) !important;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.45;
+    color: var(--text-disabled);
+  }
+  body[data-embedded="true"] .section-label,
+  body[data-embedded="true"] .filter-group-label,
+  body[data-embedded="true"] .day-header,
+  body[data-embedded="true"] .dialog-field label,
+  body[data-embedded="true"] .file-current-page-empty {
+    font-variant-caps: all-small-caps;
+    text-transform: uppercase;
+  }
+  body[data-embedded="true"] .dialog-title,
+  body[data-embedded="true"] .page-map-project-head h3 {
+    font-family: var(--platform-ui-font) !important;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0;
+    color: var(--text-display);
+  }
+  body[data-embedded="true"] .file-dialog-header h2,
+  body[data-embedded="true"] .stat-value {
+    font-family: var(--platform-ui-font) !important;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--text-display);
+  }
+  body[data-embedded="true"] .page-map-file-head h4,
+  body[data-embedded="true"] .page-map-page a,
+  body[data-embedded="true"] .page-map-nav-project,
+  body[data-embedded="true"] .version-file,
+  body[data-embedded="true"] .version-label-text,
+  body[data-embedded="true"] .fv-user,
+  body[data-embedded="true"] .fv-label,
+  body[data-embedded="true"] .file-current-page-name,
+  body[data-embedded="true"] .dialog-hint {
+    font-family: var(--platform-ui-font) !important;
+    font-size: var(--platform-ui-size);
+    font-weight: 400;
+    line-height: 1.45;
+    letter-spacing: 0;
+    color: var(--text-primary);
+  }
+  body[data-embedded="true"] .page-map-nav-file,
+  body[data-embedded="true"] .empty-sub,
+  body[data-embedded="true"] .file-current-page-url,
+  body[data-embedded="true"] .page-map-empty,
+  body[data-embedded="true"] .page-map-warning {
+    font-family: var(--platform-ui-font) !important;
+    font-size: 13px;
+    letter-spacing: 0;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+  body[data-embedded="true"] .pill,
+  body[data-embedded="true"] .project-tag,
+  body[data-embedded="true"] .file-link,
+  body[data-embedded="true"] .token-status,
+  body[data-embedded="true"] .badge,
+  body[data-embedded="true"] .day-count,
+  body[data-embedded="true"] .page-chip,
+  body[data-embedded="true"] .page-map-access-chip,
+  body[data-embedded="true"] .page-map-user-chip,
+  body[data-embedded="true"] .btn-add-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--platform-control-height);
+    padding: 0 10px;
+    border: var(--platform-stroke) solid var(--border-visible);
+    border-radius: var(--platform-radius);
+    background: var(--surface-raised);
+    color: var(--text-secondary);
+    font-family: var(--platform-code-font) !important;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1;
+    text-transform: uppercase;
+    font-variant-caps: all-small-caps;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  body[data-embedded="true"] .pill,
+  body[data-embedded="true"] .project-tag {
+    height: var(--platform-control-height);
+    gap: 6px;
+  }
+  body[data-embedded="true"] .project-tag,
+  body[data-embedded="true"] .page-chip,
+  body[data-embedded="true"] .page-map-user-chip {
+    text-transform: none;
+    font-variant-caps: normal;
+  }
+  body[data-embedded="true"] .pill:hover,
+  body[data-embedded="true"] .project-tag:hover,
+  body[data-embedded="true"] .file-link:hover,
+  body[data-embedded="true"] .page-map-nav button:hover {
+    color: var(--text-primary);
+    border-color: var(--interactive);
+    background: var(--interactive-subtle);
+  }
+  body[data-embedded="true"] .pill.active,
+  body[data-embedded="true"] .project-tag.active,
+  body[data-embedded="true"] .page-map-nav-project.active {
+    color: var(--interactive);
+    border-color: var(--interactive);
+    background: var(--platform-nav-active-bg);
+  }
+  body[data-embedded="true"] .pill.interactive,
+  body[data-embedded="true"] .file-link {
+    color: var(--interactive);
+    border-color: var(--interactive);
+    background: transparent;
+  }
+  body[data-embedded="true"] .pill.interactive:hover,
+  body[data-embedded="true"] .file-link:hover {
+    color: var(--interactive);
+    background: var(--interactive-subtle);
+  }
+  body[data-embedded="true"] .pill:disabled {
+    opacity: 0.48;
+  }
+  body[data-embedded="true"] .token-status.ok,
+  body[data-embedded="true"] .badge-named,
+  body[data-embedded="true"] .page-chip.added {
+    color: var(--success);
+    border-color: var(--platform-success-border);
+    background: var(--success-subtle);
+  }
+  body[data-embedded="true"] .token-status.missing,
+  body[data-embedded="true"] .page-chip.removed,
+  body[data-embedded="true"] .page-map-access-chip.warn,
+  body[data-embedded="true"] .dialog-status.err,
+  body[data-embedded="true"] .page-map-warning {
+    color: var(--accent);
+    border-color: var(--platform-danger-border);
+    background: var(--accent-subtle);
+  }
+  body[data-embedded="true"] .badge-duration,
+  body[data-embedded="true"] .page-chip.changed,
+  body[data-embedded="true"] .page-map-access-chip.primary,
+  body[data-embedded="true"] .page-map-user-chip.primary {
+    color: var(--interactive);
+    border-color: var(--interactive);
+    background: var(--interactive-subtle);
+  }
+  body[data-embedded="true"] .page-chip.muted,
+  body[data-embedded="true"] .page-map-user-chip.muted {
+    color: var(--text-secondary);
+    border-color: var(--border-visible);
+    background: var(--surface);
+  }
+  body[data-embedded="true"] .source-section,
+  body[data-embedded="true"] .stat-card,
+  body[data-embedded="true"] .version-card,
+  body[data-embedded="true"] .file-dialog,
+  body[data-embedded="true"] .dialog,
+  body[data-embedded="true"] .file-current-pages,
+  body[data-embedded="true"] .page-map-page,
+  body[data-embedded="true"] .state-card {
+    border: var(--platform-stroke) solid var(--border);
+    border-radius: var(--platform-radius);
+    background: var(--surface);
+  }
+  body[data-embedded="true"] .source-section {
+    margin-bottom: 12px;
+    padding: 12px;
+    border-width: 0 0 var(--platform-stroke);
+    border-radius: 0;
+    background: var(--black);
+  }
+  body[data-embedded="true"] .changelog-toolbar {
+    align-items: center;
+    gap: 12px;
+  }
+  body[data-embedded="true"] .controls,
+  body[data-embedded="true"] .filter-row,
+  body[data-embedded="true"] .project-list {
+    gap: 6px;
+  }
+  body[data-embedded="true"] .controls-separator,
+  body[data-embedded="true"] .filter-divider {
+    width: var(--platform-stroke);
+    background: var(--border);
+  }
+  body[data-embedded="true"] input,
+  body[data-embedded="true"] .page-map-search,
+  body[data-embedded="true"] .dialog-field input,
+  body[data-embedded="true"] .settings-add-project input,
+  body[data-embedded="true"] .add-inline input {
+    height: var(--platform-control-height-large);
+    padding: 0 10px;
+    border: var(--platform-stroke) solid var(--border-visible);
+    border-radius: var(--platform-radius);
+    background: var(--surface-raised);
+    color: var(--text-primary);
+    font-family: var(--platform-code-font) !important;
+    font-size: var(--platform-code-size);
+    letter-spacing: 0;
+    outline: none;
+  }
+  body[data-embedded="true"] input:focus,
+  body[data-embedded="true"] .page-map-search:focus,
+  body[data-embedded="true"] .dialog-field input:focus,
+  body[data-embedded="true"] .settings-add-project input:focus,
+  body[data-embedded="true"] .add-inline input:focus {
+    border-color: var(--interactive);
+    box-shadow: 0 0 0 2px var(--interactive-subtle);
+  }
+  body[data-embedded="true"] input::placeholder,
+  body[data-embedded="true"] .page-map-search::placeholder,
+  body[data-embedded="true"] .dialog-field input::placeholder,
+  body[data-embedded="true"] .add-inline input::placeholder {
+    color: var(--text-disabled);
+    font-size: 11px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+  body[data-embedded="true"] .token-secret-input {
+    -webkit-text-security: disc;
+    text-security: disc;
+  }
+  body[data-embedded="true"] .page-map-body {
+    grid-template-columns: var(--page-map-nav-width, 300px) 4px minmax(0, 1fr);
+    background: var(--black);
+  }
+  body[data-embedded="true"] .page-map-nav {
+    padding: 12px;
+    background: var(--surface);
+    border-right: var(--platform-stroke) solid var(--border);
+  }
+  body[data-embedded="true"] .page-map-resizer {
+    width: 4px;
+    min-width: 4px;
+    background: var(--black);
+    border-left: 0;
+    border-right: var(--platform-stroke) solid var(--border);
+  }
+  body[data-embedded="true"] .page-map-resizer::before {
+    top: 12px;
+    bottom: 12px;
+    width: var(--platform-stroke);
+    background: var(--border-visible);
+  }
+  body[data-embedded="true"] .page-map-content {
+    padding: 12px 16px 16px;
+    font-size: var(--platform-ui-size);
+  }
+  body[data-embedded="true"] .file-versions-toolbar {
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  body[data-embedded="true"] .page-map-search-wrap {
+    margin-bottom: 12px;
+  }
+  body[data-embedded="true"] .page-map-search-clear {
+    right: 4px;
+    width: var(--platform-control-height);
+    height: var(--platform-control-height);
+    border: var(--platform-stroke) solid transparent;
+    border-radius: var(--platform-radius);
+    color: var(--text-secondary);
+  }
+  body[data-embedded="true"] .page-map-search-clear::before,
+  body[data-embedded="true"] .page-map-search-clear::after {
+    width: 10px;
+    height: 1.5px;
+  }
+  body[data-embedded="true"] .page-map-search-clear:hover,
+  body[data-embedded="true"] .page-map-search-clear:focus-visible {
+    color: var(--interactive);
+    border-color: var(--interactive);
+    background: var(--interactive-subtle);
+  }
+  body[data-embedded="true"] .page-map-nav button {
+    min-height: var(--platform-control-height);
+    padding: 0 8px;
+    border: var(--platform-stroke) solid transparent;
+    border-radius: var(--platform-radius);
+    background: transparent;
+    color: var(--text-secondary);
+    text-transform: none;
+  }
+  body[data-embedded="true"] .page-map-nav-project {
+    margin-top: 4px;
+  }
+  body[data-embedded="true"] .page-map-nav-file {
+    padding-left: 18px;
+  }
+  body[data-embedded="true"] .page-map-count {
+    margin-left: 6px;
+    color: var(--text-disabled);
+  }
+  body[data-embedded="true"] .page-map-project {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: var(--platform-stroke) solid var(--border);
+  }
+  body[data-embedded="true"] .page-map-file {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: var(--platform-stroke) solid var(--border);
+  }
+  body[data-embedded="true"] .page-map-page-list {
+    gap: 4px;
+    margin-top: 8px;
+  }
+  body[data-embedded="true"] .page-map-page {
+    min-height: var(--platform-control-height-large);
+    padding: 6px 8px;
+    background: var(--surface-raised);
+  }
+  body[data-embedded="true"] .page-map-page a,
+  body[data-embedded="true"] .file-current-page-open,
+  body[data-embedded="true"] .file-current-page-url:hover {
+    color: var(--interactive);
+  }
+  body[data-embedded="true"] .page-map-node {
+    padding-top: 2px;
+  }
+  body[data-embedded="true"] .page-map-users,
+  body[data-embedded="true"] .page-map-access,
+  body[data-embedded="true"] .fv-pages {
+    gap: 4px;
+    margin-top: 6px;
+    font-family: var(--platform-ui-font) !important;
+    font-size: var(--platform-ui-size);
+    letter-spacing: 0;
+    color: var(--text-secondary);
+  }
+  body[data-embedded="true"] .page-map-user-label,
+  body[data-embedded="true"] .fv-pages-label {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--platform-control-height);
+    margin-right: 2px;
+  }
+  body[data-embedded="true"] .page-map-empty,
+  body[data-embedded="true"] .page-map-warning {
+    padding: 8px 0;
+  }
+  body[data-embedded="true"] .figma-token-empty-state {
+    display: grid;
+    place-items: center;
+    min-height: min(560px, calc(100vh - 190px));
+    padding: 24px;
+    color: var(--text-primary);
+  }
+  body[data-embedded="true"] .figma-token-empty-copy {
+    display: grid;
+    gap: 14px;
+    width: min(520px, 100%);
+  }
+  body[data-embedded="true"] .figma-token-empty-copy h3 {
+    margin: 0;
+    color: var(--text-display);
+    font-family: var(--platform-ui-font) !important;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  body[data-embedded="true"] .figma-token-empty-copy p,
+  body[data-embedded="true"] .figma-token-empty-copy li {
+    margin: 0;
+    color: var(--text-secondary);
+    font-family: var(--platform-ui-font) !important;
+    font-size: var(--platform-ui-size);
+    line-height: 1.7;
+  }
+  body[data-embedded="true"] .figma-token-empty-copy ol,
+  body[data-embedded="true"] .figma-token-empty-copy ul {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding-left: 20px;
+  }
+  body[data-embedded="true"] .figma-token-empty-copy strong {
+    color: var(--text-primary);
+    font-weight: 400;
+  }
+  body[data-embedded="true"] .figma-token-empty-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  body[data-embedded="true"] .page-map-warning {
+    padding: 8px 10px;
+    border: var(--platform-stroke) solid var(--platform-danger-border);
+    border-radius: var(--platform-radius);
+  }
+  body[data-embedded="true"] .stats-row {
+    gap: 8px;
+  }
+  body[data-embedded="true"] .stat-card {
+    padding: 12px;
+  }
+  body[data-embedded="true"] .stat-value {
+    font-variant-numeric: tabular-nums;
+  }
+  body[data-embedded="true"] .version-card {
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    gap: 10px;
+  }
+  body[data-embedded="true"] .version-card:hover,
+  body[data-embedded="true"] .stat-card:hover {
+    border-color: var(--interactive);
+  }
+  body[data-embedded="true"] .version-dot,
+  body[data-embedded="true"] .fv-dot {
+    width: 6px;
+    height: 6px;
+    margin-top: 7px;
+  }
+  body[data-embedded="true"] .version-dot.named,
+  body[data-embedded="true"] .fv-dot.named {
+    background: var(--success);
+  }
+  body[data-embedded="true"] .version-dot.auto,
+  body[data-embedded="true"] .fv-dot.auto {
+    background: var(--border-visible);
+  }
+  body[data-embedded="true"] .version-label-text,
+  body[data-embedded="true"] .fv-label {
+    color: var(--text-secondary);
+  }
+  body[data-embedded="true"] .version-label-text.is-named,
+  body[data-embedded="true"] .dialog-status.ok {
+    color: var(--success);
+  }
+  body[data-embedded="true"] .version-avatar,
+  body[data-embedded="true"] .avatar-stack img {
+    border: var(--platform-stroke) solid var(--border-visible);
+  }
+  body[data-embedded="true"] .file-dialog {
+    border-color: var(--border-visible);
+    border-radius: var(--platform-radius);
+    background: var(--surface);
+  }
+  body[data-embedded="true"] .file-dialog-header,
+  body[data-embedded="true"] .file-current-pages,
+  body[data-embedded="true"] .fv-item,
+  body[data-embedded="true"] .file-current-page,
+  body[data-embedded="true"] .user-detail-header,
+  body[data-embedded="true"] .settings-projects {
+    border-color: var(--border);
+    border-width: var(--platform-stroke);
+  }
+  body[data-embedded="true"] .file-embed-wrap {
+    background: var(--surface-raised);
+    border-bottom: var(--platform-stroke) solid var(--border);
+  }
+  body[data-embedded="true"] .file-versions-list,
+  body[data-embedded="true"] .file-current-pages {
+    padding: 12px 16px;
+  }
+  body[data-embedded="true"] .page-chip {
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.35;
+  }
+  body[data-embedded="true"] .dialog-backdrop {
+    background: rgba(0, 0, 0, 0.34);
+    backdrop-filter: blur(10px);
+  }
+  body[data-embedded="true"] .dialog {
+    padding: 16px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+  }
+  body[data-embedded="true"] .dialog-title {
+    margin-bottom: 16px;
+  }
+  body[data-embedded="true"] .dialog-close {
+    top: 12px;
+    right: 12px;
+    width: var(--platform-control-height);
+    height: var(--platform-control-height);
+    border: var(--platform-stroke) solid var(--border);
+    border-radius: var(--platform-radius);
+    background: var(--surface-raised);
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  body[data-embedded="true"] .dialog-field {
+    margin-bottom: 12px;
+  }
+  body[data-embedded="true"] .dialog-actions {
+    margin-top: 16px;
+  }
+  body[data-embedded="true"] .settings-add-project {
+    gap: 8px;
+  }
+  body[data-embedded="true"] .avatar-stack {
+    gap: 4px;
+  }
+  body[data-embedded="true"] .avatar-stack img {
+    margin-left: 0;
   }
 
   /* ── Header ── */
@@ -1185,6 +1826,7 @@
   }
 
   .page-map-search-wrap {
+    position: relative;
     margin-bottom: 14px;
   }
 
@@ -1197,8 +1839,18 @@
     border: 1px solid var(--border-visible);
     border-radius: 4px;
     color: var(--text-primary);
-    padding: 8px 10px;
+    padding: 8px 36px 8px 10px;
     outline: none;
+  }
+
+  .page-map-search::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
+  .page-map-search::-ms-clear {
+    display: none;
   }
 
   .page-map-search:focus {
@@ -1208,6 +1860,52 @@
   .page-map-search::placeholder {
     color: var(--text-disabled);
     text-transform: uppercase;
+  }
+
+  .token-secret-input {
+    -webkit-text-security: disc;
+    text-security: disc;
+  }
+
+  .page-map-search-clear {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-disabled);
+    cursor: pointer;
+  }
+
+  .page-map-search-clear[hidden] {
+    display: none !important;
+  }
+
+  .page-map-search-clear::before,
+  .page-map-search-clear::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 1.5px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .page-map-search-clear::before { transform: rotate(45deg); }
+  .page-map-search-clear::after { transform: rotate(-45deg); }
+
+  .page-map-search-clear:hover,
+  .page-map-search-clear:focus-visible {
+    color: var(--interactive);
+    background: var(--interactive-subtle);
+    outline: none;
   }
 
   .page-map-content {
@@ -1422,6 +2120,55 @@
 
   .page-map-warning { color: var(--accent); }
 
+  .figma-token-empty-state {
+    display: grid;
+    place-items: center;
+    min-height: min(560px, calc(100vh - 260px));
+    padding: 32px 20px;
+  }
+
+  .figma-token-empty-copy {
+    display: grid;
+    gap: 14px;
+    width: min(540px, 100%);
+  }
+
+  .figma-token-empty-copy h3 {
+    margin: 0;
+    color: var(--text-display);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .figma-token-empty-copy p,
+  .figma-token-empty-copy li {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .figma-token-empty-copy ol,
+  .figma-token-empty-copy ul {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .figma-token-empty-copy strong {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .figma-token-empty-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+  }
+
   @media (max-width: 768px) {
     .page { padding: 24px 16px; }
     .header { align-items: flex-start; gap: 16px; flex-direction: column; margin-bottom: 32px; }
@@ -1473,6 +2220,11 @@
     <section class="page-map-dialog">
       <div class="file-dialog-header">
         <h2>Page Map</h2>
+        <div class="embedded-actions">
+          <span class="header-meta embedded-meta" data-header-meta></span>
+          <span class="token-status" data-token-status></span>
+          <button class="pill" onclick="openSettings()">SETTINGS</button>
+        </div>
         <div style="display:flex;gap:8px;flex-shrink:0;align-items:center;justify-content:flex-end;flex-wrap:wrap">
           <button class="pill interactive" id="pageMapRefresh" onclick="loadPageMap(true)">REFRESH</button>
         </div>
@@ -1480,7 +2232,8 @@
       <div class="page-map-body">
         <aside class="page-map-nav">
           <div class="page-map-search-wrap">
-            <input class="page-map-search" id="pageMapSearch" type="search" placeholder="SEARCH PROJECT / FILE / PAGE / USER" oninput="setPageMapSearch(this.value)">
+            <input class="page-map-search" id="pageMapSearch" type="search" name="figma_page_map_query" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" inputmode="search" aria-label="Search project file page or user" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" placeholder="SEARCH PROJECT / FILE / PAGE / USER" oninput="setPageMapSearch(this.value)">
+            <button class="page-map-search-clear" id="pageMapSearchClear" type="button" aria-label="Clear search" onclick="clearPageMapSearch()" hidden></button>
           </div>
           <div class="section-label">DIRECTORY</div>
           <div id="pageMapNav"></div>
@@ -1512,6 +2265,11 @@
             <button class="pill interactive" id="fetchBtn" onclick="fetchChangelog()">FETCH</button>
             <button class="pill" id="exportBtn" onclick="exportCSV()" style="display:none">EXPORT CSV</button>
           </div>
+        </div>
+        <div class="embedded-actions">
+          <span class="header-meta embedded-meta" data-header-meta></span>
+          <span class="token-status" data-token-status></span>
+          <button class="pill" onclick="openSettings()">SETTINGS</button>
         </div>
       </div>
     </section>
@@ -1558,15 +2316,15 @@
     <div class="dialog-title">Settings</div>
     <div class="dialog-field">
       <label>FIGMA PERSONAL ACCESS TOKEN</label>
-      <input type="password" id="tokenInput" placeholder="figd_xxxxxxxxxxxxxxxx">
+      <input class="token-secret-input" type="text" id="tokenInput" name="figma_personal_access_token_local_only" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Figma personal access token" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" placeholder="figd_xxxxxxxxxxxxxxxx">
       <div class="dialog-hint">Figma Settings &rarr; Personal Access Tokens</div>
     </div>
     <div class="settings-projects">
       <div class="section-label">PROJECTS</div>
       <div class="project-list" id="projectList"></div>
       <div class="settings-add-project">
-        <input type="text" id="addNameInput" placeholder="NAME">
-        <input type="text" id="addIdInput" placeholder="PROJECT OR TEAM URL">
+        <input type="text" id="addNameInput" name="figma_project_display_name" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Project display name" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" placeholder="NAME">
+        <input type="text" id="addIdInput" name="figma_project_or_team_url" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Project or team URL" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" placeholder="PROJECT OR TEAM URL">
         <button class="btn-add-circle" onclick="addProject()">+</button>
       </div>
     </div>
@@ -1993,10 +2751,107 @@ function getInitialView() {
   return view === 'changelog' ? 'changelog' : 'map';
 }
 
+function isHexColor(value) {
+  return /^#[0-9a-f]{6}$/i.test(value || '');
+}
+
+function platformColorParam(params, key) {
+  const value = params.get(key) || '';
+  return isHexColor(value) ? value : '';
+}
+
+function platformFontParam(params, key) {
+  const value = (params.get(key) || '').trim();
+  if (!value || value.length > 180 || /[;{}<>]/.test(value)) return '';
+  return value;
+}
+
+function platformPxParam(params, key, min, max) {
+  const value = Number(params.get(key));
+  if (!Number.isFinite(value) || value < min || value > max) return '';
+  return `${value}px`;
+}
+
+function hexLuminance(hex) {
+  if (!isHexColor(hex)) return 0;
+  const raw = parseInt(hex.slice(1), 16);
+  const channels = [(raw >> 16) & 255, (raw >> 8) & 255, raw & 255];
+  const normalized = channels.map(channel => {
+    const value = channel / 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+  return (0.2126 * normalized[0]) + (0.7152 * normalized[1]) + (0.0722 * normalized[2]);
+}
+
+function hexToRgba(hex, alpha) {
+  if (!isHexColor(hex)) return '';
+  const number = parseInt(hex.slice(1), 16);
+  const red = (number >> 16) & 255;
+  const green = (number >> 8) & 255;
+  const blue = number & 255;
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+function applyPlatformTheme(params) {
+  const root = document.documentElement;
+  const bg = platformColorParam(params, 'bg');
+  const surface = platformColorParam(params, 'surface');
+  const surfaceRaised = platformColorParam(params, 'surfaceRaised');
+  const surfaceSoft = platformColorParam(params, 'surfaceSoft');
+  const navActiveBg = platformColorParam(params, 'navActiveBg');
+  const border = platformColorParam(params, 'border');
+  const text = platformColorParam(params, 'text');
+  const textSecondary = platformColorParam(params, 'textSecondary');
+  const muted = platformColorParam(params, 'muted');
+  const accent = platformColorParam(params, 'accent');
+  const danger = platformColorParam(params, 'danger');
+  const uiFont = platformFontParam(params, 'uiFont');
+  const codeFont = platformFontParam(params, 'codeFont');
+  const uiSize = platformPxParam(params, 'uiSize', 12, 18);
+  const codeSize = platformPxParam(params, 'codeSize', 11, 18);
+
+  const mappings = [
+    ['--black', bg],
+    ['--surface', surface],
+    ['--surface-raised', surfaceRaised],
+    ['--platform-surface-soft', surfaceSoft],
+    ['--platform-nav-active-bg', navActiveBg],
+    ['--border', border],
+    ['--border-visible', border],
+    ['--text-display', text],
+    ['--text-primary', text],
+    ['--text-secondary', textSecondary],
+    ['--text-disabled', muted],
+    ['--interactive', accent],
+    ['--accent', danger],
+  ];
+
+  mappings.forEach(([name, value]) => {
+    if (value) root.style.setProperty(name, value);
+  });
+
+  const interactiveSubtle = accent ? hexToRgba(accent, 0.1) : '';
+  const dangerSubtle = danger ? hexToRgba(danger, 0.1) : '';
+  if (interactiveSubtle) root.style.setProperty('--interactive-subtle', interactiveSubtle);
+  if (dangerSubtle) root.style.setProperty('--accent-subtle', dangerSubtle);
+  if (uiFont) root.style.setProperty('--platform-ui-font', uiFont);
+  if (codeFont) root.style.setProperty('--platform-code-font', codeFont);
+  if (uiSize) root.style.setProperty('--platform-ui-size', uiSize);
+  if (codeSize) root.style.setProperty('--platform-code-size', codeSize);
+
+  const isLightSurface = hexLuminance(bg || surface || '#000000') > 0.62;
+  root.style.setProperty('--success', isLightSurface ? '#15803D' : '#4ADE80');
+  root.style.setProperty(
+    '--success-subtle',
+    isLightSurface ? 'rgba(21,128,61,0.10)' : 'rgba(74,222,128,0.14)'
+  );
+}
+
 function initPlatformEmbedMode() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('embed') === 'platform') {
     document.body.dataset.embedded = 'true';
+    applyPlatformTheme(params);
   }
 }
 
@@ -2033,16 +2888,34 @@ function setDays(d) {
   });
 }
 
+function setHeaderMeta(text) {
+  const value = text || '';
+  const headerMeta = document.getElementById('headerMeta');
+  if (headerMeta) headerMeta.textContent = value;
+  document.querySelectorAll('[data-header-meta]').forEach(el => {
+    el.textContent = value;
+  });
+}
+
 function updateTokenStatus() {
-  const el = document.getElementById('tokenStatus');
   const has = !!getToken();
-  el.textContent = has ? '[TOKEN OK]' : '[NO TOKEN]';
-  el.className = 'token-status ' + (has ? 'ok' : 'missing');
+  const text = has ? '[TOKEN OK]' : '[NO TOKEN]';
+  const className = 'token-status ' + (has ? 'ok' : 'missing');
+  const el = document.getElementById('tokenStatus');
+  if (el) {
+    el.textContent = text;
+    el.className = className;
+  }
+  document.querySelectorAll('[data-token-status]').forEach(item => {
+    item.textContent = text;
+    item.className = className;
+  });
 }
 
 function openSettings() {
   document.getElementById('tokenInput').value = getToken();
   document.getElementById('settingsStatus').innerHTML = '';
+  renderProjectList();
   document.getElementById('settingsBackdrop').classList.add('open');
   document.getElementById('tokenInput').focus();
 }
@@ -2109,8 +2982,7 @@ function selectProject(id) {
       const proj = getSavedProjects().find(p => p.id === id);
       const age = Math.round((Date.now() - cached.ts) / 60000);
       const ageStr = age < 60 ? `${age}M AGO` : `${Math.round(age/60)}H AGO`;
-      document.getElementById('headerMeta').textContent =
-        `${proj?.name || id} / ${cached.days}D / CACHED ${ageStr}`;
+      setHeaderMeta(`${proj?.name || id} / ${cached.days}D / CACHED ${ageStr}`);
     }
   } else {
     allVersions = [];
@@ -2118,7 +2990,7 @@ function selectProject(id) {
     activeFileFilter = null;
     activeUserFilter = null;
     hideSections();
-    document.getElementById('headerMeta').textContent = '';
+    setHeaderMeta('');
   }
 }
 
@@ -2266,6 +3138,9 @@ function loadCache(projectId) {
 }
 
 function setStatus(text, showSpinner) {
+  if (document.body.dataset.embedded === 'true') {
+    setHeaderMeta(text);
+  }
   const bar = document.getElementById('statusBar');
   bar.style.display = 'flex';
   bar.innerHTML = '';
@@ -2428,7 +3303,7 @@ async function fetchChangelog() {
     saveCache(projectId, days);
     hydrateAvatars(document.querySelector('.page'));
 
-    document.getElementById('headerMeta').textContent = `${data.projectName} / ${days}D`;
+    setHeaderMeta(`${data.projectName} / ${days}D`);
     updateSavedProjectName(projectId, data.rawProjectName);
   } catch (e) {
     hideStatus();
@@ -3274,6 +4149,25 @@ function pageMapCacheAge(ts) {
 
 function setPageMapSearch(value) {
   pageMapSearchQuery = value || '';
+  updatePageMapSearchClear();
+  renderPageMap();
+}
+
+function updatePageMapSearchClear() {
+  const input = document.getElementById('pageMapSearch');
+  const clearButton = document.getElementById('pageMapSearchClear');
+  if (!clearButton) return;
+  clearButton.hidden = !((input && input.value) || pageMapSearchQuery);
+}
+
+function clearPageMapSearch() {
+  const input = document.getElementById('pageMapSearch');
+  pageMapSearchQuery = '';
+  if (input) {
+    input.value = '';
+    input.focus();
+  }
+  updatePageMapSearchClear();
   renderPageMap();
 }
 
@@ -3567,6 +4461,46 @@ function scrollPageMapTo(id) {
   document.getElementById(id)?.scrollIntoView({ block: 'start' });
 }
 
+function figmaTokenEmptyStateHtml() {
+  return `<div class="figma-token-empty-state">
+    <div class="figma-token-empty-copy">
+      <h3>添加 Figma Personal Access Token</h3>
+      <p>个人访问令牌（Personal Access Token）用于调用 Figma API。</p>
+      <ol>
+        <li>打开 Figma</li>
+        <li>进入 Settings 或 Account settings</li>
+        <li>找到 Personal access tokens</li>
+        <li>点击 Create new token</li>
+        <li>勾选相应的权限</li>
+        <li>生成后立刻复制保存</li>
+      </ol>
+      <div>
+        <p><strong>注意：</strong></p>
+        <ul>
+          <li>这个 token 只会显示一次</li>
+          <li>不要公开分享</li>
+          <li>适合脚本、接口调试、自动化读取 Figma 文件</li>
+        </ul>
+      </div>
+      <div class="figma-token-empty-actions">
+        <button class="pill interactive" type="button" onclick="openSettings()">OPEN SETTINGS</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPageMapTokenEmptyState() {
+  document.getElementById('pageMapNav').innerHTML = '';
+  document.getElementById('pageMapSummary').textContent = 'FIGMA TOKEN REQUIRED';
+  document.getElementById('pageMapContent').innerHTML = figmaTokenEmptyStateHtml();
+}
+
+function renderChangelogTokenEmptyState() {
+  hideSections();
+  document.getElementById('timeline').innerHTML = figmaTokenEmptyStateHtml();
+  setHeaderMeta('');
+}
+
 function renderPageMapEmpty(message) {
   document.getElementById('pageMapNav').innerHTML = '';
   document.getElementById('pageMapSummary').textContent = 'PROJECTS';
@@ -3582,11 +4516,11 @@ function renderPageMap(data = pageMapData, failures = pageMapFailures) {
 
   hydratePageMapUsers(data);
   const projects = data || [];
-  const selectedProject = ensureSelectedPageMapProject(projects);
+  const searchQuery = pageMapSearchQuery.trim();
+  const isSearchMode = !!searchQuery;
+  const filteredProjects = isSearchMode ? pageMapFilterData(projects, searchQuery) : [];
+  const selectedProject = isSearchMode ? null : ensureSelectedPageMapProject(projects);
   const selectedProjectIndex = Math.max(0, projects.findIndex(project => project.id === selectedProject?.id));
-  const filteredSelectedProject = selectedProject
-    ? pageMapFilterData([selectedProject], pageMapSearchQuery)[0]
-    : null;
 
   if (!projects.length) {
     nav.innerHTML = '';
@@ -3598,26 +4532,100 @@ function renderPageMap(data = pageMapData, failures = pageMapFailures) {
     return;
   }
 
-  const displayProject = filteredSelectedProject || { ...selectedProject, files: [] };
-  const totals = pageMapProjectTotals(displayProject);
+  const visibleProjects = isSearchMode
+    ? filteredProjects
+    : (selectedProject ? [selectedProject] : []);
+  const totals = isSearchMode
+    ? pageMapTotals(visibleProjects)
+    : pageMapProjectTotals(selectedProject);
   const cacheLabel = pageMapCachedAt ? ` · CACHED ${pageMapCacheAge(pageMapCachedAt)}` : '';
-  const selectedLabel = selectedProject ? `${selectedProject.name} · ` : '';
-  summary.textContent = `${selectedLabel}${totals.files} FILES · ${totals.pages} PAGES${pageMapSearchQuery.trim() ? ' · FILTERED' : ''}`;
+  summary.textContent = isSearchMode
+    ? `SEARCH "${searchQuery}" · ${totals.projects} PROJECTS · ${totals.files} FILES · ${totals.pages} PAGES`
+    : `${selectedProject ? selectedProject.name + ' · ' : ''}${totals.files} FILES · ${totals.pages} PAGES`;
   setPageMapStatus(
-    failures.length ? `[${failures.length} WARNING(S)${cacheLabel}]` : `[SELECTED PROJECT${cacheLabel}]`,
+    failures.length
+      ? `[${failures.length} WARNING(S)${cacheLabel}]`
+      : (isSearchMode ? `[ORGANIZATION RESULTS${cacheLabel}]` : `[SELECTED PROJECT${cacheLabel}]`),
     failures.length ? 'warn' : 'ok'
   );
 
   let navHtml = '';
   let contentHtml = '';
 
-  projects.forEach((project, projectIndex) => {
+  if (isSearchMode && !visibleProjects.length) {
+    nav.innerHTML = '';
+    content.innerHTML = `<div class="page-map-empty">NO MATCHES IN ORGANIZATION FOR "${esc(searchQuery)}"</div>`;
+    return;
+  }
+
+  const renderFile = (project, projectIndex, file, fileIndex) => {
+    const fileId = pageMapAnchor('file', projectIndex, fileIndex);
+    let html = `<div class="page-map-file" id="${fileId}">
+      <div class="page-map-file-head">
+        <h4>${esc(file.name)}</h4>
+        <a class="file-link" href="${escAttr(figmaWebUrl(file.key))}" onclick="event.preventDefault();openInFigma(${jsArg(file.key)})">OPEN FILE &rarr;</a>
+      </div>
+      <div class="page-map-node">${esc(file.key)}</div>
+      ${pageMapAccessHtml(file)}
+      ${pageMapKnownPeopleHtml(file)}
+      ${pageMapUsersHtml(file.users, file.lastUser ? `LAST ${file.lastUser} · USERS` : 'USERS', 'NO VERSION CACHE')}`;
+
+    if (file.error) {
+      html += `<div class="page-map-warning">${esc(file.error)}</div>`;
+    } else if (!file.pages.length) {
+      html += '<div class="page-map-empty">NO PAGES</div>';
+    } else {
+      html += '<div class="page-map-page-list">';
+      file.pages.forEach((page, pageIndex) => {
+        const pageId = pageMapAnchor('page', projectIndex, fileIndex, pageIndex);
+        const emptyUserText = page.userSource === 'not-analyzed'
+          ? 'NOT ANALYZED'
+          : (page.userSource === 'no-change-detected' ? 'NO PAGE TOUCH' : 'NO USER');
+        html += `<div class="page-map-page" id="${pageId}">
+          <div class="page-map-page-main">
+            <a href="${escAttr(figmaWebUrl(file.key, page.id))}" onclick="event.preventDefault();openInFigma(${jsArg(file.key)}, ${jsArg(page.id)})">${esc(page.name)}</a>
+            ${pageMapUsersHtml(page.users, 'INFERRED USERS', emptyUserText)}
+          </div>
+          <span class="page-map-node">${esc(page.id)}</span>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    html += '</div>';
+    return html;
+  };
+
+  if (isSearchMode) {
+    visibleProjects.forEach((project, projectIndex) => {
+      const projectTotals = pageMapProjectTotals(project);
+      const projectId = pageMapAnchor('project', projectIndex);
+      navHtml += `<button class="page-map-nav-project" onclick="scrollPageMapTo('${projectId}')">${esc(project.name)}<span class="page-map-count">${projectTotals.files}/${projectTotals.pages}</span></button>`;
+
+      contentHtml += `<section class="page-map-project" id="${projectId}">
+        <div class="page-map-project-head">
+          <h3>${esc(project.name)}</h3>
+          <span class="page-map-count">${esc(project.id)} · ${projectTotals.files} FILES · ${projectTotals.pages} PAGES</span>
+        </div>`;
+
+      if (!project.files.length) {
+        contentHtml += '<div class="page-map-empty">NO FILES</div>';
+      } else {
+        project.files.forEach((file, fileIndex) => {
+          contentHtml += renderFile(project, projectIndex, file, fileIndex);
+        });
+      }
+
+      contentHtml += '</section>';
+    });
+  } else {
+    projects.forEach((project, projectIndex) => {
     const projectTotals = pageMapProjectTotals(project);
     const isSelected = project.id === selectedPageMapProjectId;
     navHtml += `<button class="page-map-nav-project ${isSelected ? 'active' : ''}" onclick="selectPageMapProject(${jsArg(project.id)})">${esc(project.name)}<span class="page-map-count">${projectTotals.files}/${projectTotals.pages}</span></button>`;
 
     if (!isSelected) return;
-    (displayProject.files || []).forEach((file, fileIndex) => {
+      (selectedProject.files || []).forEach((file, fileIndex) => {
       const fileId = pageMapAnchor('file', projectIndex, fileIndex);
       navHtml += `<button class="page-map-nav-file" onclick="scrollPageMapTo('${fileId}')">${esc(file.name)}<span class="page-map-count">${file.pages.length}</span></button>`;
     });
@@ -3631,51 +4639,16 @@ function renderPageMap(data = pageMapData, failures = pageMapFailures) {
       <span class="page-map-count">${esc(selectedProject.id)} · ${selectedTotals.files} FILES · ${selectedTotals.pages} PAGES</span>
     </div>`;
 
-  if (!filteredSelectedProject && pageMapSearchQuery.trim()) {
-    contentHtml += `<div class="page-map-empty">NO MATCHES IN ${esc(selectedProject.name)} FOR "${esc(pageMapSearchQuery.trim())}"</div>`;
-  } else if (!displayProject.files.length) {
+    if (!selectedProject.files.length) {
     contentHtml += '<div class="page-map-empty">NO FILES</div>';
   } else {
-    displayProject.files.forEach((file, fileIndex) => {
-      const fileId = pageMapAnchor('file', selectedProjectIndex, fileIndex);
-
-      contentHtml += `<div class="page-map-file" id="${fileId}">
-        <div class="page-map-file-head">
-          <h4>${esc(file.name)}</h4>
-          <a class="file-link" href="${escAttr(figmaWebUrl(file.key))}" onclick="event.preventDefault();openInFigma(${jsArg(file.key)})">OPEN FILE &rarr;</a>
-        </div>
-        <div class="page-map-node">${esc(file.key)}</div>
-        ${pageMapAccessHtml(file)}
-        ${pageMapKnownPeopleHtml(file)}
-        ${pageMapUsersHtml(file.users, file.lastUser ? `LAST ${file.lastUser} · USERS` : 'USERS', 'NO VERSION CACHE')}`;
-
-      if (file.error) {
-        contentHtml += `<div class="page-map-warning">${esc(file.error)}</div>`;
-      } else if (!file.pages.length) {
-        contentHtml += '<div class="page-map-empty">NO PAGES</div>';
-      } else {
-        contentHtml += '<div class="page-map-page-list">';
-        file.pages.forEach((page, pageIndex) => {
-          const pageId = pageMapAnchor('page', selectedProjectIndex, fileIndex, pageIndex);
-          const emptyUserText = page.userSource === 'not-analyzed'
-            ? 'NOT ANALYZED'
-            : (page.userSource === 'no-change-detected' ? 'NO PAGE TOUCH' : 'NO USER');
-          contentHtml += `<div class="page-map-page" id="${pageId}">
-            <div class="page-map-page-main">
-              <a href="${escAttr(figmaWebUrl(file.key, page.id))}" onclick="event.preventDefault();openInFigma(${jsArg(file.key)}, ${jsArg(page.id)})">${esc(page.name)}</a>
-              ${pageMapUsersHtml(page.users, 'INFERRED USERS', emptyUserText)}
-            </div>
-            <span class="page-map-node">${esc(page.id)}</span>
-          </div>`;
-        });
-        contentHtml += '</div>';
-      }
-
-      contentHtml += '</div>';
+      selectedProject.files.forEach((file, fileIndex) => {
+        contentHtml += renderFile(selectedProject, selectedProjectIndex, file, fileIndex);
     });
   }
 
   contentHtml += '</section>';
+  }
 
   if (failures.length) {
     contentHtml += '<section class="page-map-project"><div class="page-map-project-head"><h3>Warnings</h3></div>';
@@ -3709,7 +4682,7 @@ async function loadPageMap(force) {
 
   if (!token) {
     setPageMapStatus('[NO TOKEN]', 'err');
-    renderPageMapEmpty('OPEN SETTINGS AND SAVE FIGMA TOKEN FIRST');
+    renderPageMapTokenEmptyState();
     return;
   }
 
@@ -3836,7 +4809,10 @@ document.getElementById('fileDialogBackdrop').addEventListener('keydown', e => {
 
 function loadAllProjectsCache(metaText) {
   const projects = getSavedProjects();
-  if (!projects.length) return;
+  if (!projects.length) {
+    if (!getToken()) renderChangelogTokenEmptyState();
+    return;
+  }
 
   allVersions = [];
   allFiles = [];
@@ -3851,7 +4827,10 @@ function loadAllProjectsCache(metaText) {
     if (cached.days > maxDays) maxDays = cached.days;
   });
 
-  if (!allVersions.length && !allFiles.length) return;
+  if (!allVersions.length && !allFiles.length) {
+    if (!getToken()) renderChangelogTokenEmptyState();
+    return;
+  }
 
   allVersions.sort((a, b) => b.createdAt - a.createdAt);
   syncFileNamesFromVersions();
@@ -3864,7 +4843,7 @@ function loadAllProjectsCache(metaText) {
   renderUserFilters();
   renderUserStats();
   renderTimeline();
-  document.getElementById('headerMeta').textContent = metaText || `ALL PROJECTS / CACHED`;
+  setHeaderMeta(metaText || `ALL PROJECTS / CACHED`);
   hydrateAvatars(document.querySelector('.page'));
   resolveAvatars(maxDays || 30);
 }

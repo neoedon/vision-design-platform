@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
+    "sync:design-projects": "node scripts/sync-feishu-design-projects.mjs",
+    "sync:design-projects:watch": "node scripts/sync-feishu-design-projects.mjs --watch",
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {

@@ -257,6 +257,12 @@ svg {
   background: var(--nav-hover-bg);
 }
 
+.workspaceMenuStatic,
+.workspaceMenuStatic:hover {
+  border-color: transparent;
+  background: transparent;
+}
+
 .l1Nav,
 .l2Tabs,
 .moduleList {
@@ -732,6 +738,11 @@ svg {
   background: var(--bg);
 }
 
+.canvasBody-design-projects {
+  overflow: hidden;
+  background: var(--bg);
+}
+
 .canvasBody[data-locked="true"] {
   background:
     linear-gradient(to right, var(--grid-line) 0, transparent 0.5px),
@@ -803,6 +814,534 @@ svg {
   margin: 8px 0 0;
   color: var(--text-secondary);
   line-height: 1.7;
+}
+
+.designProjectsWorkbench {
+  display: grid;
+  grid-template-rows: 40px 44px 40px minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.designProjectsWorkbench-empty {
+  grid-template-rows: minmax(0, 1fr);
+  place-items: center;
+}
+
+.designProjectSyncBar,
+.designProjectMetricStrip,
+.designProjectToolbar {
+  border-bottom: var(--stroke-width) solid var(--border);
+  background: var(--bg);
+}
+
+.designProjectSyncBar,
+.designProjectToolbar,
+.designProjectSyncActions,
+.designProjectSource,
+.designProjectSearch,
+.designProjectFilter,
+.designProjectResultCount {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.designProjectSyncBar {
+  justify-content: space-between;
+  gap: 14px;
+  padding: 0 14px;
+}
+
+.designProjectSource {
+  gap: 8px;
+  overflow: hidden;
+}
+
+.designProjectSource > svg {
+  color: var(--accent);
+}
+
+.designProjectSource span {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.designProjectSource strong,
+.designProjectSource small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.designProjectSource strong {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.designProjectSource small,
+.designProjectResultCount {
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-caps: all-small-caps;
+}
+
+.designProjectSyncActions {
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.designProjectMetricStrip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.designProjectMetric {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 0 14px;
+  border-right: var(--stroke-width) solid var(--border);
+}
+
+.designProjectMetric:last-child {
+  border-right: 0;
+}
+
+.designProjectMetric span,
+.designProjectFilter span,
+.designProjectListPanel header span,
+.designProjectFieldTable header span,
+.designProjectSummaryItem span,
+.designProjectTextBlock span,
+.designProjectFieldRow small {
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-caps: all-small-caps;
+}
+
+.designProjectMetric strong {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.designProjectToolbar {
+  gap: 8px;
+  padding: 0 14px;
+}
+
+.designProjectSearch {
+  position: relative;
+  flex: 1 1 360px;
+  max-width: 560px;
+  height: var(--control-height);
+  gap: 7px;
+  padding: 0 7px 0 9px;
+  color: var(--muted);
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-soft);
+}
+
+.designProjectSearch:focus-within {
+  color: var(--text);
+  border-color: var(--accent-border);
+  background: var(--surface-raised);
+}
+
+.designProjectSearch input {
+  min-width: 0;
+  flex: 1 1 auto;
+  height: 100%;
+  padding: 0;
+  color: var(--text);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 12px;
+}
+
+.designProjectSearch input::placeholder {
+  color: var(--muted);
+}
+
+.designProjectSearch input::-webkit-search-decoration,
+.designProjectSearch input::-webkit-search-cancel-button,
+.designProjectSearch input::-webkit-search-results-button,
+.designProjectSearch input::-webkit-search-results-decoration {
+  display: none;
+}
+
+.designProjectSearch button {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  color: var(--muted);
+  border-radius: var(--radius-tiny);
+  background: transparent;
+}
+
+.designProjectSearch button:hover {
+  color: var(--text);
+  background: var(--nav-hover-bg);
+}
+
+.designProjectFilter {
+  gap: 6px;
+  height: var(--control-height);
+  padding: 0 8px;
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-soft);
+}
+
+.designProjectFilter select {
+  height: calc(var(--control-height) - 2px);
+  max-width: 148px;
+  padding: 0 2px;
+  color: var(--text-secondary);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 11px;
+}
+
+.designProjectResultCount {
+  gap: 6px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.designProjectContent {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.designProjectListPanel,
+.designProjectDetailPanel {
+  min-height: 0;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.designProjectListPanel {
+  display: grid;
+  grid-template-rows: 34px minmax(0, 1fr);
+  border-right: var(--stroke-width) solid var(--border);
+}
+
+.designProjectListPanel header,
+.designProjectFieldTable header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-bottom: var(--stroke-width) solid var(--border);
+  background: var(--bg);
+}
+
+.designProjectListPanel header strong,
+.designProjectFieldTable header strong {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.designProjectList {
+  min-height: 0;
+  overflow: auto;
+  padding: 6px;
+}
+
+.designProjectRow {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  min-height: 52px;
+  gap: 8px;
+  padding: 6px 8px;
+  color: var(--text-secondary);
+  border: var(--stroke-width) solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  text-align: left;
+}
+
+.designProjectRow:hover {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--nav-hover-bg);
+}
+
+.designProjectRow[data-active="true"] {
+  color: var(--text);
+  border-color: var(--accent-border);
+  background: var(--nav-active-bg);
+}
+
+.designProjectRowState {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: var(--accent);
+  border: var(--stroke-width) solid var(--accent-border);
+  border-radius: var(--radius-control);
+  background: var(--accent-faint);
+}
+
+.designProjectRowState[data-completed="true"] {
+  color: #ffffff;
+  border-color: #22c55e;
+  background: #0f6f4d;
+}
+
+.designProjectRowCopy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.designProjectRowCopy strong,
+.designProjectRowCopy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.designProjectRowCopy strong {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.designProjectRowCopy small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.designProjectDetailPanel {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, auto) minmax(0, 1fr);
+  overflow: auto;
+  padding: 14px;
+}
+
+.designProjectDetailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+  padding-bottom: 12px;
+  border-bottom: var(--stroke-width) solid var(--border);
+}
+
+.designProjectDetailHeader h2 {
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.designProjectSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-bottom: var(--stroke-width) solid var(--border);
+}
+
+.designProjectSummaryItem {
+  display: grid;
+  align-content: center;
+  min-height: 54px;
+  gap: 4px;
+  padding: 8px 10px 8px 0;
+}
+
+.designProjectSummaryItem strong {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.designProjectTextBlocks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px 0;
+}
+
+.designProjectTextBlock {
+  min-width: 0;
+  padding: 10px;
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+}
+
+.designProjectTextBlock p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  white-space: pre-wrap;
+}
+
+.designProjectFieldTable {
+  display: grid;
+  grid-template-rows: 34px minmax(0, 1fr);
+  min-height: 280px;
+  overflow: hidden;
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+}
+
+.designProjectFieldTable > div {
+  min-height: 0;
+  overflow: auto;
+}
+
+.designProjectFieldRow {
+  display: grid;
+  grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+  gap: 12px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border-bottom: var(--stroke-width) solid var(--border);
+}
+
+.designProjectFieldRow:last-child {
+  border-bottom: 0;
+}
+
+.designProjectFieldRow > span:first-child {
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  min-width: 0;
+}
+
+.designProjectFieldRow strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.designProjectLongValue,
+.designProjectEmptyValue,
+.designProjectFieldLink {
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.designProjectEmptyValue {
+  color: var(--muted);
+  font-variant-caps: all-small-caps;
+}
+
+.designProjectFieldLink {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.designProjectFieldLink:hover {
+  text-decoration: underline;
+}
+
+.designProjectValueStack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+}
+
+.designProjectValuePill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  max-width: 100%;
+  padding: 0 7px;
+  color: var(--text-secondary);
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-tiny);
+  background: var(--surface-soft);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.designProjectValuePill[data-tone="success"] {
+  color: #ffffff;
+  border-color: #22c55e;
+  background: #0f6f4d;
+}
+
+.designProjectValuePill[data-tone="neutral"] {
+  color: var(--muted);
+}
+
+.designProjectEmptyState,
+.designProjectNoResults {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+}
+
+.designProjectEmptyState {
+  max-width: 520px;
+  padding: 18px;
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--surface-raised);
+}
+
+.designProjectEmptyState h2 {
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.designProjectEmptyState p,
+.designProjectEmptyState small {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.designProjectNoResults {
+  justify-content: center;
+  min-height: 220px;
 }
 
 .stateMatrix,
@@ -919,6 +1458,7 @@ svg {
 .figmaDashboardWorkbench {
   height: 100%;
   min-height: 0;
+  overflow: hidden;
   background: var(--bg);
 }
 
@@ -926,7 +1466,7 @@ svg {
   display: block;
   width: 100%;
   height: 100%;
-  min-height: calc(100vh - 136px);
+  min-height: 0;
   border: 0;
   background: var(--bg-deep);
 }
@@ -2502,6 +3042,45 @@ svg {
   gap: 6px;
 }
 
+.authNotice {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 10px;
+  color: var(--text-secondary);
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-soft);
+}
+
+.authNotice[data-tone="success"] {
+  color: var(--text);
+  border-color: color-mix(in srgb, #22c55e 56%, var(--border));
+  background: color-mix(in srgb, #22c55e 16%, var(--surface-soft));
+}
+
+.authNotice[data-tone="danger"] {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--danger) 64%, var(--border));
+  background: color-mix(in srgb, var(--danger) 14%, var(--surface-soft));
+}
+
+.authNotice span,
+.authNotice small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.authNotice span {
+  font-size: 11px;
+}
+
+.authNotice small {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
 .permissionGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2540,6 +3119,10 @@ svg {
   .themeOverview,
   .settingsGrid {
     grid-template-columns: 1fr;
+  }
+
+  .designProjectSummaryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -2622,8 +3205,52 @@ svg {
   .emptyWorkbench,
   .resourceWorkbench,
   .fontPackageWorkbench,
+  .designProjectContent,
+  .designProjectTextBlocks,
   .sliceFieldGrid {
     grid-template-columns: 1fr;
+  }
+
+  .designProjectsWorkbench {
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+  }
+
+  .designProjectSyncBar,
+  .designProjectToolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    min-height: 40px;
+    padding: 8px 12px;
+  }
+
+  .designProjectSyncActions,
+  .designProjectResultCount {
+    margin-left: 0;
+  }
+
+  .designProjectMetricStrip,
+  .designProjectSummaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .designProjectSearch {
+    max-width: none;
+    flex-basis: 100%;
+  }
+
+  .designProjectListPanel {
+    min-height: 320px;
+    border-right: 0;
+    border-bottom: var(--stroke-width) solid var(--border);
+  }
+
+  .designProjectDetailHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .designProjectFieldRow {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .assetHeroPanel {

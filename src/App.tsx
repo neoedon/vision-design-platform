@@ -43,11 +43,14 @@ import type { AccountRole } from "./data/tools";
 import { roles } from "./data/tools";
 import {
   buildFeishuOAuthUrl,
+  consumeFeishuOAuthCallback,
   createDemoFeishuAccount,
+  getFeishuOAuthSetup,
   loadFeishuAccount,
   saveFeishuAccount,
 } from "./auth/feishu";
 import type { FeishuAccount } from "./auth/feishu";
+import { DesignProjectsWorkbench } from "./tools/DesignProjectsWorkbench";
 import { SliceTool } from "./tools/SliceTool";
 
 type AccentTheme = {
@@ -87,6 +90,10 @@ type ThemeConfig = {
 };
 
 type ThemeMode = "light" | "dark" | "system";
+type AuthStatus = {
+  message: string;
+  tone: "danger" | "neutral" | "success";
+};
 type ThemePalette = Pick<
   ThemeConfig,
   | "accent"
@@ -629,6 +636,7 @@ type RouteSurface =
   | "open-design-workspace"
   | "ai-create"
   | "integration"
+  | "design-projects"
   | "figma-project-dashboard"
   | "member-management"
   | "skill-library"
@@ -911,6 +919,32 @@ const workspaceRoutes: WorkspaceRoute[] = [
         kind: "integration",
         icon: Archive,
         minimumRole: "owner",
+      },
+    ],
+  },
+  {
+    id: "figma-projects.design-projects",
+    l1Id: "figma-projects",
+    l2Id: "design-projects",
+    l2Label: "设计项目",
+    l2Note: "feishu base / tasks",
+    defaultL3Id: "task-entries",
+    minimumRole: "designer",
+    status: "synced",
+    queue: "feishu base",
+    quality: "read only",
+    workbenchLabel: "设计项目需求提报",
+    workbenchDescription:
+      "从飞书 Base「设计项目需求提报」单向同步的任务条目，只读展示列表、筛选、搜索和详情。",
+    surface: "design-projects",
+    inspectorSections: ["selection", "account", "properties", "status", "logs"],
+    l3Packages: [
+      {
+        id: "task-entries",
+        label: "任务条目",
+        note: "list / filter / detail",
+        kind: "project",
+        icon: List,
       },
     ],
   },
@@ -1663,10 +1697,50 @@ export function App() {
     loadThemeConfigs(loadThemeMode()),
   );
   const [authOpen, setAuthOpen] = useState(false);
+  const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
 
   useEffect(() => {
     saveFeishuAccount(account);
   }, [account]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    consumeFeishuOAuthCallback()
+      .then((result) => {
+        if (cancelled || result.status === "none") {
+          return;
+        }
+
+        if (result.status === "success") {
+          setAccount(result.account);
+          setAuthStatus({ message: result.message, tone: "success" });
+          setAuthOpen(false);
+          return;
+        }
+
+        setAuthStatus({ message: result.message, tone: "danger" });
+        setAuthOpen(true);
+      })
+      .catch((caughtError: unknown) => {
+        if (cancelled) {
+          return;
+        }
+
+        setAuthStatus({
+          message:
+            caughtError instanceof Error
+              ? caughtError.message
+              : "Feishu OAuth callback failed.",
+          tone: "danger",
+        });
+        setAuthOpen(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     window.localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(themeConfigs));
@@ -1704,11 +1778,13 @@ export function App() {
 
   function signIn(roleToUse: AccountRole) {
     setAccount(createDemoFeishuAccount(roleToUse));
+    setAuthStatus({ message: "Using local Feishu demo account.", tone: "neutral" });
     setAuthOpen(false);
   }
 
   function signOut() {
     setAccount(null);
+    setAuthStatus(null);
     setAuthOpen(false);
   }
 
@@ -1799,7 +1875,16 @@ export function App() {
     }
 
     if (activeRoute.surface === "figma-project-dashboard") {
-      return <FigmaProjectDashboardWorkbench activePackage={activePackage} />;
+      return (
+        <FigmaProjectDashboardWorkbench
+          activePackage={activePackage}
+          config={activeThemeConfig}
+        />
+      );
+    }
+
+    if (activeRoute.surface === "design-projects") {
+      return <DesignProjectsWorkbench />;
     }
 
     return <RoutePlaceholder route={activeRoute} activePackage={activePackage} />;
@@ -1817,10 +1902,9 @@ export function App() {
           <span className="brandMark" aria-hidden="true">
             <img src={TEAM_ICON_SRC} alt="" />
           </span>
-          <button className="workspaceMenu" type="button">
-            <span>vision</span>
-            <ChevronDown size={13} />
-          </button>
+          <span className="workspaceMenu workspaceMenuStatic" aria-label="Current space">
+            <span>vision design</span>
+          </span>
         </div>
 
         <nav className="l1Nav" aria-label="Primary domains">
@@ -1974,6 +2058,7 @@ export function App() {
       {authOpen ? (
         <AuthDialog
           account={account}
+          authStatus={authStatus}
           onClose={() => setAuthOpen(false)}
           onRoleChange={changeRole}
           onSignIn={signIn}
@@ -2140,13 +2225,46 @@ function BrandResourceWorkbench({ activePackage }: BrandResourceWorkbenchProps) 
 
 type FigmaProjectDashboardWorkbenchProps = {
   activePackage: L3Package;
+  config: ThemeConfig;
 };
 
 function FigmaProjectDashboardWorkbench({
   activePackage,
+  config,
 }: FigmaProjectDashboardWorkbenchProps) {
   const view = activePackage.id === "changelog" ? "changelog" : "map";
-  const dashboardSrc = `${FIGMA_PROJECT_DASHBOARD_SRC}?embed=platform&view=${view}`;
+  const dashboardParams = new URLSearchParams({
+    embed: "platform",
+    view,
+    bg: colorValue(config.bg, defaultThemeConfigs[DEFAULT_THEME_ID].bg),
+    surface: colorValue(config.surface, defaultThemeConfigs[DEFAULT_THEME_ID].surface),
+    surfaceRaised: colorValue(
+      config.surfaceRaised,
+      defaultThemeConfigs[DEFAULT_THEME_ID].surfaceRaised,
+    ),
+    surfaceSoft: colorValue(
+      config.surfaceSoft,
+      defaultThemeConfigs[DEFAULT_THEME_ID].surfaceSoft,
+    ),
+    navActiveBg: colorValue(
+      config.navActiveBg,
+      defaultThemeConfigs[DEFAULT_THEME_ID].navActiveBg,
+    ),
+    border: colorValue(config.border, defaultThemeConfigs[DEFAULT_THEME_ID].border),
+    text: colorValue(config.text, defaultThemeConfigs[DEFAULT_THEME_ID].text),
+    textSecondary: colorValue(
+      config.textSecondary,
+      defaultThemeConfigs[DEFAULT_THEME_ID].textSecondary,
+    ),
+    muted: colorValue(config.muted, defaultThemeConfigs[DEFAULT_THEME_ID].muted),
+    accent: colorValue(config.accent, defaultThemeConfigs[DEFAULT_THEME_ID].accent),
+    danger: colorValue(config.danger, defaultThemeConfigs[DEFAULT_THEME_ID].danger),
+    uiFont: config.uiFont,
+    codeFont: config.codeFont,
+    uiSize: String(config.uiFontSize),
+    codeSize: String(config.codeFontSize),
+  });
+  const dashboardSrc = `${FIGMA_PROJECT_DASHBOARD_SRC}?${dashboardParams.toString()}`;
 
   return (
     <div className="figmaDashboardWorkbench">
@@ -3121,6 +3239,7 @@ function RoleDropdown({ value, onChange, variant = "toolbar" }: RoleDropdownProp
 
 type AuthDialogProps = {
   account: FeishuAccount | null;
+  authStatus: AuthStatus | null;
   onClose: () => void;
   onRoleChange: (role: AccountRole) => void;
   onSignIn: (role: AccountRole) => void;
@@ -3129,6 +3248,7 @@ type AuthDialogProps = {
 
 function AuthDialog({
   account,
+  authStatus,
   onClose,
   onRoleChange,
   onSignIn,
@@ -3137,9 +3257,11 @@ function AuthDialog({
   const [selectedRole, setSelectedRole] = useState<AccountRole>(
     account?.role ?? "designer",
   );
-  const feishuOAuthUrl = buildFeishuOAuthUrl();
+  const oauthSetup = getFeishuOAuthSetup();
 
   function submitSignIn() {
+    const feishuOAuthUrl = buildFeishuOAuthUrl(selectedRole);
+
     if (feishuOAuthUrl) {
       window.location.assign(feishuOAuthUrl);
       return;
@@ -3168,6 +3290,23 @@ function AuthDialog({
         </header>
 
         <div className="authRows">
+          {authStatus ? (
+            <div className="authNotice" data-tone={authStatus.tone}>
+              <span>{authStatus.message}</span>
+            </div>
+          ) : null}
+
+          <div className="authNotice" data-tone={oauthSetup.hasAppId ? "neutral" : "danger"}>
+            <span>
+              {oauthSetup.hasAppId
+                ? oauthSetup.hasExchangeEndpoint
+                  ? "Feishu OAuth is configured."
+                  : "Feishu OAuth app is configured. Token exchange endpoint is missing."
+                : "Feishu OAuth app id is missing. Demo login is still available."}
+            </span>
+            <small>{oauthSetup.redirectUri}</small>
+          </div>
+
           <div className="fieldBlock">
             <span>role</span>
             <RoleDropdown
@@ -3204,7 +3343,7 @@ function AuthDialog({
           ) : (
             <button className="primaryButton" type="button" onClick={submitSignIn}>
               <KeyRound size={15} />
-              <span>{feishuOAuthUrl ? "continue with feishu" : "use feishu demo"}</span>
+              <span>{oauthSetup.hasAppId ? "continue with feishu" : "use feishu demo"}</span>
             </button>
           )}
         </footer>
