@@ -1,3 +1,83 @@
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-Thin.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-ExtraLight.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-Light.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-Normal.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 350;
+}
+
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-Regular.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-Medium.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-Demibold.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-Semibold.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 650;
+}
+
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-Bold.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "MiSansBrandPreview";
+  src: url("/brand-assets/fonts/misans/MiSans-Heavy.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 900;
+}
+
 :root {
   color-scheme: dark;
   --ui-font: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
@@ -647,6 +727,11 @@ svg {
   overflow: auto;
 }
 
+.canvasBody-figma-project-dashboard {
+  overflow: hidden;
+  background: var(--bg);
+}
+
 .canvasBody[data-locked="true"] {
   background:
     linear-gradient(to right, var(--grid-line) 0, transparent 0.5px),
@@ -831,9 +916,45 @@ svg {
   padding: 16px;
 }
 
+.figmaDashboardWorkbench {
+  height: 100%;
+  min-height: 0;
+  background: var(--bg);
+}
+
+.figmaDashboardFrame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: calc(100vh - 136px);
+  border: 0;
+  background: var(--bg-deep);
+}
+
+.logoAssetWorkbench,
+.fontPackageWorkbench {
+  display: grid;
+  gap: 12px;
+  min-height: 100%;
+  padding: 16px;
+}
+
+.logoAssetWorkbench {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.fontPackageWorkbench {
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+}
+
 .resourceDetailPanel,
 .pdfPreviewPanel,
-.versionHistory {
+.versionHistory,
+.assetHeroPanel,
+.assetLibraryPanel,
+.logoAssetCard,
+.fontListPanel,
+.fontPreviewPanel {
   border: var(--stroke-width) solid var(--border);
   border-radius: var(--radius-panel);
   background: var(--surface-raised);
@@ -1003,6 +1124,451 @@ svg {
 
 .pdfFallback a {
   color: var(--accent);
+}
+
+.assetHeroPanel {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+}
+
+.assetHeroIcon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--accent);
+  border: var(--stroke-width) solid var(--accent-border);
+  border-radius: var(--radius-control);
+  background: var(--nav-active-bg);
+}
+
+.assetHeroPanel h2,
+.assetLibraryHeader h3,
+.fontPreviewHeader h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.assetHeroPanel p {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.assetHeroStats {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(72px, 1fr));
+  overflow: hidden;
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-soft);
+}
+
+.assetHeroStats span {
+  display: grid;
+  gap: 3px;
+  min-height: 48px;
+  padding: 8px 10px;
+  border-right: var(--stroke-width) solid var(--border);
+}
+
+.assetHeroStats span:last-child {
+  border-right: 0;
+}
+
+.assetHeroStats strong {
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.assetHeroStats small,
+.assetCountBadge {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.assetLibraryPanel,
+.fontListPanel,
+.fontPreviewPanel {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.fontListPanel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.assetLibraryHeader,
+.fontPreviewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 8px 12px;
+  border-bottom: var(--stroke-width) solid var(--border);
+}
+
+.assetLibraryHeader > div:first-child,
+.fontPreviewHeader > div:first-child {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.assetLibraryHeader h3,
+.fontPreviewHeader h3 {
+  font-size: 14px;
+}
+
+.assetCountBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-height);
+  padding: 0 8px;
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-soft);
+  white-space: nowrap;
+}
+
+.assetModeSwitch {
+  flex: 0 0 auto;
+}
+
+.logoGallery {
+  min-width: 0;
+}
+
+.logoGallery[data-view="grid"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  align-content: start;
+  gap: 8px;
+  padding: 12px;
+}
+
+.logoGallery[data-view="list"] {
+  display: grid;
+}
+
+.logoAssetCard {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.logoGallery[data-view="grid"] .logoAssetCard {
+  display: grid;
+  grid-template-rows: minmax(164px, 1fr) auto auto;
+}
+
+.logoGallery[data-view="list"] .logoAssetCard {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) minmax(220px, 280px);
+  align-items: stretch;
+  border-width: 0 0 var(--stroke-width);
+  border-radius: 0;
+}
+
+.logoGallery[data-view="list"] .logoAssetCard:last-child {
+  border-bottom: 0;
+}
+
+.transparentPreview {
+  background-color: #f6f6f6;
+  background-image:
+    linear-gradient(45deg, rgba(0, 0, 0, 0.12) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0, 0, 0, 0.12) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, 0.12) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, 0.12) 75%);
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+  background-size: 16px 16px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.logoPreview {
+  display: grid;
+  place-items: center;
+  min-height: 164px;
+  padding: 18px;
+}
+
+.logoPreview img {
+  display: block;
+  width: 100%;
+  max-height: 118px;
+  object-fit: contain;
+}
+
+.logoGallery[data-view="list"] .logoPreview {
+  min-height: 104px;
+  padding: 12px;
+  border-right: var(--stroke-width) solid var(--border);
+}
+
+.logoGallery[data-view="list"] .logoPreview img {
+  max-height: 72px;
+}
+
+.logoAssetCopy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.logoAssetCopy span,
+.logoAssetCopy small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.logoAssetCopy h4 {
+  overflow: hidden;
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logoAssetCopy p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.assetFormatLinks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 10px;
+  border-top: var(--stroke-width) solid var(--border);
+}
+
+.logoGallery[data-view="list"] .assetFormatLinks {
+  align-content: center;
+  border-top: 0;
+  border-left: var(--stroke-width) solid var(--border);
+}
+
+.assetFormatLinks a {
+  display: grid;
+  grid-template-columns: 13px minmax(0, 1fr);
+  align-items: center;
+  gap: 2px 6px;
+  min-height: 36px;
+  padding: 5px 7px;
+  color: var(--text-secondary);
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-soft);
+  text-decoration: none;
+}
+
+.assetFormatLinks a:hover {
+  color: var(--text);
+  border-color: var(--accent-border);
+  background: var(--nav-active-bg);
+}
+
+.assetFormatLinks small {
+  grid-column: 2;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fontWeightList {
+  display: grid;
+  align-content: start;
+  overflow: auto;
+}
+
+.fontWeightButton {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 8px 12px;
+  color: var(--text-secondary);
+  border-bottom: var(--stroke-width) solid var(--border);
+  background: transparent;
+  text-align: left;
+}
+
+.fontWeightButton:last-child {
+  border-bottom: 0;
+}
+
+.fontWeightButton:hover,
+.fontWeightButton[data-active="true"] {
+  color: var(--text);
+  background: var(--nav-hover-bg);
+}
+
+.fontWeightButton[data-active="true"] {
+  background: var(--nav-active-bg);
+}
+
+.fontWeightButton span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.fontWeightButton strong,
+.fontWeightButton small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fontWeightButton strong {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.fontWeightButton small,
+.fontWeightButton i {
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
+}
+
+.fontWeightButton i {
+  font-family: var(--code-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.fontPreviewPanel {
+  display: grid;
+  align-content: start;
+}
+
+.fontPreviewControls {
+  padding: 12px;
+  border-bottom: var(--stroke-width) solid var(--border);
+}
+
+.fontPreviewInput {
+  display: grid;
+  gap: 6px;
+}
+
+.fontPreviewInput > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.fontPreviewTextarea {
+  width: 100%;
+  min-height: 88px;
+  resize: vertical;
+  padding: 10px;
+  color: var(--text);
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  outline: 0;
+  background: var(--bg);
+  font-family: var(--ui-font);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.fontPreviewTextarea:focus {
+  border-color: var(--accent-border);
+}
+
+.fontPreviewStage {
+  display: grid;
+  align-content: center;
+  min-height: 220px;
+  padding: 18px;
+  border-bottom: var(--stroke-width) solid var(--border);
+  background:
+    linear-gradient(to right, var(--grid-line) 0, transparent 0.5px),
+    var(--surface-soft);
+  background-size: 24px 24px;
+}
+
+.fontPreviewStage > span {
+  color: var(--muted);
+  font-family: var(--ui-font);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.fontPreviewStage p {
+  margin: 10px 0 0;
+  color: var(--text);
+  font-size: 42px;
+  line-height: 1.16;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.fontSampleGrid {
+  display: grid;
+  border-bottom: var(--stroke-width) solid var(--border);
+}
+
+.fontSampleRow {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 12px;
+  min-height: 70px;
+  padding: 10px 12px;
+  border-bottom: var(--stroke-width) solid var(--border);
+}
+
+.fontSampleRow:last-child {
+  border-bottom: 0;
+}
+
+.fontSampleRow span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.fontSampleRow strong {
+  min-width: 0;
+  color: var(--text);
+  font-weight: inherit;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.fontMetaGrid {
+  margin: 12px;
 }
 
 .inspectorPanel {
@@ -2055,8 +2621,42 @@ svg {
   .l3Workspace,
   .emptyWorkbench,
   .resourceWorkbench,
+  .fontPackageWorkbench,
   .sliceFieldGrid {
     grid-template-columns: 1fr;
+  }
+
+  .assetHeroPanel {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .assetHeroStats {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .assetLibraryHeader,
+  .fontPreviewHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .logoGallery[data-view="list"] .logoAssetCard {
+    grid-template-columns: 1fr;
+  }
+
+  .logoGallery[data-view="list"] .logoPreview {
+    border-right: 0;
+    border-bottom: var(--stroke-width) solid var(--border);
+  }
+
+  .logoGallery[data-view="list"] .assetFormatLinks {
+    border-top: var(--stroke-width) solid var(--border);
+    border-left: 0;
+  }
+
+  .fontPreviewStage p {
+    font-size: 32px;
   }
 
   .moduleRail {

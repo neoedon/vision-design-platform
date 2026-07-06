@@ -1,0 +1,3948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figma Project Changelog</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000000;
+    --surface: #111111;
+    --surface-raised: #1A1A1A;
+    --border: #222222;
+    --border-visible: #333333;
+    --text-display: #FFFFFF;
+    --text-primary: #E8E8E8;
+    --text-secondary: #999999;
+    --text-disabled: #666666;
+    --accent: #D71921;
+    --accent-subtle: rgba(215,25,33,0.15);
+    --interactive: #5B9BF6;
+    --interactive-subtle: rgba(91,155,246,0.12);
+    --success: #4ade80;
+    --success-subtle: rgba(74,222,128,0.12);
+    --dot-opacity: 0.4;
+  }
+
+  :root[data-theme="light"] {
+    --black: #F5F5F5;
+    --surface: #FFFFFF;
+    --surface-raised: #F0F0F0;
+    --border: #E5E5E5;
+    --border-visible: #D0D0D0;
+    --text-display: #111111;
+    --text-primary: #222222;
+    --text-secondary: #777777;
+    --text-disabled: #AAAAAA;
+    --accent: #D71921;
+    --accent-subtle: rgba(215,25,33,0.08);
+    --interactive: #2B6FD0;
+    --interactive-subtle: rgba(43,111,208,0.08);
+    --success: #16A34A;
+    --success-subtle: rgba(22,163,74,0.08);
+    --dot-opacity: 0.25;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--black);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* dot-matrix bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--border) 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    opacity: var(--dot-opacity);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; padding: 32px 24px; }
+
+  body[data-embedded="true"]::before { display: none; }
+  body[data-embedded="true"] .page {
+    max-width: none;
+    min-height: 100vh;
+    padding: 0;
+  }
+  body[data-embedded="true"] .header,
+  body[data-embedded="true"] .view-tabs {
+    display: none;
+  }
+  body[data-embedded="true"] .map-view {
+    min-height: 100vh;
+  }
+  body[data-embedded="true"] .map-view .page-map-dialog {
+    height: 100vh;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+  }
+  body[data-embedded="true"] .source-section {
+    margin-bottom: 16px;
+    border-width: 0 0 1px;
+    border-radius: 0;
+  }
+  body[data-embedded="true"] #changelogView {
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 48px;
+  }
+
+  .header h1 {
+    font-family: 'Doto', 'Space Mono', monospace;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--text-display);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  /* ── Pill Buttons ── */
+  .pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--border-visible);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 200ms ease-out, border-color 200ms ease-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .pill:hover { color: var(--text-display); border-color: var(--text-display); }
+  .pill:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .pill.active {
+    color: var(--text-display);
+    border-color: var(--text-display);
+  }
+
+  .pill.interactive { color: var(--interactive); border-color: var(--interactive); }
+  .pill.interactive:hover { color: var(--text-display); border-color: var(--text-display); }
+
+  .view-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: -24px 0 24px;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+
+  .view-tab {
+    min-width: 112px;
+    justify-content: center;
+  }
+
+  .view-panel { display: none; }
+  .view-panel.active { display: block; }
+
+  .changelog-toolbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .map-view {
+    min-height: calc(100vh - 180px);
+  }
+
+  .map-view .page-map-dialog {
+    width: 100%;
+    max-width: none;
+    height: calc(100vh - 188px);
+    min-height: 620px;
+    max-height: none;
+  }
+
+  /* ── Source Section ── */
+  .source-section {
+    margin-bottom: 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+
+  .source-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .source-projects { flex: 1; min-width: 0; }
+
+  .source-actions { flex-shrink: 0; }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .controls-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--border-visible);
+    margin: 0 4px;
+  }
+
+  /* ── Sections ── */
+  section { margin-bottom: 24px; }
+
+  #filtersSection { margin-bottom: 20px; }
+  #filtersSection .section-label { margin-bottom: 10px; }
+  #filtersSection .filter-row { margin-bottom: 0; }
+
+  .filter-group-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 8px;
+  }
+
+  .filter-divider {
+    height: 1px;
+    background: var(--border-visible);
+    margin: 14px 0;
+  }
+
+  .filter-group--users .filter-group-label {
+    color: var(--text-secondary);
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 12px;
+  }
+
+  .project-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .project-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--border-visible);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 200ms ease-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .project-tag:hover { color: var(--text-display); border-color: var(--text-display); }
+
+  .project-tag.active {
+    color: var(--interactive);
+    border-color: var(--interactive);
+  }
+
+  .project-tag .tag-id {
+    font-size: 10px;
+    opacity: 0.5;
+  }
+
+  .project-tag .tag-remove {
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0.4;
+    transition: opacity 200ms, color 200ms;
+    margin-right: -4px;
+  }
+
+  .project-tag .tag-remove:hover { opacity: 1; color: var(--accent); }
+
+  /* ── Add project inline ── */
+  .add-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .add-inline input {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-visible);
+    color: var(--text-primary);
+    padding: 4px 0;
+    outline: none;
+    transition: border-color 200ms;
+    width: 100px;
+  }
+
+  .add-inline input:focus { border-color: var(--text-primary); }
+
+  .add-inline input::placeholder {
+    color: var(--text-disabled);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .add-inline .id-input { width: 220px; }
+
+  .btn-add-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid var(--border-visible);
+    background: transparent;
+    color: var(--text-disabled);
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 200ms;
+    flex-shrink: 0;
+  }
+
+  .btn-add-circle:hover { color: var(--text-display); border-color: var(--text-display); }
+
+  /* ── Settings Dialog ── */
+  .dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dialog-backdrop.open { display: flex; }
+  body.dialog-open { overflow: hidden; }
+
+  .dialog {
+    background: var(--surface);
+    border: 1px solid var(--border-visible);
+    border-radius: 16px;
+    width: 480px;
+    max-width: 90vw;
+    padding: 24px;
+    position: relative;
+  }
+
+  .settings-dialog {
+    width: 760px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .settings-projects {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 22px;
+  }
+
+  .settings-projects .project-list {
+    margin-bottom: 16px;
+    max-height: 260px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 2px;
+  }
+
+  .settings-add-project {
+    display: grid;
+    grid-template-columns: minmax(120px, 180px) minmax(220px, 1fr) auto;
+    align-items: end;
+    gap: 10px;
+  }
+
+  .settings-add-project input {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-visible);
+    color: var(--text-primary);
+    padding: 8px 0;
+    outline: none;
+  }
+
+  .settings-add-project input:focus { border-color: var(--text-primary); }
+
+  .dialog-title {
+    font-family: 'Space Grotesk', system-ui;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text-display);
+    margin-bottom: 24px;
+  }
+
+  .dialog-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: var(--surface-raised);
+    border: none;
+    color: var(--text-secondary);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 200ms;
+  }
+
+  .dialog-close:hover { color: var(--text-display); }
+
+  .dialog-field {
+    margin-bottom: 20px;
+  }
+
+  .dialog-field label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 8px;
+  }
+
+  .dialog-field input {
+    width: 100%;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-visible);
+    color: var(--text-primary);
+    padding: 8px 0;
+    outline: none;
+    transition: border-color 200ms;
+  }
+
+  .dialog-field input:focus { border-color: var(--text-primary); }
+
+  .dialog-field input::placeholder {
+    color: var(--text-disabled);
+  }
+
+  .dialog-hint {
+    font-size: 13px;
+    color: var(--text-disabled);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .dialog-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 16px;
+  }
+
+  .dialog-status.ok { color: var(--success); }
+  .dialog-status.err { color: var(--accent); }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  /* ── Stats ── */
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 0;
+  }
+
+  #overviewSection { margin-bottom: 32px; }
+  #overviewSection.dimmed { opacity: 0.42; transition: opacity 200ms ease-out; }
+  #overviewSection.dimmed .stat-card { pointer-events: none; }
+
+  #userStatsSection { margin-bottom: 32px; }
+
+  .user-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .user-detail-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-display);
+  }
+
+  .user-detail-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-left: auto;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    flex: 1;
+    min-width: 0;
+    transition: border-color 200ms;
+  }
+
+  .stat-card:hover { border-color: var(--border-visible); }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-family: 'Space Grotesk', system-ui;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-display);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-sub {
+    font-size: 13px;
+    color: var(--text-disabled);
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  .avatar-stack {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    gap: 0;
+  }
+
+  .avatar-stack img {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    border: 2px solid var(--surface);
+    object-fit: cover;
+    margin-left: -6px;
+  }
+
+  .avatar-stack img:first-child { margin-left: 0; }
+
+  .avatar-stack .avatar-overflow {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--text-disabled);
+    margin-left: 6px;
+  }
+
+  /* ── Filter chips ── */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* ── Timeline ── */
+  .day-group { margin-bottom: 32px; }
+
+  .day-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .day-count {
+    font-size: 10px;
+    color: var(--text-disabled);
+    background: var(--surface-raised);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .version-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color 200ms;
+  }
+
+  .version-card:hover { border-color: var(--border-visible); }
+
+  .version-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--text-disabled);
+    min-width: 44px;
+    padding-top: 1px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+
+  .version-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  .version-dot.named { background: var(--success); }
+  .version-dot.auto { background: var(--border-visible); }
+
+  .version-body { flex: 1; min-width: 0; }
+
+  .version-file {
+    font-family: 'Space Grotesk', system-ui;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .version-label-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .version-label-text.is-named { color: var(--success); }
+
+  .version-meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text-disabled);
+    letter-spacing: 0.04em;
+    align-items: center;
+  }
+
+  .version-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 1px solid var(--border-visible);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 8px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .badge-named { background: var(--success-subtle); color: var(--success); }
+  .badge-duration { background: var(--interactive-subtle); color: var(--interactive); }
+
+  .file-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-disabled);
+    background: var(--surface-raised);
+    border-radius: 999px;
+    padding: 2px 8px;
+    margin-left: 6px;
+    transition: color 200ms, background 200ms;
+    white-space: nowrap;
+  }
+
+  .file-link:hover {
+    color: var(--interactive);
+    background: var(--interactive-subtle);
+  }
+
+  /* ── Status / Feedback ── */
+  .status-bar {
+    padding: 16px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-disabled);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--border-visible);
+    border-top-color: var(--text-secondary);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-msg {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--accent-subtle);
+    color: var(--accent);
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(215,25,33,0.3);
+    margin-bottom: 16px;
+  }
+
+  .notice-msg {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: rgba(0, 200, 140, 0.08);
+    color: var(--success);
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 200, 140, 0.28);
+    margin-bottom: 16px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 96px 24px;
+    color: var(--text-disabled);
+  }
+
+  .empty-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .empty-sub {
+    font-size: 14px;
+    color: var(--text-disabled);
+  }
+
+  .token-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .token-status.ok {
+    background: var(--success-subtle);
+    color: var(--success);
+  }
+
+  .token-status.missing {
+    background: var(--accent-subtle);
+    color: var(--accent);
+  }
+
+  /* ── File Detail Dialog ── */
+  .file-dialog {
+    background: var(--surface);
+    border: 1px solid var(--border-visible);
+    border-radius: 8px;
+    width: 900px;
+    max-width: 95vw;
+    max-height: 90vh;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .file-dialog-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .file-dialog-header h2 {
+    font-family: 'Space Grotesk', system-ui;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-display);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-dialog-body {
+    flex: 1;
+    overflow: hidden;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .file-embed-wrap {
+    width: 100%;
+    height: 360px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-raised);
+    flex-shrink: 0;
+  }
+
+  .file-embed-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .file-versions-list {
+    padding: 16px 24px 24px;
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .file-versions-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .file-versions-toolbar .section-label { margin-bottom: 0; }
+
+  .page-analysis-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    line-height: 1.4;
+    color: var(--text-disabled);
+    text-align: right;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .page-analysis-status.ok { color: var(--success); }
+  .page-analysis-status.warn { color: var(--interactive); }
+  .page-analysis-status.err { color: var(--accent); }
+
+  .fv-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .fv-item:last-child { border-bottom: none; }
+
+  .fv-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text-disabled);
+    min-width: 110px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+    padding-top: 1px;
+  }
+
+  .fv-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .fv-dot.named { background: var(--success); }
+  .fv-dot.auto { background: var(--border-visible); }
+
+  .fv-body { flex: 1; min-width: 0; }
+
+  .fv-user {
+    font-size: 14px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .fv-label {
+    font-size: 13px;
+    color: var(--success);
+    margin-top: 2px;
+  }
+
+  .fv-pages {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+  }
+
+  .fv-pages-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-disabled);
+    letter-spacing: 0.08em;
+    margin-right: 2px;
+  }
+
+  .page-chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-visible);
+    border-radius: 3px;
+    padding: 2px 5px;
+    max-width: 100%;
+    line-height: 1.4;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .page-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .page-link:hover {
+    color: var(--text-display);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .page-link-open {
+    color: var(--text-disabled);
+    margin-left: 6px;
+    white-space: nowrap;
+  }
+
+  .page-chip.changed { color: var(--interactive); border-color: var(--interactive-subtle); }
+  .page-chip.added { color: var(--success); border-color: var(--success-subtle); }
+  .page-chip.removed { color: var(--accent); border-color: var(--accent-subtle); }
+  .page-chip.muted { color: var(--text-disabled); }
+
+  .file-current-pages {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+
+  .file-current-pages-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .file-current-pages-head .section-label { margin-bottom: 0; }
+
+  .file-current-page-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-disabled);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  .file-current-page-list {
+    display: grid;
+    gap: 8px;
+    max-height: 180px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .file-current-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: start;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .file-current-page:first-child { border-top: none; }
+
+  .file-current-page-name {
+    font-size: 13px;
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+  }
+
+  .file-current-page-url {
+    display: block;
+    margin-top: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    line-height: 1.5;
+    color: var(--text-disabled);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  .file-current-page-url:hover {
+    color: var(--interactive);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .file-current-page-open {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--interactive);
+    text-decoration: none;
+    white-space: nowrap;
+    padding-top: 1px;
+  }
+
+  .file-current-page-empty {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-disabled);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Page Map Dialog ── */
+  .page-map-dialog {
+    background: var(--surface);
+    border: 1px solid var(--border-visible);
+    border-radius: 8px;
+    width: 1120px;
+    max-width: 96vw;
+    height: 86vh;
+    max-height: 900px;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .page-map-body {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: var(--page-map-nav-width, 300px) 8px minmax(0, 1fr);
+  }
+
+  .page-map-nav {
+    background: var(--surface-raised);
+    padding: 16px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .page-map-resizer {
+    position: relative;
+    width: 8px;
+    min-width: 8px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    cursor: col-resize;
+    outline: none;
+  }
+
+  .page-map-resizer::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    bottom: 18px;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background: var(--border-visible);
+    transition: background 160ms, width 160ms;
+  }
+
+  .page-map-resizer:hover::before,
+  .page-map-resizer:focus-visible::before,
+  body.page-map-nav-resizing .page-map-resizer::before {
+    width: 2px;
+    background: var(--interactive);
+  }
+
+  body.page-map-nav-resizing {
+    cursor: col-resize;
+    user-select: none;
+  }
+
+  .page-map-search-wrap {
+    margin-bottom: 14px;
+  }
+
+  .page-map-search {
+    width: 100%;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    background: var(--black);
+    border: 1px solid var(--border-visible);
+    border-radius: 4px;
+    color: var(--text-primary);
+    padding: 8px 10px;
+    outline: none;
+  }
+
+  .page-map-search:focus {
+    border-color: var(--interactive);
+  }
+
+  .page-map-search::placeholder {
+    color: var(--text-disabled);
+    text-transform: uppercase;
+  }
+
+  .page-map-content {
+    min-width: 0;
+    padding: 16px 24px 24px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+    font-size: 13px;
+  }
+
+  .page-map-nav button {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    text-align: left;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: color 180ms, background 180ms;
+  }
+
+  .page-map-nav button:hover {
+    color: var(--text-display);
+    background: var(--interactive-subtle);
+  }
+
+  .page-map-nav-project {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 8px;
+    margin-top: 6px;
+  }
+
+  .page-map-nav-project.active {
+    color: var(--interactive);
+    background: var(--interactive-subtle);
+  }
+
+  .page-map-nav-file {
+    font-family: 'Space Grotesk', system-ui;
+    font-size: 14px;
+    padding: 6px 8px 6px 18px;
+  }
+
+  .page-map-count {
+    color: var(--text-disabled);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    margin-left: 6px;
+  }
+
+  .page-map-project {
+    padding-bottom: 22px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-map-project:last-child { border-bottom: none; }
+
+  .page-map-project-head,
+  .page-map-file-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .page-map-project-head h3 {
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--text-display);
+  }
+
+  .page-map-file {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .page-map-file-head h4 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+  }
+
+  .page-map-page-list {
+    display: grid;
+    gap: 5px;
+    margin-top: 9px;
+  }
+
+  .page-map-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: start;
+    padding: 7px 9px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--black);
+  }
+
+  .page-map-page-main {
+    min-width: 0;
+  }
+
+  .page-map-page a {
+    color: var(--interactive);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    font-size: 13px;
+  }
+
+  .page-map-page a:hover {
+    color: var(--text-display);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .page-map-node {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-disabled);
+    white-space: nowrap;
+  }
+
+  .page-map-users {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-disabled);
+    letter-spacing: 0.04em;
+  }
+
+  .page-map-access {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-disabled);
+    letter-spacing: 0.04em;
+  }
+
+  .page-map-access-chip {
+    color: var(--text-secondary);
+    border: 1px solid var(--border-visible);
+    border-radius: 4px;
+    padding: 2px 6px;
+    background: var(--black);
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .page-map-access-chip.primary {
+    color: var(--interactive);
+    border-color: var(--interactive-subtle);
+  }
+
+  .page-map-access-chip.warn {
+    color: var(--accent);
+    border-color: var(--accent-subtle);
+  }
+
+  .page-map-user-label {
+    color: var(--text-disabled);
+    margin-right: 2px;
+  }
+
+  .page-map-user-chip {
+    color: var(--text-secondary);
+    border: 1px solid var(--border-visible);
+    border-radius: 999px;
+    padding: 1px 6px;
+    background: var(--surface);
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .page-map-user-chip.primary {
+    color: var(--success);
+    border-color: var(--success-subtle);
+  }
+
+  .page-map-user-chip.muted {
+    color: var(--text-disabled);
+    border-color: var(--border);
+  }
+
+  .page-map-empty,
+  .page-map-warning {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-disabled);
+    letter-spacing: 0.04em;
+    padding: 9px 0;
+  }
+
+  .page-map-warning { color: var(--accent); }
+
+  @media (max-width: 768px) {
+    .page { padding: 24px 16px; }
+    .header { align-items: flex-start; gap: 16px; flex-direction: column; margin-bottom: 32px; }
+    .header h1 { font-size: 32px; }
+    .view-tabs { margin-top: -12px; }
+    .view-tab { min-width: 0; flex: 1; }
+    .stats-row { flex-direction: column; }
+    .controls { gap: 6px; }
+    .settings-add-project { grid-template-columns: 1fr; }
+    .map-view .page-map-dialog {
+      height: auto;
+      min-height: calc(100vh - 190px);
+    }
+    .page-map-body { grid-template-columns: 1fr; }
+    .page-map-nav {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      max-height: 220px;
+    }
+    .page-map-resizer { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══ Header ═══ -->
+  <div class="header">
+    <h1>FIGMA PROJECTS</h1>
+    <div class="header-actions">
+      <span class="header-meta" id="headerMeta"></span>
+      <span class="token-status" id="tokenStatus"></span>
+      <button class="pill" id="themeToggle" onclick="toggleTheme()">LIGHT</button>
+      <button class="pill" onclick="openSettings()">SETTINGS</button>
+    </div>
+  </div>
+
+  <div class="view-tabs">
+    <button class="pill view-tab active" id="mapTab" onclick="switchView('map')">MAP</button>
+    <button class="pill view-tab" id="changelogTab" onclick="switchView('changelog')">CHANGELOG</button>
+  </div>
+
+  <!-- ═══ Feedback ═══ -->
+  <div id="statusBar" class="status-bar" style="display:none"></div>
+  <div id="errorBox" style="display:none"></div>
+
+  <div id="mapView" class="view-panel active map-view">
+    <section class="page-map-dialog">
+      <div class="file-dialog-header">
+        <h2>Page Map</h2>
+        <div style="display:flex;gap:8px;flex-shrink:0;align-items:center;justify-content:flex-end;flex-wrap:wrap">
+          <button class="pill interactive" id="pageMapRefresh" onclick="loadPageMap(true)">REFRESH</button>
+        </div>
+      </div>
+      <div class="page-map-body">
+        <aside class="page-map-nav">
+          <div class="page-map-search-wrap">
+            <input class="page-map-search" id="pageMapSearch" type="search" placeholder="SEARCH PROJECT / FILE / PAGE / USER" oninput="setPageMapSearch(this.value)">
+          </div>
+          <div class="section-label">DIRECTORY</div>
+          <div id="pageMapNav"></div>
+        </aside>
+        <div class="page-map-resizer" id="pageMapResizer" role="separator" aria-orientation="vertical" aria-label="Resize directory" tabindex="0"></div>
+        <main class="page-map-content" id="pageMapContentWrap">
+          <div class="file-versions-toolbar">
+            <div class="section-label" id="pageMapSummary">PROJECTS</div>
+            <div class="page-analysis-status" id="pageMapStatus"></div>
+          </div>
+          <div id="pageMapContent"></div>
+        </main>
+      </div>
+    </section>
+  </div>
+
+  <div id="changelogView" class="view-panel">
+    <!-- ═══ Source: Time + Action ═══ -->
+    <section class="source-section">
+      <div class="changelog-toolbar">
+        <div>
+          <div class="section-label">RANGE</div>
+          <div class="controls">
+            <button class="pill" id="days7" onclick="setDays(7)">7D</button>
+            <button class="pill" id="days14" onclick="setDays(14)">14D</button>
+            <button class="pill active" id="days30" onclick="setDays(30)">30D</button>
+            <button class="pill" id="days90" onclick="setDays(90)">90D</button>
+            <span class="controls-separator"></span>
+            <button class="pill interactive" id="fetchBtn" onclick="fetchChangelog()">FETCH</button>
+            <button class="pill" id="exportBtn" onclick="exportCSV()" style="display:none">EXPORT CSV</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ Overview Stats ═══ -->
+    <section id="overviewSection" style="display:none">
+      <div class="section-label">PROJECT OVERVIEW</div>
+      <div id="statsRow" class="stats-row stats-row--overview"></div>
+    </section>
+
+    <!-- ═══ Filters ═══ -->
+    <section id="filtersSection" style="display:none">
+      <div class="section-label">FILTER</div>
+      <div class="filter-group filter-group--files">
+        <div class="filter-group-label">FILES</div>
+        <div id="filterRow" class="filter-row"></div>
+      </div>
+      <div class="filter-divider" id="filterDivider"></div>
+      <div class="filter-group filter-group--users">
+        <div class="filter-group-label">USERS</div>
+        <div id="userFilterRow" class="filter-row"></div>
+      </div>
+    </section>
+
+    <!-- ═══ User Detail Stats (shown when user is selected) ═══ -->
+    <section id="userStatsSection" style="display:none">
+      <div class="section-label">USER DETAIL</div>
+      <div id="userDetailHeader" class="user-detail-header"></div>
+      <div id="userStatsRow" class="stats-row"></div>
+    </section>
+
+    <!-- ═══ Timeline ═══ -->
+    <section id="timelineSection">
+      <div id="timeline"></div>
+    </section>
+  </div>
+
+</div>
+
+<!-- Settings Dialog -->
+<div class="dialog-backdrop" id="settingsBackdrop" onclick="if(event.target===this)closeSettings()">
+  <div class="dialog settings-dialog">
+    <button class="dialog-close" onclick="closeSettings()">&times;</button>
+    <div class="dialog-title">Settings</div>
+    <div class="dialog-field">
+      <label>FIGMA PERSONAL ACCESS TOKEN</label>
+      <input type="password" id="tokenInput" placeholder="figd_xxxxxxxxxxxxxxxx">
+      <div class="dialog-hint">Figma Settings &rarr; Personal Access Tokens</div>
+    </div>
+    <div class="settings-projects">
+      <div class="section-label">PROJECTS</div>
+      <div class="project-list" id="projectList"></div>
+      <div class="settings-add-project">
+        <input type="text" id="addNameInput" placeholder="NAME">
+        <input type="text" id="addIdInput" placeholder="PROJECT OR TEAM URL">
+        <button class="btn-add-circle" onclick="addProject()">+</button>
+      </div>
+    </div>
+    <div id="settingsStatus"></div>
+    <div class="dialog-actions">
+      <button class="pill" onclick="clearToken()">CLEAR</button>
+      <button class="pill interactive" onclick="saveAndClose()">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<!-- File Detail Dialog -->
+<div class="dialog-backdrop" id="fileDialogBackdrop" onclick="if(event.target===this)closeFileDialog()">
+  <div class="file-dialog">
+    <div class="file-dialog-header">
+      <h2 id="fileDialogTitle"></h2>
+      <div style="display:flex;gap:8px;flex-shrink:0;align-items:center;justify-content:flex-end;flex-wrap:wrap">
+        <button class="pill interactive" id="fileDialogAnalyze" onclick="">ANALYZE PAGES</button>
+        <button class="pill" id="fileDialogAnalyzeMore" onclick="">ANALYZE MORE</button>
+        <button class="pill" id="fileDialogOpen" onclick="">OPEN &rarr;</button>
+        <button class="dialog-close" onclick="closeFileDialog()" style="position:static">&times;</button>
+      </div>
+    </div>
+    <div class="file-dialog-body">
+      <div class="file-embed-wrap" id="fileEmbedWrap"></div>
+      <div class="file-current-pages" id="fileCurrentPages"></div>
+      <div class="file-versions-list">
+        <div class="file-versions-toolbar">
+          <div class="section-label">VERSION HISTORY</div>
+          <div class="page-analysis-status" id="filePageAnalysisStatus"></div>
+        </div>
+        <div id="fileVersionsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://api.figma.com/v1';
+const STORAGE_KEY = 'figma-changelog-projects';
+const TOKEN_KEY = 'figma-changelog-token';
+const CACHE_KEY = 'figma-changelog-cache';
+const AVATAR_URL_KEY = 'figma-changelog-avatar-urls';
+const PAGE_ANALYSIS_KEY = 'figma-changelog-page-analysis';
+const PAGE_MAP_CACHE_KEY = 'figma-changelog-page-map';
+const PAGE_MAP_NAV_WIDTH_KEY = 'figma-changelog-page-map-nav-width';
+const PAGE_ANALYSIS_BATCH_SIZE = 5;
+const DEFAULT_PAGE_MAP_PROJECT_IDS = ['611888617', '611818804', '611779334', '571570024'];
+const AUTO_FETCH_INTERVAL_MS = 5 * 60 * 1000;
+const PAGE_MAP_NAV_WIDTH_DEFAULT = 300;
+const PAGE_MAP_NAV_WIDTH_MIN = 220;
+const PAGE_MAP_NAV_WIDTH_MAX = 560;
+let allVersions = [];
+let allFiles = [];
+let activeFileFilter = null;
+let selectedProjectId = null;
+let currentDays = 30;
+let activeUserFilter = null;
+let liveAvatarUrls = {};
+let activeFileDialogKey = null;
+let filePagesByKey = {};
+let pageAnalysisByFile = {};
+let autoFetchInFlight = false;
+let autoFetchTimerId = null;
+let activeView = 'map';
+
+function loadLiveAvatarUrls() {
+  try { liveAvatarUrls = JSON.parse(localStorage.getItem(AVATAR_URL_KEY)) || {}; }
+  catch { liveAvatarUrls = {}; }
+}
+
+function saveLiveAvatarUrls() {
+  try { localStorage.setItem(AVATAR_URL_KEY, JSON.stringify(liveAvatarUrls)); } catch {}
+}
+
+function loadPageAnalysisCache() {
+  try {
+    const raw = localStorage.getItem(PAGE_ANALYSIS_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    pageAnalysisByFile = data.files || {};
+  } catch {
+    pageAnalysisByFile = {};
+  }
+}
+
+function savePageAnalysisCache() {
+  try {
+    localStorage.setItem(PAGE_ANALYSIS_KEY, JSON.stringify({
+      schema: 1,
+      ts: Date.now(),
+      files: pageAnalysisByFile,
+    }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function ingestUserFromVersion(userObj) {
+  if (!userObj) return;
+  if (userObj.img_url) {
+    if (userObj.handle) liveAvatarUrls[userObj.handle] = userObj.img_url;
+    if (userObj.id) liveAvatarUrls['id:' + userObj.id] = userObj.img_url;
+  }
+}
+
+function getAvatarUrl(user) {
+  if (liveAvatarUrls[user]) return liveAvatarUrls[user];
+  const v = allVersions.find(v => v.user === user);
+  if (v?.userId && liveAvatarUrls['id:' + v.userId]) return liveAvatarUrls['id:' + v.userId];
+  const withImg = allVersions.find(v => v.user === user && v.userImg);
+  return withImg?.userImg || '';
+}
+
+function userColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return `hsl(${h % 360}, 42%, 40%)`;
+}
+
+function initialsAvatarDataUrl(name) {
+  const parts = String(name).trim().split(/[\s._-]+/).filter(Boolean);
+  const initials = parts.length >= 2
+    ? (parts[0][0] + parts[parts.length - 1][0])
+    : (String(name).slice(0, 2) || '?');
+  const text = initials.toUpperCase().slice(0, 2);
+  const bg = userColor(name);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="${bg}"/><text x="32" y="32" dy="0.35em" text-anchor="middle" fill="#fff" font-family="Space Grotesk,sans-serif" font-size="24" font-weight="600">${text}</text></svg>`;
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+
+function escAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function avatarHtml(user, size, extraStyle) {
+  const sz = size || 18;
+  const st = extraStyle || '';
+  const placeholder = initialsAvatarDataUrl(user);
+  return `<img class="version-avatar" data-avatar-user="${escAttr(user)}" src="${placeholder}" alt="${esc(user)}" title="${esc(user)}" referrerpolicy="no-referrer" style="width:${sz}px;height:${sz}px;${st}">`;
+}
+
+function bindAvatarImg(img) {
+  const user = img.dataset.avatarUser;
+  if (!user) return;
+  const url = getAvatarUrl(user);
+  if (!url) return;
+
+  const fallback = () => { img.src = initialsAvatarDataUrl(user); };
+  const policies = ['no-referrer', 'strict-origin-when-cross-origin', 'origin'];
+  let idx = 0;
+
+  const tryNext = () => {
+    if (idx >= policies.length) { fallback(); return; }
+    const policy = policies[idx++];
+    const probe = new Image();
+    probe.referrerPolicy = policy;
+    probe.onload = () => {
+      img.referrerPolicy = policy;
+      img.src = url;
+    };
+    probe.onerror = tryNext;
+    probe.src = url;
+  };
+  tryNext();
+}
+
+function hydrateAvatars(root) {
+  (root || document).querySelectorAll('img[data-avatar-user]').forEach(bindAvatarImg);
+}
+
+function syncVersionUserImgs() {
+  allVersions.forEach(v => {
+    const fresh = getAvatarUrl(v.user);
+    if (fresh) v.userImg = fresh;
+  });
+}
+
+function isValidFileName(name, key) {
+  return name && name.trim() && name.trim() !== key;
+}
+
+function getFileName(fileKey) {
+  const f = allFiles.find(f => f.key === fileKey);
+  if (isValidFileName(f?.name, fileKey)) return f.name.trim();
+  const v = allVersions.find(v => v.fileKey === fileKey && isValidFileName(v.fileName, fileKey));
+  if (v) return v.fileName.trim();
+  return fileKey;
+}
+
+function displayFileName(fileKey) {
+  const name = getFileName(fileKey);
+  return name !== fileKey ? name : 'UNTITLED FILE';
+}
+
+function syncFileNamesFromVersions() {
+  allVersions.forEach(v => {
+    if (!v.fileKey || !isValidFileName(v.fileName, v.fileKey)) return;
+    const name = v.fileName.trim();
+    let f = allFiles.find(f => f.key === v.fileKey);
+    if (f) {
+      if (!isValidFileName(f.name, v.fileKey)) f.name = name;
+    } else {
+      allFiles.push({ key: v.fileKey, name });
+    }
+  });
+}
+
+function mergeFileEntry(f) {
+  if (!f?.key) return;
+  const existing = allFiles.find(ef => ef.key === f.key);
+  if (!existing) {
+    allFiles.push({ key: f.key, name: f.name || '' });
+    return;
+  }
+  if (isValidFileName(f.name, f.key) && !isValidFileName(existing.name, f.key)) {
+    existing.name = f.name.trim();
+  }
+}
+
+async function refreshMissingFileNamesFromApi() {
+  const token = getToken();
+  if (!token) return;
+
+  const keys = [...new Set(allVersions.map(v => v.fileKey))];
+  const missing = keys.filter(k => getFileName(k) === k);
+  if (!missing.length) return;
+
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+  for (let i = 0; i < missing.length; i++) {
+    const key = missing[i];
+    try {
+      const meta = await figmaGet(`/files/${key}?depth=1`, token);
+      const name = meta.name?.trim();
+      if (isValidFileName(name, key)) {
+        let f = allFiles.find(f => f.key === key);
+        if (f) f.name = name;
+        else allFiles.push({ key, name });
+        allVersions.forEach(v => { if (v.fileKey === key) v.fileName = name; });
+      }
+    } catch (e) {
+      console.warn('File name fetch failed for', key, e);
+    }
+    if (i < missing.length - 1) await delay(200);
+  }
+}
+
+async function refreshAvatarUrlsFromApi() {
+  const token = getToken();
+  if (!token || !allFiles.length) return;
+
+  const fileKeys = [...new Set(allFiles.map(f => f.key))];
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+
+  for (let i = 0; i < fileKeys.length; i++) {
+    try {
+      const vData = await figmaGet(`/files/${fileKeys[i]}/versions`, token);
+      (vData.versions || []).forEach(ver => ingestUserFromVersion(ver.user));
+    } catch (e) {
+      console.warn('Avatar URL refresh failed for file', fileKeys[i], e);
+    }
+    if (i < fileKeys.length - 1) await delay(150);
+  }
+
+  syncVersionUserImgs();
+  saveLiveAvatarUrls();
+}
+
+async function resolveAvatars(days, projectId) {
+  syncFileNamesFromVersions();
+  if (getToken()) {
+    await refreshAvatarUrlsFromApi();
+    await refreshMissingFileNamesFromApi();
+  }
+  refreshAvatarsUI(days);
+  if (projectId != null) saveCache(projectId, days);
+}
+
+function refreshAvatarsUI(days) {
+  renderStats(allFiles, days || getDays());
+  renderFilters();
+  renderUserFilters();
+  renderTimeline();
+  if (activeUserFilter) renderUserStats();
+  hydrateAvatars(document.querySelector('.page'));
+  hydrateAvatars(document.getElementById('fileDialogBackdrop'));
+}
+
+function showSections() {
+  document.getElementById('overviewSection').style.display = '';
+  document.getElementById('filtersSection').style.display = '';
+  document.getElementById('exportBtn').style.display = 'inline-flex';
+}
+
+function hideSections() {
+  document.getElementById('overviewSection').style.display = 'none';
+  document.getElementById('overviewSection').classList.remove('dimmed');
+  document.getElementById('filtersSection').style.display = 'none';
+  document.getElementById('userStatsSection').style.display = 'none';
+  document.getElementById('exportBtn').style.display = 'none';
+  document.getElementById('timeline').innerHTML = '';
+}
+
+function updateOverviewDimmed() {
+  document.getElementById('overviewSection').classList.toggle('dimmed', !!activeUserFilter);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('figma-changelog-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeButton(saved);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('figma-changelog-theme', next);
+  updateThemeButton(next);
+}
+
+function updateThemeButton(theme) {
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.textContent = theme === 'dark' ? 'LIGHT' : 'DARK';
+}
+
+initTheme();
+
+function clampNumber(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getPageMapNavMaxWidth() {
+  const body = document.querySelector('.page-map-body');
+  if (!body) return PAGE_MAP_NAV_WIDTH_MAX;
+  return Math.max(PAGE_MAP_NAV_WIDTH_MIN, Math.min(PAGE_MAP_NAV_WIDTH_MAX, body.clientWidth - 360));
+}
+
+function applyPageMapNavWidth(width, persist) {
+  const body = document.querySelector('.page-map-body');
+  const resizer = document.getElementById('pageMapResizer');
+  if (!body) return PAGE_MAP_NAV_WIDTH_DEFAULT;
+
+  const clamped = clampNumber(Math.round(width || PAGE_MAP_NAV_WIDTH_DEFAULT), PAGE_MAP_NAV_WIDTH_MIN, getPageMapNavMaxWidth());
+  body.style.setProperty('--page-map-nav-width', `${clamped}px`);
+  if (resizer) resizer.setAttribute('aria-valuenow', String(clamped));
+  if (persist) {
+    try { localStorage.setItem(PAGE_MAP_NAV_WIDTH_KEY, String(clamped)); } catch {}
+  }
+  return clamped;
+}
+
+function loadPageMapNavWidth() {
+  let width = PAGE_MAP_NAV_WIDTH_DEFAULT;
+  try {
+    const saved = parseInt(localStorage.getItem(PAGE_MAP_NAV_WIDTH_KEY), 10);
+    if (Number.isFinite(saved)) width = saved;
+  } catch {}
+  applyPageMapNavWidth(width, false);
+}
+
+let pageMapNavResizeState = null;
+
+function initPageMapResizer() {
+  const body = document.querySelector('.page-map-body');
+  const resizer = document.getElementById('pageMapResizer');
+  if (!body || !resizer) return;
+
+  resizer.setAttribute('aria-valuemin', String(PAGE_MAP_NAV_WIDTH_MIN));
+  resizer.setAttribute('aria-valuemax', String(PAGE_MAP_NAV_WIDTH_MAX));
+  loadPageMapNavWidth();
+
+  resizer.addEventListener('pointerdown', e => {
+    if (window.matchMedia('(max-width: 768px)').matches) return;
+    const rect = body.getBoundingClientRect();
+    resizer.focus({ preventScroll: true });
+    pageMapNavResizeState = {
+      left: rect.left,
+      width: parseInt(getComputedStyle(body).getPropertyValue('--page-map-nav-width'), 10) || PAGE_MAP_NAV_WIDTH_DEFAULT,
+    };
+    document.body.classList.add('page-map-nav-resizing');
+    resizer.setPointerCapture?.(e.pointerId);
+    e.preventDefault();
+  });
+
+  resizer.addEventListener('keydown', e => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    const current = parseInt(getComputedStyle(body).getPropertyValue('--page-map-nav-width'), 10) || PAGE_MAP_NAV_WIDTH_DEFAULT;
+    const step = e.shiftKey ? 40 : 16;
+    let next = current;
+    if (e.key === 'ArrowLeft') next = current - step;
+    if (e.key === 'ArrowRight') next = current + step;
+    if (e.key === 'Home') next = PAGE_MAP_NAV_WIDTH_MIN;
+    if (e.key === 'End') next = getPageMapNavMaxWidth();
+    applyPageMapNavWidth(next, true);
+  });
+
+  window.addEventListener('pointermove', e => {
+    if (!pageMapNavResizeState) return;
+    pageMapNavResizeState.width = applyPageMapNavWidth(e.clientX - pageMapNavResizeState.left, false);
+  });
+
+  const endResize = () => {
+    if (!pageMapNavResizeState) return;
+    applyPageMapNavWidth(pageMapNavResizeState.width, true);
+    pageMapNavResizeState = null;
+    document.body.classList.remove('page-map-nav-resizing');
+  };
+
+  window.addEventListener('pointerup', endResize);
+  window.addEventListener('pointercancel', endResize);
+
+  window.addEventListener('resize', () => {
+    const current = parseInt(getComputedStyle(body).getPropertyValue('--page-map-nav-width'), 10) || PAGE_MAP_NAV_WIDTH_DEFAULT;
+    applyPageMapNavWidth(current, false);
+  });
+}
+
+function getInitialView() {
+  const params = new URLSearchParams(window.location.search);
+  const view = params.get('view') || window.location.hash.replace(/^#/, '');
+  return view === 'changelog' ? 'changelog' : 'map';
+}
+
+function initPlatformEmbedMode() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('embed') === 'platform') {
+    document.body.dataset.embedded = 'true';
+  }
+}
+
+function switchView(view) {
+  activeView = view === 'changelog' ? 'changelog' : 'map';
+  document.getElementById('mapView')?.classList.toggle('active', activeView === 'map');
+  document.getElementById('changelogView')?.classList.toggle('active', activeView === 'changelog');
+  document.getElementById('mapTab')?.classList.toggle('active', activeView === 'map');
+  document.getElementById('changelogTab')?.classList.toggle('active', activeView === 'changelog');
+
+  if (activeView === 'map') {
+    renderPageMap();
+    if (!pageMapData) loadPageMap(false);
+  } else if (!allVersions.length && !allFiles.length) {
+    loadAllProjectsCache();
+  }
+}
+
+function getSavedProjects() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveProjects(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+function getToken() { return (localStorage.getItem(TOKEN_KEY) || '').trim(); }
+function getDays() { return currentDays; }
+function getProjectId() { return selectedProjectId; }
+
+function setDays(d) {
+  currentDays = d;
+  [7,14,30,90].forEach(n => {
+    const el = document.getElementById('days' + n);
+    if (el) el.classList.toggle('active', n === d);
+  });
+}
+
+function updateTokenStatus() {
+  const el = document.getElementById('tokenStatus');
+  const has = !!getToken();
+  el.textContent = has ? '[TOKEN OK]' : '[NO TOKEN]';
+  el.className = 'token-status ' + (has ? 'ok' : 'missing');
+}
+
+function openSettings() {
+  document.getElementById('tokenInput').value = getToken();
+  document.getElementById('settingsStatus').innerHTML = '';
+  document.getElementById('settingsBackdrop').classList.add('open');
+  document.getElementById('tokenInput').focus();
+}
+
+function closeSettings() {
+  document.getElementById('settingsBackdrop').classList.remove('open');
+}
+
+function saveAndClose() {
+  const val = document.getElementById('tokenInput').value.trim();
+  if (val) {
+    localStorage.setItem(TOKEN_KEY, val);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+  updateTokenStatus();
+  closeSettings();
+  startAutoFetchLoop();
+}
+
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  document.getElementById('tokenInput').value = '';
+  document.getElementById('settingsStatus').innerHTML =
+    '<div class="dialog-status err">[TOKEN CLEARED]</div>';
+  updateTokenStatus();
+}
+
+function renderProjectList() {
+  const projects = getSavedProjects();
+  const container = document.getElementById('projectList');
+  let html = '';
+
+  projects.forEach((p, i) => {
+    const isActive = selectedProjectId === p.id;
+    html += `<span class="project-tag ${isActive ? 'active' : ''}" onclick="selectProject('${p.id}')">
+      ${esc(p.name)}<span class="tag-id">${p.id}</span><span class="tag-remove" onclick="event.stopPropagation();removeProject(${i})">&times;</span>
+    </span>`;
+  });
+
+  container.innerHTML = html || '<div class="page-map-empty">NO PROJECTS SAVED</div>';
+}
+
+function selectProject(id) {
+  selectedProjectId = selectedProjectId === id ? null : id;
+  renderProjectList();
+  if (selectedProjectId) {
+    const cached = loadCache(selectedProjectId);
+    if (cached) {
+      allVersions = cached.versions;
+      allFiles = cached.files;
+      activeFileFilter = null;
+      activeUserFilter = null;
+      computeSessionDurations();
+      syncFileNamesFromVersions();
+      showSections();
+      renderStats(allFiles, cached.days);
+      renderFilters();
+      renderUserFilters();
+      renderUserStats();
+      renderTimeline();
+      hydrateAvatars(document.querySelector('.page'));
+      resolveAvatars(cached.days, id);
+      const proj = getSavedProjects().find(p => p.id === id);
+      const age = Math.round((Date.now() - cached.ts) / 60000);
+      const ageStr = age < 60 ? `${age}M AGO` : `${Math.round(age/60)}H AGO`;
+      document.getElementById('headerMeta').textContent =
+        `${proj?.name || id} / ${cached.days}D / CACHED ${ageStr}`;
+    }
+  } else {
+    allVersions = [];
+    allFiles = [];
+    activeFileFilter = null;
+    activeUserFilter = null;
+    hideSections();
+    document.getElementById('headerMeta').textContent = '';
+  }
+}
+
+function extractProjectId(raw) {
+  const match = raw.match(/project\/(\d+)/);
+  if (match) return match[1];
+  const digits = raw.match(/^\d+$/);
+  return digits ? digits[0] : null;
+}
+
+function extractTeamId(raw) {
+  const match = raw.match(/(?:files\/)?team\/(\d+)/);
+  return match ? match[1] : null;
+}
+
+function mergeSavedProjects(incoming) {
+  const projects = getSavedProjects();
+  const byId = new Map(projects.map(p => [p.id, p]));
+  let added = 0;
+  let updated = 0;
+
+  incoming.forEach(item => {
+    const id = String(item.id || '').trim();
+    if (!id) return;
+    const name = (item.name || 'PROJECT ' + id).trim();
+    if (byId.has(id)) {
+      const current = byId.get(id);
+      if (name && current.name !== name) {
+        current.name = name;
+        updated += 1;
+      }
+      return;
+    }
+    const next = { name, id };
+    projects.push(next);
+    byId.set(id, next);
+    added += 1;
+  });
+
+  saveProjects(projects);
+  invalidatePageMapCache();
+  renderProjectList();
+  return { added, updated, total: projects.length };
+}
+
+async function importTeamProjects(teamId) {
+  const token = getToken();
+  if (!token) {
+    showError('[ERROR: SAVE FIGMA TOKEN BEFORE IMPORTING TEAM PROJECTS]');
+    return;
+  }
+
+  setStatus(`[IMPORTING TEAM PROJECTS · ${teamId}]`, true);
+  try {
+    const data = await figmaGet(`/teams/${teamId}/projects`, token);
+    const incoming = (data.projects || []).map(project => ({
+      id: project.id,
+      name: project.name || 'PROJECT ' + project.id,
+    }));
+
+    if (!incoming.length) {
+      showError('[NO PROJECTS RETURNED FOR THIS TEAM]');
+      return;
+    }
+
+    const result = mergeSavedProjects(incoming);
+    selectedProjectId = null;
+    hideError();
+    loadAllProjectsCache(`ALL PROJECTS / TEAM ${teamId} IMPORTED`);
+    showNotice(`[IMPORTED ${result.added} PROJECT(S), UPDATED ${result.updated}, TOTAL ${result.total}]`);
+    if (activeView === 'map') loadPageMap(true);
+    startAutoFetchLoop();
+  } catch (e) {
+    showError(e.message || String(e));
+  } finally {
+    hideStatus();
+  }
+}
+
+async function addProject() {
+  const nameInput = document.getElementById('addNameInput');
+  const idInput = document.getElementById('addIdInput');
+  const name = nameInput.value.trim();
+  const rawId = idInput.value.trim();
+
+  if (!rawId) { showError('[ERROR: PROJECT OR TEAM URL REQUIRED]'); idInput.focus(); return; }
+
+  const teamId = extractTeamId(rawId);
+  if (teamId) {
+    await importTeamProjects(teamId);
+    nameInput.value = '';
+    idInput.value = '';
+    return;
+  }
+
+  const id = extractProjectId(rawId);
+  if (!id) { showError('[ERROR: CANNOT PARSE PROJECT ID FROM INPUT]'); idInput.focus(); return; }
+
+  const existing = getSavedProjects();
+  if (existing.some(p => p.id === id)) {
+    showError('[ERROR: PROJECT ID ALREADY EXISTS]');
+    return;
+  }
+
+  mergeSavedProjects([{ name: name || 'PROJECT ' + id, id }]);
+  selectedProjectId = id;
+  hideError();
+  nameInput.value = '';
+  idInput.value = '';
+  renderProjectList();
+  if (activeView === 'map') loadPageMap(true);
+}
+
+function removeProject(index) {
+  const projects = getSavedProjects();
+  const removed = projects.splice(index, 1)[0];
+  saveProjects(projects);
+  if (removed && selectedProjectId === removed.id) selectedProjectId = null;
+  renderProjectList();
+}
+
+function saveProjectCache(projectId, days, versions, files) {
+  const data = {
+    projectId,
+    days,
+    ts: Date.now(),
+    versions: versions.map(v => ({ ...v, createdAt: v.createdAt.toISOString() })),
+    files,
+  };
+  try { localStorage.setItem(CACHE_KEY + '-' + projectId, JSON.stringify(data)); } catch {}
+}
+
+function saveCache(projectId, days) {
+  saveProjectCache(projectId, days, allVersions, allFiles);
+}
+
+function loadCache(projectId) {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY + '-' + projectId);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    data.versions = data.versions.map(v => ({ ...v, createdAt: new Date(v.createdAt) }));
+    return data;
+  } catch { return null; }
+}
+
+function setStatus(text, showSpinner) {
+  const bar = document.getElementById('statusBar');
+  bar.style.display = 'flex';
+  bar.innerHTML = '';
+  if (showSpinner) {
+    const spinner = document.createElement('span');
+    spinner.className = 'spinner';
+    bar.appendChild(spinner);
+    bar.appendChild(document.createTextNode(' '));
+  }
+  bar.appendChild(document.createTextNode(text));
+}
+
+function hideStatus() { document.getElementById('statusBar').style.display = 'none'; }
+
+function showError(msg) {
+  const box = document.getElementById('errorBox');
+  box.style.display = 'block';
+  box.innerHTML = `<div class="error-msg">${msg}</div>`;
+}
+
+function showNotice(msg) {
+  const box = document.getElementById('errorBox');
+  box.style.display = 'block';
+  box.innerHTML = `<div class="notice-msg">${msg}</div>`;
+}
+
+function hideError() { document.getElementById('errorBox').style.display = 'none'; }
+
+async function figmaGet(path, token) {
+  const res = await fetch(`${API_BASE}${path}`, { headers: { 'X-FIGMA-TOKEN': token } });
+  if (!res.ok) {
+    const text = await res.text();
+    if (res.status === 403) throw new Error('[ERROR: TOKEN INVALID OR NO ACCESS]');
+    if (res.status === 404) throw new Error('[ERROR: PROJECT NOT FOUND]');
+    if (res.status === 429) throw new Error('[ERROR: RATE LIMITED — RETRY LATER]');
+    throw new Error(`[ERROR: API ${res.status}]`);
+  }
+  return res.json();
+}
+
+function updateSavedProjectName(projectId, projectName) {
+  if (!projectName) return;
+  const projects = getSavedProjects();
+  const idx = projects.findIndex(p => p.id === projectId);
+  if (idx !== -1 && projects[idx].name !== projectName) {
+    projects[idx].name = projectName;
+    saveProjects(projects);
+    renderProjectList();
+  }
+}
+
+async function fetchProjectChangelogData(projectId, token, days, onProgress) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+
+  onProgress?.({ phase: 'files' });
+  const projData = await figmaGet(`/projects/${projectId}/files`, token);
+  const files = projData.files || [];
+  const versions = [];
+
+  if (!files.length) {
+    return {
+      projectId,
+      projectName: projData.name || 'PROJECT ' + projectId,
+      rawProjectName: projData.name || '',
+      files,
+      versions,
+    };
+  }
+
+  const delay = (ms) => new Promise(r => setTimeout(r, ms));
+  onProgress?.({ phase: 'versions', completed: 0, total: files.length });
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    try {
+      const vData = await figmaGet(`/files/${file.key}/versions`, token);
+      (vData.versions || []).forEach(ver => ingestUserFromVersion(ver.user));
+      const fileVersions = (vData.versions || []).filter(v => new Date(v.created_at) >= cutoff);
+      fileVersions.forEach(v => {
+        const handle = v.user ? v.user.handle : 'Unknown';
+        versions.push({
+          fileKey: file.key,
+          fileName: file.name,
+          id: v.id,
+          label: v.label || '',
+          description: v.description || '',
+          createdAt: new Date(v.created_at),
+          user: handle,
+          userId: v.user ? v.user.id : '',
+          userImg: v.user ? (v.user.img_url || liveAvatarUrls[handle] || (v.user.id ? liveAvatarUrls['id:' + v.user.id] : '') || '') : '',
+        });
+      });
+    } catch (e) {
+      console.warn(`Failed to fetch versions for ${file.name}:`, e);
+    }
+    onProgress?.({ phase: 'versions', completed: i + 1, total: files.length });
+    if (i < files.length - 1) await delay(200);
+  }
+
+  versions.sort((a, b) => b.createdAt - a.createdAt);
+
+  return {
+    projectId,
+    projectName: projData.name || 'PROJECT ' + projectId,
+    rawProjectName: projData.name || '',
+    files,
+    versions,
+  };
+}
+
+async function fetchChangelog() {
+  const token = getToken();
+  const projectId = getProjectId();
+  const days = getDays();
+
+  if (!token) { showError('[ERROR: NO TOKEN — OPEN SETTINGS]'); return; }
+  if (!projectId) { showError('[ERROR: SELECT A PROJECT]'); return; }
+
+  hideError();
+  allVersions = [];
+  allFiles = [];
+  activeFileFilter = null;
+  activeUserFilter = null;
+  hideSections();
+  document.getElementById('fetchBtn').disabled = true;
+
+  try {
+    const data = await fetchProjectChangelogData(projectId, token, days, progress => {
+      if (progress.phase === 'files') {
+        setStatus('[LOADING PROJECT FILES...]', true);
+      } else {
+        setStatus(`[FETCHING VERSIONS... ${progress.completed} / ${progress.total}]`, true);
+      }
+    });
+    const files = data.files;
+
+    if (files.length === 0) {
+      hideStatus();
+      document.getElementById('timeline').innerHTML =
+        '<div class="empty-state"><div class="empty-title">[NO FILES]</div><div class="empty-sub">This project contains no files</div></div>';
+      saveProjectCache(projectId, days, [], files);
+      updateSavedProjectName(projectId, data.rawProjectName);
+      return;
+    }
+
+    allFiles = files;
+    allVersions = data.versions;
+
+    computeSessionDurations();
+    syncFileNamesFromVersions();
+    await refreshMissingFileNamesFromApi();
+    hideStatus();
+    showSections();
+    renderStats(files, days);
+    renderFilters();
+    renderUserFilters();
+    renderTimeline();
+    saveLiveAvatarUrls();
+    saveCache(projectId, days);
+    hydrateAvatars(document.querySelector('.page'));
+
+    document.getElementById('headerMeta').textContent = `${data.projectName} / ${days}D`;
+    updateSavedProjectName(projectId, data.rawProjectName);
+  } catch (e) {
+    hideStatus();
+    showError(e.message);
+  } finally {
+    document.getElementById('fetchBtn').disabled = false;
+  }
+}
+
+function computeSessionDurations() {
+  const SESSION_GAP = 30 * 60 * 1000; // 30min gap = new session
+  allVersions.forEach(v => { delete v.sessionDuration; });
+
+  const byUserFile = {};
+  const sorted = [...allVersions].sort((a, b) => a.createdAt - b.createdAt);
+
+  sorted.forEach(v => {
+    const key = `${v.user}::${v.fileKey}`;
+    if (!byUserFile[key]) byUserFile[key] = [];
+    byUserFile[key].push(v);
+  });
+
+  Object.values(byUserFile).forEach(versions => {
+    if (versions.length < 2) return;
+    let sessionGroup = [versions[0]];
+
+    for (let i = 1; i < versions.length; i++) {
+      const curr = versions[i];
+      const prev = versions[i - 1];
+      const gap = curr.createdAt - prev.createdAt;
+
+      if (gap > SESSION_GAP) {
+        markSession(sessionGroup);
+        sessionGroup = [curr];
+      } else {
+        sessionGroup.push(curr);
+      }
+    }
+    markSession(sessionGroup);
+  });
+}
+
+function markSession(group) {
+  if (group.length < 2) return;
+  const dur = group[group.length - 1].createdAt - group[0].createdAt;
+  if (dur < 60000) return;
+  group.forEach(v => { v.sessionDuration = dur; });
+}
+
+function formatDuration(ms) {
+  const mins = Math.round(ms / 60000);
+  if (mins < 60) return `${mins}M`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m > 0 ? `${h}H ${m}M` : `${h}H`;
+}
+
+function formatShortDate(d) {
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+function renderStats(files, days) {
+  const namedCount = allVersions.filter(v => v.label).length;
+  const uniqueUsers = [...new Set(allVersions.map(v => v.user))];
+  const activeFiles = [...new Set(allVersions.map(v => v.fileKey))];
+  const autoCount = allVersions.length - namedCount;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">FILES</div>
+      <div class="stat-value">${activeFiles.length}<span style="font-size:17px;color:var(--text-disabled);font-weight:400"> / ${files.length}</span></div>
+      <div class="stat-sub">WITH CHANGES IN RANGE</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">VERSIONS</div>
+      <div class="stat-value">${allVersions.length}</div>
+      <div class="stat-sub">${days}D · ${autoCount} AUTO · ${namedCount} NAMED</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">CHECKPOINTS</div>
+      <div class="stat-value">${namedCount}</div>
+      <div class="stat-sub">NAMED VERSIONS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">CONTRIBUTORS</div>
+      <div class="stat-value">${uniqueUsers.length}</div>
+      <div class="avatar-stack">${uniqueUsers.slice(0, 6).map(u => avatarHtml(u, 22, '')).join('')}${uniqueUsers.length > 6 ? `<span class="avatar-overflow">+${uniqueUsers.length - 6}</span>` : ''}</div>
+    </div>
+  `;
+  updateOverviewDimmed();
+  hydrateAvatars(document.getElementById('statsRow'));
+}
+
+function renderFilters() {
+  const fileKeys = [...new Set(allVersions.map(v => v.fileKey))];
+  const filesGroup = document.querySelector('.filter-group--files');
+  const divider = document.getElementById('filterDivider');
+  if (fileKeys.length <= 1) {
+    document.getElementById('filterRow').innerHTML = '';
+    if (filesGroup) filesGroup.style.display = 'none';
+    if (divider) divider.style.display = 'none';
+    return;
+  }
+  if (filesGroup) filesGroup.style.display = '';
+  if (divider) divider.style.display = '';
+  let html = `<button class="pill ${activeFileFilter === null ? 'active' : ''}" onclick="setFileFilter(null)">ALL</button>`;
+
+  fileKeys.forEach(key => {
+    const name = displayFileName(key);
+    const fullName = getFileName(key);
+    const count = allVersions.filter(v => v.fileKey === key).length;
+    const short = name.length > 20 ? name.slice(0, 18) + '...' : name;
+    const title = fullName !== key ? fullName : `${name} (${key})`;
+    html += `<button class="pill ${activeFileFilter === key ? 'active' : ''}" onclick="setFileFilter('${key}')" title="${esc(title)}">${esc(short)} (${count}) <a class="file-link" href="#" onclick="event.preventDefault();event.stopPropagation();openInFigma('${key}')">OPEN &rarr;</a></button>`;
+  });
+
+  document.getElementById('filterRow').innerHTML = html;
+}
+
+function getFileDialogVersions(fileKey) {
+  return allVersions
+    .filter(v => v.fileKey === fileKey)
+    .sort((a, b) => b.createdAt - a.createdAt);
+}
+
+function setFilePageAnalysisStatus(text, tone) {
+  const el = document.getElementById('filePageAnalysisStatus');
+  el.textContent = text || '';
+  el.className = 'page-analysis-status' + (tone ? ' ' + tone : '');
+}
+
+function figmaUrlNodeId(nodeId) {
+  return String(nodeId).replace(/:/g, '-');
+}
+
+function figmaPageUrl(fileKey, pageId) {
+  return figmaWebUrl(fileKey, pageId);
+}
+
+function figmaWebUrl(fileKey, nodeId) {
+  const nodeParam = nodeId ? `?node-id=${figmaUrlNodeId(nodeId)}` : '';
+  return `https://www.figma.com/design/${fileKey}${nodeParam}`;
+}
+
+function figmaDesktopUrl(fileKey, nodeId) {
+  const nodeParam = nodeId ? `?node-id=${figmaUrlNodeId(nodeId)}` : '';
+  return `figma://file/${fileKey}${nodeParam}`;
+}
+
+function jsArg(value) {
+  return escAttr(JSON.stringify(value));
+}
+
+function pagesFromFileData(data) {
+  return (data?.document?.children || [])
+    .filter(node => node.type === 'CANVAS')
+    .map(node => ({
+      id: node.id,
+      name: node.name || 'Untitled Page',
+    }));
+}
+
+function getFilePagesFromPageMap(fileKey) {
+  if (!pageMapData?.length) return null;
+  for (const project of pageMapData) {
+    const file = (project.files || []).find(item => item.key === fileKey && !item.error);
+    if (file && Array.isArray(file.pages)) {
+      return file.pages.map(page => ({
+        id: page.id,
+        name: page.name || 'Untitled Page',
+      }));
+    }
+  }
+  return null;
+}
+
+function getCachedFilePages(fileKey) {
+  if (Array.isArray(filePagesByKey[fileKey])) return filePagesByKey[fileKey];
+  const fromPageMap = getFilePagesFromPageMap(fileKey);
+  if (fromPageMap) {
+    filePagesByKey[fileKey] = fromPageMap;
+    return fromPageMap;
+  }
+  return null;
+}
+
+function renderFileCurrentPages(fileKey, pages, options = {}) {
+  const el = document.getElementById('fileCurrentPages');
+  if (!el) return;
+
+  const pageList = Array.isArray(pages) ? pages : [];
+  const status = options.status ? ` · ${options.status}` : '';
+  const countText = `${pageList.length} ${pageList.length === 1 ? 'PAGE' : 'PAGES'}${status}`;
+  let html = `<div class="file-current-pages-head">
+    <div class="section-label">CURRENT PAGES</div>
+    <div class="file-current-page-count">${esc(countText)}</div>
+  </div>`;
+
+  if (options.message) {
+    html += `<div class="file-current-page-empty">${esc(options.message)}</div>`;
+  }
+
+  if (pageList.length) {
+    html += '<div class="file-current-page-list">';
+    pageList.forEach((page, index) => {
+      const url = figmaPageUrl(fileKey, page.id);
+      html += `<div class="file-current-page">
+        <div>
+          <div class="file-current-page-name">${String(index + 1).padStart(2, '0')} · ${esc(page.name)}</div>
+          <a class="file-current-page-url" href="${escAttr(url)}" onclick="event.preventDefault();openInFigma(${jsArg(fileKey)}, ${jsArg(page.id)})" target="_blank" rel="noopener noreferrer">${esc(url)}</a>
+        </div>
+        <a class="file-current-page-open" href="${escAttr(url)}" onclick="event.preventDefault();openInFigma(${jsArg(fileKey)}, ${jsArg(page.id)})" target="_blank" rel="noopener noreferrer">OPEN &rarr;</a>
+      </div>`;
+    });
+    html += '</div>';
+  } else if (!options.message) {
+    html += '<div class="file-current-page-empty">NO PAGES FOUND</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+async function loadFileCurrentPages(fileKey) {
+  const cached = getCachedFilePages(fileKey);
+  if (cached) {
+    renderFileCurrentPages(fileKey, cached, { status: 'CACHED' });
+  } else {
+    renderFileCurrentPages(fileKey, [], { status: 'LOADING', message: 'LOADING PAGES' });
+  }
+
+  const token = getToken();
+  if (!token) {
+    if (!cached && activeFileDialogKey === fileKey) {
+      renderFileCurrentPages(fileKey, [], { status: 'NO TOKEN', message: 'OPEN SETTINGS AND SAVE FIGMA TOKEN FIRST' });
+    }
+    return;
+  }
+
+  try {
+    const data = await figmaGet(`/files/${fileKey}?depth=1`, token);
+    if (data?.name) mergeFileEntry({ key: fileKey, name: data.name });
+    const pages = pagesFromFileData(data);
+    filePagesByKey[fileKey] = pages;
+    if (activeFileDialogKey === fileKey) {
+      renderFileCurrentPages(fileKey, pages, { status: 'LIVE' });
+    }
+  } catch (e) {
+    if (activeFileDialogKey !== fileKey) return;
+    const message = e.message || String(e);
+    if (cached) {
+      renderFileCurrentPages(fileKey, cached, { status: 'CACHED', message: `LIVE LOAD FAILED · ${message}` });
+    } else {
+      renderFileCurrentPages(fileKey, [], { status: 'ERROR', message });
+    }
+  }
+}
+
+function pageChipHtml(fileKey, page) {
+  const href = figmaPageUrl(fileKey, page.id);
+  return `<span class="page-chip ${page.changeType}" title="${escAttr(page.id)}">
+    <a class="page-link" href="${escAttr(href)}" onclick="event.preventDefault();event.stopPropagation();openInFigma(${jsArg(fileKey)}, ${jsArg(page.id)})" target="_blank" rel="noopener noreferrer">${esc(page.name)}<span class="page-link-open">OPEN &rarr;</span></a>
+  </span>`;
+}
+
+function pageAnalysisHtml(version) {
+  const result = pageAnalysisByFile[version.fileKey]?.versions?.[version.id];
+  if (!result) return '';
+
+  if (result.status === 'changed') {
+    const chips = result.pages.map(p => pageChipHtml(version.fileKey, p)).join('');
+    return `<div class="fv-pages"><span class="fv-pages-label">PAGES</span>${chips}</div>`;
+  }
+
+  if (result.status === 'unchanged') {
+    return '<div class="fv-pages"><span class="fv-pages-label">PAGES</span><span class="page-chip muted">NO PAGE DIFF</span></div>';
+  }
+
+  if (result.status === 'baseline') {
+    return '<div class="fv-pages"><span class="fv-pages-label">PAGES</span><span class="page-chip muted">BASELINE NEEDED</span></div>';
+  }
+
+  return '<div class="fv-pages"><span class="fv-pages-label">PAGES</span><span class="page-chip removed">ANALYSIS ERROR</span></div>';
+}
+
+function renderFileVersionList(fileKey) {
+  const versions = getFileDialogVersions(fileKey);
+
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  let html = '';
+  versions.forEach(v => {
+    const d = v.createdAt;
+    const dateStr = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const isNamed = !!v.label;
+    const dotCls = isNamed ? 'named' : 'auto';
+    const labelHtml = isNamed ? `<div class="fv-label">${esc(v.label)}</div>` : '';
+    const durHtml = v.sessionDuration ? ` <span class="badge badge-duration">${formatDuration(v.sessionDuration)}</span>` : '';
+    const pagesHtml = pageAnalysisHtml(v);
+
+    html += `<div class="fv-item">
+      <div class="fv-time">${dateStr} ${timeStr}</div>
+      <div class="fv-dot ${dotCls}"></div>
+      <div class="fv-body">
+        <div class="fv-user">${avatarHtml(v.user, 16, '')} ${esc(v.user)}${durHtml}</div>
+        ${labelHtml}
+        ${pagesHtml}
+      </div>
+    </div>`;
+  });
+
+  if (!versions.length) html = '<div style="color:var(--text-disabled);font-size:13px">[NO VERSIONS IN RANGE]</div>';
+  document.getElementById('fileVersionsList').innerHTML = html;
+  hydrateAvatars(document.getElementById('fileDialogBackdrop'));
+}
+
+function stableStringify(value) {
+  if (value === undefined) return 'null';
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+
+  const keys = Object.keys(value).sort();
+  return '{' + keys.map(k => JSON.stringify(k) + ':' + stableStringify(value[k])).join(',') + '}';
+}
+
+function hashString(str) {
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16);
+}
+
+function countNodes(node) {
+  if (!node || !Array.isArray(node.children)) return 1;
+  return 1 + node.children.reduce((sum, child) => sum + countNodes(child), 0);
+}
+
+async function fetchFilePageSnapshot(fileKey, versionId, token) {
+  const data = await figmaGet(`/files/${fileKey}?version=${encodeURIComponent(versionId)}`, token);
+  const pages = (data.document?.children || []).filter(node => node.type === 'CANVAS');
+
+  return {
+    versionId,
+    pages: pages.map(page => ({
+      id: page.id,
+      name: page.name || 'UNTITLED PAGE',
+      nodeCount: countNodes(page),
+      hash: hashString(stableStringify(page)),
+    })),
+  };
+}
+
+function diffPageSnapshots(current, previous) {
+  const currentById = new Map(current.pages.map(p => [p.id, p]));
+  const previousById = new Map(previous.pages.map(p => [p.id, p]));
+  const pages = [];
+
+  current.pages.forEach(page => {
+    const oldPage = previousById.get(page.id);
+    if (!oldPage) {
+      pages.push({ id: page.id, name: page.name, changeType: 'added' });
+    } else if (oldPage.hash !== page.hash) {
+      pages.push({ id: page.id, name: page.name, changeType: 'changed' });
+    }
+  });
+
+  previous.pages.forEach(page => {
+    if (!currentById.has(page.id)) {
+      pages.push({ id: page.id, name: page.name, changeType: 'removed' });
+    }
+  });
+
+  pages.sort((a, b) => a.name.localeCompare(b.name));
+  return pages.length
+    ? { status: 'changed', pages, comparedTo: previous.versionId }
+    : { status: 'unchanged', pages: [], comparedTo: previous.versionId };
+}
+
+function getPageAnalysisBucket(fileKey) {
+  const bucket = pageAnalysisByFile[fileKey] || { ts: Date.now(), versions: {} };
+  if (!bucket.versions) bucket.versions = {};
+  return bucket;
+}
+
+function getAnalyzedVersionCount(fileKey, versions) {
+  const bucket = pageAnalysisByFile[fileKey];
+  if (!bucket?.versions) return 0;
+  let count = 0;
+  while (count < versions.length && bucket.versions[versions[count].id]) count++;
+  return count;
+}
+
+function setPageAnalysisButtonsDisabled(disabled) {
+  const analyzeButton = document.getElementById('fileDialogAnalyze');
+  const moreButton = document.getElementById('fileDialogAnalyzeMore');
+  if (analyzeButton) analyzeButton.disabled = disabled;
+  if (moreButton) moreButton.disabled = disabled;
+}
+
+function updatePageAnalysisControls(fileKey) {
+  const versions = getFileDialogVersions(fileKey);
+  const moreButton = document.getElementById('fileDialogAnalyzeMore');
+  if (!moreButton) return;
+
+  const analyzedCount = getAnalyzedVersionCount(fileKey, versions);
+  const hasMore = versions.length > 1 && analyzedCount > 0 && analyzedCount < versions.length;
+  moreButton.disabled = !hasMore;
+  moreButton.textContent = analyzedCount > 0
+    ? `ANALYZE MORE (${analyzedCount}/${versions.length})`
+    : 'ANALYZE MORE';
+}
+
+async function analyzeFilePages(fileKey, startIndex) {
+  const token = getToken();
+  const versions = getFileDialogVersions(fileKey);
+  const batchStart = Math.max(0, startIndex || 0);
+
+  if (!token) {
+    setFilePageAnalysisStatus('[NO TOKEN]', 'err');
+    return;
+  }
+
+  if (versions.length < 2) {
+    setFilePageAnalysisStatus('[NEED 2+ VERSIONS]', 'warn');
+    return;
+  }
+
+  if (batchStart >= versions.length) {
+    setFilePageAnalysisStatus(`[ALL SAVED · ${versions.length}/${versions.length}]`, 'ok');
+    updatePageAnalysisControls(fileKey);
+    return;
+  }
+
+  const batchEnd = Math.min(batchStart + PAGE_ANALYSIS_BATCH_SIZE, versions.length);
+  const batchTotal = batchEnd - batchStart;
+  const resultBucket = getPageAnalysisBucket(fileKey);
+  const snapshotCache = {};
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+
+  pageAnalysisByFile[fileKey] = resultBucket;
+  setPageAnalysisButtonsDisabled(true);
+  renderFileVersionList(fileKey);
+
+  try {
+    const getSnapshot = async index => {
+      const version = versions[index];
+      if (!version) return null;
+      if (!snapshotCache[version.id]) {
+        setFilePageAnalysisStatus(`[SNAPSHOT ${index + 1} / ${versions.length}]`, 'warn');
+        snapshotCache[version.id] = await fetchFilePageSnapshot(fileKey, version.id, token);
+      }
+      return snapshotCache[version.id];
+    };
+
+    for (let i = batchStart; i < batchEnd; i++) {
+      const version = versions[i];
+      const currentSnapshot = await getSnapshot(i);
+      const previousSnapshot = await getSnapshot(i + 1);
+      resultBucket.versions[version.id] = previousSnapshot
+        ? diffPageSnapshots(currentSnapshot, previousSnapshot)
+        : { status: 'baseline', pages: [] };
+      resultBucket.ts = Date.now();
+      resultBucket.batchSize = PAGE_ANALYSIS_BATCH_SIZE;
+      resultBucket.savedCount = getAnalyzedVersionCount(fileKey, versions);
+
+      const saved = savePageAnalysisCache();
+      const doneInBatch = i - batchStart + 1;
+      setFilePageAnalysisStatus(
+        saved
+          ? `[SAVED ${doneInBatch}/${batchTotal} · TOTAL ${resultBucket.savedCount}/${versions.length}]`
+          : `[SAVE FAILED · ${doneInBatch}/${batchTotal}]`,
+        saved ? 'ok' : 'warn'
+      );
+      if (activeFileDialogKey === fileKey) renderFileVersionList(fileKey);
+      if (i < batchEnd - 1) await delay(150);
+    }
+
+    const changedCount = Object.values(resultBucket.versions).filter(r => r.status === 'changed').length;
+    const analyzedCount = getAnalyzedVersionCount(fileKey, versions);
+    setFilePageAnalysisStatus(`[SAVED · ${changedCount} CHANGED · ${analyzedCount}/${versions.length}]`, 'ok');
+    renderTimeline();
+  } catch (e) {
+    console.warn('Page analysis failed for file', fileKey, e);
+    setFilePageAnalysisStatus('[ANALYSIS FAILED]', 'err');
+  } finally {
+    setPageAnalysisButtonsDisabled(false);
+    updatePageAnalysisControls(fileKey);
+    if (activeFileDialogKey === fileKey) renderFileVersionList(fileKey);
+  }
+}
+
+function analyzeMoreFilePages(fileKey) {
+  const versions = getFileDialogVersions(fileKey);
+  return analyzeFilePages(fileKey, getAnalyzedVersionCount(fileKey, versions));
+}
+
+function openFileDialog(fileKey) {
+  activeFileDialogKey = fileKey;
+  const name = displayFileName(fileKey);
+  const fullName = getFileName(fileKey);
+
+  document.getElementById('fileDialogTitle').textContent = name;
+  document.getElementById('fileDialogTitle').title = fullName !== fileKey ? fullName : fileKey;
+  document.getElementById('fileDialogOpen').onclick = () => openInFigma(fileKey);
+  document.getElementById('fileDialogAnalyze').onclick = () => analyzeFilePages(fileKey, 0);
+  document.getElementById('fileDialogAnalyzeMore').onclick = () => analyzeMoreFilePages(fileKey);
+
+  const versions = getFileDialogVersions(fileKey);
+  const analyzedCount = getAnalyzedVersionCount(fileKey, versions);
+  setPageAnalysisButtonsDisabled(false);
+  updatePageAnalysisControls(fileKey);
+  setFilePageAnalysisStatus(analyzedCount ? `[PAGE ANALYSIS SAVED · ${analyzedCount}/${versions.length}]` : '', analyzedCount ? 'ok' : '');
+
+  const embedUrl = `https://www.figma.com/embed?embed_host=share&url=https://www.figma.com/design/${fileKey}`;
+  document.getElementById('fileEmbedWrap').innerHTML =
+    `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+
+  loadFileCurrentPages(fileKey);
+  renderFileVersionList(fileKey);
+  document.getElementById('fileDialogBackdrop').classList.add('open');
+  document.body.classList.add('dialog-open');
+  hydrateAvatars(document.getElementById('fileDialogBackdrop'));
+}
+
+function closeFileDialog() {
+  activeFileDialogKey = null;
+  document.getElementById('fileDialogBackdrop').classList.remove('open');
+  document.body.classList.remove('dialog-open');
+  document.getElementById('fileEmbedWrap').innerHTML = '';
+  document.getElementById('fileCurrentPages').innerHTML = '';
+}
+
+function openInFigma(fileKey, nodeId) {
+  const desktopUrl = figmaDesktopUrl(fileKey, nodeId);
+  const webUrl = figmaWebUrl(fileKey, nodeId);
+  const iframe = document.createElement('iframe');
+  let appProbablyOpened = false;
+  const markAppOpened = () => { appProbablyOpened = true; };
+  const handleVisibility = () => {
+    if (document.visibilityState === 'hidden') markAppOpened();
+  };
+
+  window.addEventListener('blur', markAppOpened, { once: true });
+  document.addEventListener('visibilitychange', handleVisibility);
+
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  iframe.src = desktopUrl;
+
+  setTimeout(() => {
+    if (iframe.parentNode) document.body.removeChild(iframe);
+    window.removeEventListener('blur', markAppOpened);
+    document.removeEventListener('visibilitychange', handleVisibility);
+    if (!appProbablyOpened && document.visibilityState === 'visible') {
+      window.open(webUrl, '_blank');
+    }
+  }, 900);
+}
+
+function setFileFilter(key) {
+  activeFileFilter = key;
+  renderFilters();
+  renderTimeline();
+}
+
+function renderUserFilters() {
+  const users = [...new Set(allVersions.map(v => v.user))].sort();
+  const usersGroup = document.querySelector('.filter-group--users');
+  const divider = document.getElementById('filterDivider');
+  if (users.length <= 1) {
+    document.getElementById('userFilterRow').innerHTML = '';
+    if (usersGroup) usersGroup.style.display = 'none';
+    if (divider) divider.style.display = 'none';
+    return;
+  }
+  if (usersGroup) usersGroup.style.display = '';
+  const filesVisible = document.querySelector('.filter-group--files')?.style.display !== 'none';
+  if (divider) divider.style.display = filesVisible ? '' : 'none';
+  let html = `<button class="pill ${activeUserFilter === null ? 'active' : ''}" onclick="setUserFilter(null)">ALL USERS</button>`;
+
+  users.forEach(user => {
+    const count = allVersions.filter(v => v.user === user).length;
+    const v0 = allVersions.find(v => v.user === user);
+    const avatar = avatarHtml(user, 14, 'margin-right:2px;vertical-align:middle');
+    html += `<button class="pill ${activeUserFilter === user ? 'active' : ''}" onclick="setUserFilter('${esc(user)}')">${avatar}${esc(user)} (${count})</button>`;
+  });
+
+  document.getElementById('userFilterRow').innerHTML = html;
+}
+
+function setUserFilter(user) {
+  activeUserFilter = user;
+  renderUserFilters();
+  updateOverviewDimmed();
+  renderUserStats();
+  renderTimeline();
+}
+
+function renderUserStats() {
+  const section = document.getElementById('userStatsSection');
+  const header = document.getElementById('userDetailHeader');
+  const el = document.getElementById('userStatsRow');
+  if (!activeUserFilter) {
+    section.style.display = 'none';
+    return;
+  }
+
+  const uv = allVersions.filter(v => v.user === activeUserFilter);
+  const files = [...new Set(uv.map(v => v.fileKey))];
+  const named = uv.filter(v => v.label).length;
+  const totalVersions = allVersions.length;
+  const totalActiveFiles = [...new Set(allVersions.map(v => v.fileKey))].length;
+  const versionShare = totalVersions ? Math.round((uv.length / totalVersions) * 100) : 0;
+  const fileShare = totalActiveFiles ? Math.round((files.length / totalActiveFiles) * 100) : 0;
+
+  let totalSession = 0;
+  const sessionSeen = new Set();
+  uv.forEach(v => {
+    if (v.sessionDuration && !sessionSeen.has(v.fileKey + '::' + v.sessionDuration)) {
+      sessionSeen.add(v.fileKey + '::' + v.sessionDuration);
+      totalSession += v.sessionDuration;
+    }
+  });
+
+  const activeDays = new Set();
+  uv.forEach(v => {
+    const d = v.createdAt;
+    activeDays.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+  });
+
+  const fileCounts = {};
+  uv.forEach(v => { fileCounts[v.fileKey] = (fileCounts[v.fileKey] || 0) + 1; });
+  const topEntry = Object.entries(fileCounts).sort((a, b) => b[1] - a[1])[0];
+  const topFileKey = topEntry?.[0];
+  const topFileCount = topEntry?.[1] || 0;
+  const topFileName = displayFileName(topFileKey || '');
+  const topShort = topFileName.length > 18 ? topFileName.slice(0, 16) + '...' : topFileName;
+
+  const lastActive = uv.reduce((latest, v) => (!latest || v.createdAt > latest.createdAt) ? v : latest, null);
+
+  section.style.display = '';
+  header.innerHTML = `
+    ${avatarHtml(activeUserFilter, 24, '')}
+    <span class="user-detail-name">${esc(activeUserFilter)}</span>
+    <span class="user-detail-meta">LAST ACTIVE · ${lastActive ? formatShortDate(lastActive.createdAt) : '—'}</span>
+  `;
+  el.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">VERSIONS</div>
+      <div class="stat-value">${uv.length}</div>
+      <div class="stat-sub">${versionShare}% OF TOTAL · ${named} NAMED · ${uv.length - named} AUTO</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">FILES TOUCHED</div>
+      <div class="stat-value">${files.length}</div>
+      <div class="stat-sub">${fileShare}% OF ACTIVE · TOP ${esc(topShort).toUpperCase()} (${topFileCount})</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ACTIVE DAYS</div>
+      <div class="stat-value">${activeDays.size}</div>
+      <div class="stat-sub">UNIQUE EDIT DAYS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">EST. SESSION TIME</div>
+      <div class="stat-value">${totalSession > 0 ? formatDuration(totalSession) : '—'}</div>
+      <div class="stat-sub">${totalSession > 0 ? 'FROM VERSION GAP ANALYSIS' : 'NOT ENOUGH DATA'}</div>
+    </div>
+  `;
+  hydrateAvatars(section);
+}
+
+function renderTimeline() {
+  let filtered = allVersions;
+  if (activeFileFilter) filtered = filtered.filter(v => v.fileKey === activeFileFilter);
+  if (activeUserFilter) filtered = filtered.filter(v => v.user === activeUserFilter);
+
+  if (filtered.length === 0) {
+    document.getElementById('timeline').innerHTML =
+      '<div class="empty-state"><div class="empty-title">[NO RESULTS]</div><div class="empty-sub">No changes in this time range</div></div>';
+    return;
+  }
+
+  const groups = {};
+  filtered.forEach(v => {
+    const d = v.createdAt;
+    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const dayKey = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    if (!groups[dayKey]) groups[dayKey] = [];
+    groups[dayKey].push(v);
+  });
+
+  let html = '';
+  Object.entries(groups).forEach(([day, versions]) => {
+    html += `<div class="day-group">`;
+    html += `<div class="day-header">${day}<span class="day-count">${versions.length}</span></div>`;
+
+    versions.forEach(v => {
+      const time = `${String(v.createdAt.getHours()).padStart(2,'0')}:${String(v.createdAt.getMinutes()).padStart(2,'0')}`;
+      const isNamed = !!v.label;
+      const dotClass = isNamed ? 'named' : 'auto';
+      const labelHtml = isNamed
+        ? `<div class="version-label-text is-named">${esc(v.label)}</div>`
+        : (v.description ? `<div class="version-label-text">${esc(v.description)}</div>` : '');
+      const badge = isNamed ? '<span class="badge badge-named">NAMED</span>' : '';
+      const durBadge = v.sessionDuration ? `<span class="badge badge-duration">${formatDuration(v.sessionDuration)} SESSION</span>` : '';
+      const pagesHtml = pageAnalysisHtml(v);
+
+      html += `
+        <div class="version-card">
+          <div class="version-time">${time}</div>
+          <div class="version-dot ${dotClass}"></div>
+          <div class="version-body">
+            <div class="version-file">${esc(displayFileName(v.fileKey))}${badge}${durBadge} <a class="file-link" href="#" onclick="event.preventDefault();event.stopPropagation();openFileDialog('${v.fileKey}')">DETAIL</a> <a class="file-link" href="#" onclick="event.preventDefault();event.stopPropagation();openInFigma('${v.fileKey}')">OPEN &rarr;</a></div>
+            ${labelHtml}
+            ${pagesHtml}
+            <div class="version-meta">
+              ${avatarHtml(v.user, 18, '')}
+              <span>${esc(v.user)}</span>
+            </div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+
+  document.getElementById('timeline').innerHTML = html;
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function exportCSV() {
+  let filtered = allVersions;
+  if (activeFileFilter) filtered = filtered.filter(v => v.fileKey === activeFileFilter);
+  if (activeUserFilter) filtered = filtered.filter(v => v.user === activeUserFilter);
+
+  const BOM = '﻿';
+  let csv = BOM + 'Time,File,Version Name,Description,User,File Key,Version ID\n';
+  filtered.forEach(v => {
+    csv += [
+      v.createdAt.toISOString(),
+      `"${displayFileName(v.fileKey).replace(/"/g,'""')}"`,
+      `"${v.label.replace(/"/g,'""')}"`,
+      `"${v.description.replace(/"/g,'""')}"`,
+      `"${v.user.replace(/"/g,'""')}"`,
+      v.fileKey,
+      v.id
+    ].join(',') + '\n';
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `figma-changelog-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+let pageMapData = null;
+let pageMapFailures = [];
+let pageMapCachedAt = 0;
+let pageMapSearchQuery = '';
+let selectedPageMapProjectId = '';
+
+function getPageMapProjects() {
+  const saved = getSavedProjects();
+  if (saved.length) {
+    return saved.map(project => ({
+      id: project.id,
+      name: project.name || 'PROJECT ' + project.id,
+    }));
+  }
+  return DEFAULT_PAGE_MAP_PROJECT_IDS.map(id => ({ id, name: 'PROJECT ' + id }));
+}
+
+function getPageMapProjectIds() {
+  return getPageMapProjects().map(project => project.id);
+}
+
+function invalidatePageMapCache() {
+  pageMapData = null;
+  pageMapFailures = [];
+  pageMapCachedAt = 0;
+  selectedPageMapProjectId = '';
+  try { localStorage.removeItem(PAGE_MAP_CACHE_KEY); } catch {}
+}
+
+function pageMapProjectIdsMatch(ids) {
+  const currentIds = getPageMapProjectIds();
+  return Array.isArray(ids) && ids.join('|') === currentIds.join('|');
+}
+
+function loadPageMapCache() {
+  try {
+    const raw = localStorage.getItem(PAGE_MAP_CACHE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!pageMapProjectIdsMatch(data.projectIds)) return;
+    pageMapData = Array.isArray(data.projects) ? data.projects : null;
+    pageMapFailures = Array.isArray(data.failures) ? data.failures : [];
+    pageMapCachedAt = data.ts || 0;
+  } catch {
+    pageMapData = null;
+    pageMapFailures = [];
+    pageMapCachedAt = 0;
+  }
+}
+
+function savePageMapCache() {
+  if (!pageMapData?.length) return false;
+  try {
+    pageMapCachedAt = Date.now();
+    localStorage.setItem(PAGE_MAP_CACHE_KEY, JSON.stringify({
+      ts: pageMapCachedAt,
+      projectIds: getPageMapProjectIds(),
+      projects: pageMapData,
+      failures: pageMapFailures,
+    }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function pageMapAnchor(type, projectIndex, fileIndex, pageIndex) {
+  return `pm-${type}-${projectIndex}${fileIndex == null ? '' : '-' + fileIndex}${pageIndex == null ? '' : '-' + pageIndex}`;
+}
+
+function pageMapCacheAge(ts) {
+  if (!ts) return '';
+  const mins = Math.max(0, Math.round((Date.now() - ts) / 60000));
+  if (mins < 1) return 'NOW';
+  if (mins < 60) return `${mins}M AGO`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}H AGO`;
+  return `${Math.round(hours / 24)}D AGO`;
+}
+
+function setPageMapSearch(value) {
+  pageMapSearchQuery = value || '';
+  renderPageMap();
+}
+
+function normalizeSearchText(value) {
+  return String(value || '').toLowerCase();
+}
+
+function pageMapUserText(users) {
+  return (users || []).map(u => u.name).join(' ');
+}
+
+function addPageMapUser(map, name, dateValue) {
+  if (!name) return;
+  const date = dateValue instanceof Date ? dateValue : new Date(dateValue || 0);
+  const existing = map.get(name) || { name, count: 0, lastAt: 0 };
+  existing.count += 1;
+  const time = Number.isFinite(date.getTime()) ? date.getTime() : 0;
+  if (time > existing.lastAt) existing.lastAt = time;
+  map.set(name, existing);
+}
+
+function pageMapUserStats(map) {
+  return [...map.values()].sort((a, b) => {
+    if (b.count !== a.count) return b.count - a.count;
+    return b.lastAt - a.lastAt;
+  });
+}
+
+function normalizePageMapPerson(user) {
+  if (!user) return null;
+  const name = user.handle || user.name || user.email || '';
+  if (!name) return null;
+  return {
+    id: user.id || '',
+    name,
+    email: user.email || '',
+    avatar: user.img_url || user.imgUrl || '',
+  };
+}
+
+function pageMapRoleLabel(role) {
+  const key = String(role || '').toLowerCase();
+  const labels = {
+    owner: 'OWNER',
+    editor: 'EDITOR',
+    viewer: 'VIEWER',
+    admin: 'ADMIN',
+  };
+  return labels[key] || (key ? key.replace(/_/g, ' ').toUpperCase() : '');
+}
+
+function pageMapLinkAccessLabel(linkAccess) {
+  const key = String(linkAccess || '').toLowerCase();
+  const labels = {
+    inherit: 'PROJECT DEFAULT',
+    view: 'ANYONE CAN VIEW',
+    edit: 'ANYONE CAN EDIT',
+    org_view: 'ORG CAN VIEW',
+    org_edit: 'ORG CAN EDIT',
+  };
+  return labels[key] || (key ? key.replace(/_/g, ' ').toUpperCase() : '');
+}
+
+function addPageMapKnownPerson(map, person, role, count) {
+  if (!person?.name) return;
+  const key = person.id || person.email || person.name;
+  const existing = map.get(key) || { ...person, roles: [], score: 0, count: 0 };
+  if (role && !existing.roles.includes(role)) existing.roles.push(role);
+  existing.count += count || 0;
+  existing.score += count || 1;
+  map.set(key, existing);
+}
+
+function pageMapKnownPeople(file) {
+  const people = new Map();
+  const roleLabel = pageMapRoleLabel(file.access?.role);
+  if (file.currentUser && roleLabel) addPageMapKnownPerson(people, file.currentUser, `YOU ${roleLabel}`, 5);
+  addPageMapKnownPerson(people, file.creator, 'CREATOR', 4);
+  addPageMapKnownPerson(people, file.lastTouchedBy, 'LAST TOUCHED', 3);
+  (file.users || []).forEach(user => {
+    addPageMapKnownPerson(people, { name: user.name }, user.count > 1 ? `EDIT ACTIVITY ${user.count}` : 'EDIT ACTIVITY', user.count || 1);
+  });
+  return [...people.values()].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+}
+
+function pageMapAccessSearchText(file) {
+  const access = file.access || {};
+  return [
+    access.linkAccess,
+    pageMapLinkAccessLabel(access.linkAccess),
+    access.role,
+    pageMapRoleLabel(access.role),
+    access.editorType,
+  ].filter(Boolean).join(' ');
+}
+
+function pageMapFilePeopleSearchText(file) {
+  const knownPeople = pageMapKnownPeople(file)
+    .map(person => `${person.name} ${person.email || ''} ${person.roles.join(' ')}`)
+    .join(' ');
+  return [
+    file.creator?.name,
+    file.creator?.email,
+    file.lastTouchedBy?.name,
+    file.lastTouchedBy?.email,
+    knownPeople,
+  ].filter(Boolean).join(' ');
+}
+
+function pageMapAccessFromResponses(fileData, metaFile, metaError) {
+  return {
+    linkAccess: fileData?.linkAccess || fileData?.link_access || metaFile?.link_access || '',
+    role: fileData?.role || metaFile?.role || '',
+    editorType: fileData?.editorType || metaFile?.editorType || '',
+    lastModified: fileData?.lastModified || metaFile?.last_touched_at || '',
+    metaError: metaError || '',
+  };
+}
+
+function pageMapAccessHtml(file) {
+  const access = file.access || {};
+  const chips = [];
+  if (access.linkAccess) chips.push({ text: `LINK ${pageMapLinkAccessLabel(access.linkAccess)}`, tone: 'primary', title: access.linkAccess });
+  if (access.role) chips.push({ text: `YOUR ACCESS ${pageMapRoleLabel(access.role)}`, tone: '', title: access.role });
+  if (access.editorType) chips.push({ text: `TYPE ${String(access.editorType).toUpperCase()}`, tone: '', title: access.editorType });
+  if (access.metaError) chips.push({ text: 'META LIMITED', tone: 'warn', title: access.metaError });
+  if (!chips.length) chips.push({ text: 'ACCESS UNKNOWN · REFRESH TO LOAD', tone: 'warn', title: 'No access metadata in this cached page map yet.' });
+
+  return `<div class="page-map-access"><span class="page-map-user-label">ACCESS</span>${
+    chips.map(chip => `<span class="page-map-access-chip ${chip.tone}" title="${escAttr(chip.title || chip.text)}">${esc(chip.text)}</span>`).join('')
+  }</div>`;
+}
+
+function pageMapKnownPeopleHtml(file) {
+  const people = pageMapKnownPeople(file);
+  const chips = people.length
+    ? people.slice(0, 6).map(person => {
+        const role = person.roles.slice(0, 2).join(' / ');
+        const suffix = role ? ` · ${role}` : '';
+        const title = [person.name, person.email, ...person.roles].filter(Boolean).join(' · ');
+        return `<span class="page-map-user-chip ${person.roles.some(r => r.includes('YOU') || r === 'CREATOR') ? 'primary' : ''}" title="${escAttr(title)}">${esc(person.name + suffix)}</span>`;
+      }).join('') + (people.length > 6 ? `<span class="page-map-user-chip muted">+${people.length - 6}</span>` : '')
+    : '<span class="page-map-user-chip muted">NO PEOPLE FROM API</span>';
+  return `<div class="page-map-users"><span class="page-map-user-label">KNOWN PEOPLE</span>${chips}<span class="page-map-user-chip muted" title="Figma public REST API does not expose the full current owner/editor/viewer roster for a file.">FULL ROSTER NOT IN API</span></div>`;
+}
+
+function isPageMapMetaScopeError(message) {
+  return /TOKEN INVALID|NO ACCESS|FORBIDDEN|403|SCOPE/i.test(message || '');
+}
+
+function collectPageMapVersions() {
+  const byKey = new Map();
+  const ingest = version => {
+    if (!version?.fileKey || !version.id) return;
+    const key = `${version.fileKey}::${version.id}`;
+    const createdAt = version.createdAt instanceof Date ? version.createdAt : new Date(version.createdAt || version.created_at || 0);
+    byKey.set(key, { ...version, createdAt });
+  };
+
+  getPageMapProjects().forEach(project => {
+    const projectId = project.id;
+    const cached = loadCache(projectId);
+    (cached?.versions || []).forEach(ingest);
+  });
+  allVersions.forEach(ingest);
+
+  return [...byKey.values()];
+}
+
+function hydratePageMapUsers(data = pageMapData) {
+  if (!data?.length) return data;
+
+  const versions = collectPageMapVersions();
+  const versionsByFile = new Map();
+  const versionsByFileAndId = new Map();
+
+  versions.forEach(version => {
+    if (!versionsByFile.has(version.fileKey)) versionsByFile.set(version.fileKey, []);
+    versionsByFile.get(version.fileKey).push(version);
+    versionsByFileAndId.set(`${version.fileKey}::${version.id}`, version);
+  });
+
+  data.forEach(project => {
+    project.files.forEach(file => {
+      const fileVersions = versionsByFile.get(file.key) || [];
+      fileVersions.sort((a, b) => b.createdAt - a.createdAt);
+
+      const fileUsers = new Map();
+      fileVersions.forEach(version => addPageMapUser(fileUsers, version.user, version.createdAt));
+      file.users = pageMapUserStats(fileUsers);
+      file.lastUser = fileVersions[0]?.user || '';
+
+      const pageUsersById = new Map();
+      const analyzedVersions = pageAnalysisByFile[file.key]?.versions || {};
+      Object.entries(analyzedVersions).forEach(([versionId, result]) => {
+        const version = versionsByFileAndId.get(`${file.key}::${versionId}`);
+        if (!version?.user) return;
+        (result.pages || []).forEach(page => {
+          if (!page?.id || page.changeType === 'removed') return;
+          if (!pageUsersById.has(page.id)) pageUsersById.set(page.id, new Map());
+          addPageMapUser(pageUsersById.get(page.id), version.user, version.createdAt);
+        });
+      });
+
+      const hasAnalysis = !!Object.keys(analyzedVersions).length;
+      file.pages.forEach(page => {
+        page.users = pageMapUserStats(pageUsersById.get(page.id) || new Map());
+        page.userSource = page.users.length ? 'inferred' : (hasAnalysis ? 'no-change-detected' : 'not-analyzed');
+      });
+    });
+  });
+
+  return data;
+}
+
+function pageMapUsersHtml(users, label, emptyText) {
+  const list = users || [];
+  const chips = list.length
+    ? list.slice(0, 4).map((user, index) =>
+        `<span class="page-map-user-chip ${index === 0 ? 'primary' : ''}" title="${escAttr(user.name)}">${esc(user.name)}${user.count > 1 ? ` (${user.count})` : ''}</span>`
+      ).join('') + (list.length > 4 ? `<span class="page-map-user-chip muted">+${list.length - 4}</span>` : '')
+    : `<span class="page-map-user-chip muted">${esc(emptyText)}</span>`;
+
+  return `<div class="page-map-users"><span class="page-map-user-label">${esc(label)}</span>${chips}</div>`;
+}
+
+function pageMapFilterData(data, query) {
+  const q = normalizeSearchText(query).trim();
+  if (!q) return data;
+
+  return (data || []).map(project => {
+    const projectMatches = normalizeSearchText(`${project.name} ${project.id}`).includes(q);
+    const files = project.files.map(file => {
+      const fileMatches = normalizeSearchText(`${file.name} ${file.key} ${pageMapAccessSearchText(file)}`).includes(q);
+      const fileUserMatches = normalizeSearchText(`${pageMapUserText(file.users)} ${pageMapFilePeopleSearchText(file)}`).includes(q);
+      const pages = file.pages.filter(page => {
+        if (projectMatches || fileMatches) return true;
+        const pageText = `${page.name} ${page.id} ${pageMapUserText(page.users)} ${page.userSource || ''}`;
+        return normalizeSearchText(pageText).includes(q);
+      });
+      if (projectMatches || fileMatches || pages.length) return { ...file, pages };
+      return fileUserMatches ? { ...file, pages: file.pages } : null;
+    }).filter(Boolean);
+    return (projectMatches || files.length) ? { ...project, files } : null;
+  }).filter(Boolean);
+}
+
+function pageMapProjectTotals(project) {
+  const files = project?.files || [];
+  const pages = files.reduce((sum, file) => sum + (file.pages || []).length, 0);
+  return { files: files.length, pages };
+}
+
+function ensureSelectedPageMapProject(data) {
+  const projects = data || [];
+  if (!projects.length) {
+    selectedPageMapProjectId = '';
+    return null;
+  }
+  const selected = projects.find(project => project.id === selectedPageMapProjectId);
+  if (selected) return selected;
+  selectedPageMapProjectId = projects[0].id;
+  return projects[0];
+}
+
+function selectPageMapProject(projectId) {
+  selectedPageMapProjectId = projectId || '';
+  renderPageMap();
+  const contentWrap = document.getElementById('pageMapContentWrap');
+  if (contentWrap) contentWrap.scrollTop = 0;
+}
+
+function setPageMapStatus(text, tone) {
+  const el = document.getElementById('pageMapStatus');
+  if (!el) return;
+  el.textContent = text || '';
+  el.className = 'page-analysis-status' + (tone ? ' ' + tone : '');
+}
+
+function pageMapTotals(data) {
+  const projects = data || [];
+  const files = projects.reduce((sum, project) => sum + project.files.length, 0);
+  const pages = projects.reduce(
+    (sum, project) => sum + project.files.reduce((fileSum, file) => fileSum + file.pages.length, 0),
+    0
+  );
+  return { projects: projects.length, files, pages };
+}
+
+function scrollPageMapTo(id) {
+  document.getElementById(id)?.scrollIntoView({ block: 'start' });
+}
+
+function renderPageMapEmpty(message) {
+  document.getElementById('pageMapNav').innerHTML = '';
+  document.getElementById('pageMapSummary').textContent = 'PROJECTS';
+  document.getElementById('pageMapContent').innerHTML =
+    `<div class="page-map-empty">${esc(message || 'NO DATA')}</div>`;
+}
+
+function renderPageMap(data = pageMapData, failures = pageMapFailures) {
+  const nav = document.getElementById('pageMapNav');
+  const content = document.getElementById('pageMapContent');
+  const summary = document.getElementById('pageMapSummary');
+  if (!nav || !content || !summary) return;
+
+  hydratePageMapUsers(data);
+  const projects = data || [];
+  const selectedProject = ensureSelectedPageMapProject(projects);
+  const selectedProjectIndex = Math.max(0, projects.findIndex(project => project.id === selectedProject?.id));
+  const filteredSelectedProject = selectedProject
+    ? pageMapFilterData([selectedProject], pageMapSearchQuery)[0]
+    : null;
+
+  if (!projects.length) {
+    nav.innerHTML = '';
+    summary.textContent = 'PROJECTS';
+    setPageMapStatus(failures.length ? `[${failures.length} WARNING(S)]` : '', failures.length ? 'err' : '');
+    content.innerHTML = failures.length
+      ? failures.map(item => `<div class="page-map-warning">${esc(item.scope)} · ${esc(item.message)}</div>`).join('')
+      : '<div class="page-map-empty">NO PAGE MAP LOADED</div>';
+    return;
+  }
+
+  const displayProject = filteredSelectedProject || { ...selectedProject, files: [] };
+  const totals = pageMapProjectTotals(displayProject);
+  const cacheLabel = pageMapCachedAt ? ` · CACHED ${pageMapCacheAge(pageMapCachedAt)}` : '';
+  const selectedLabel = selectedProject ? `${selectedProject.name} · ` : '';
+  summary.textContent = `${selectedLabel}${totals.files} FILES · ${totals.pages} PAGES${pageMapSearchQuery.trim() ? ' · FILTERED' : ''}`;
+  setPageMapStatus(
+    failures.length ? `[${failures.length} WARNING(S)${cacheLabel}]` : `[SELECTED PROJECT${cacheLabel}]`,
+    failures.length ? 'warn' : 'ok'
+  );
+
+  let navHtml = '';
+  let contentHtml = '';
+
+  projects.forEach((project, projectIndex) => {
+    const projectTotals = pageMapProjectTotals(project);
+    const isSelected = project.id === selectedPageMapProjectId;
+    navHtml += `<button class="page-map-nav-project ${isSelected ? 'active' : ''}" onclick="selectPageMapProject(${jsArg(project.id)})">${esc(project.name)}<span class="page-map-count">${projectTotals.files}/${projectTotals.pages}</span></button>`;
+
+    if (!isSelected) return;
+    (displayProject.files || []).forEach((file, fileIndex) => {
+      const fileId = pageMapAnchor('file', projectIndex, fileIndex);
+      navHtml += `<button class="page-map-nav-file" onclick="scrollPageMapTo('${fileId}')">${esc(file.name)}<span class="page-map-count">${file.pages.length}</span></button>`;
+    });
+  });
+
+  const projectId = pageMapAnchor('project', selectedProjectIndex);
+  const selectedTotals = pageMapProjectTotals(selectedProject);
+  contentHtml += `<section class="page-map-project" id="${projectId}">
+    <div class="page-map-project-head">
+      <h3>${esc(selectedProject.name)}</h3>
+      <span class="page-map-count">${esc(selectedProject.id)} · ${selectedTotals.files} FILES · ${selectedTotals.pages} PAGES</span>
+    </div>`;
+
+  if (!filteredSelectedProject && pageMapSearchQuery.trim()) {
+    contentHtml += `<div class="page-map-empty">NO MATCHES IN ${esc(selectedProject.name)} FOR "${esc(pageMapSearchQuery.trim())}"</div>`;
+  } else if (!displayProject.files.length) {
+    contentHtml += '<div class="page-map-empty">NO FILES</div>';
+  } else {
+    displayProject.files.forEach((file, fileIndex) => {
+      const fileId = pageMapAnchor('file', selectedProjectIndex, fileIndex);
+
+      contentHtml += `<div class="page-map-file" id="${fileId}">
+        <div class="page-map-file-head">
+          <h4>${esc(file.name)}</h4>
+          <a class="file-link" href="${escAttr(figmaWebUrl(file.key))}" onclick="event.preventDefault();openInFigma(${jsArg(file.key)})">OPEN FILE &rarr;</a>
+        </div>
+        <div class="page-map-node">${esc(file.key)}</div>
+        ${pageMapAccessHtml(file)}
+        ${pageMapKnownPeopleHtml(file)}
+        ${pageMapUsersHtml(file.users, file.lastUser ? `LAST ${file.lastUser} · USERS` : 'USERS', 'NO VERSION CACHE')}`;
+
+      if (file.error) {
+        contentHtml += `<div class="page-map-warning">${esc(file.error)}</div>`;
+      } else if (!file.pages.length) {
+        contentHtml += '<div class="page-map-empty">NO PAGES</div>';
+      } else {
+        contentHtml += '<div class="page-map-page-list">';
+        file.pages.forEach((page, pageIndex) => {
+          const pageId = pageMapAnchor('page', selectedProjectIndex, fileIndex, pageIndex);
+          const emptyUserText = page.userSource === 'not-analyzed'
+            ? 'NOT ANALYZED'
+            : (page.userSource === 'no-change-detected' ? 'NO PAGE TOUCH' : 'NO USER');
+          contentHtml += `<div class="page-map-page" id="${pageId}">
+            <div class="page-map-page-main">
+              <a href="${escAttr(figmaWebUrl(file.key, page.id))}" onclick="event.preventDefault();openInFigma(${jsArg(file.key)}, ${jsArg(page.id)})">${esc(page.name)}</a>
+              ${pageMapUsersHtml(page.users, 'INFERRED USERS', emptyUserText)}
+            </div>
+            <span class="page-map-node">${esc(page.id)}</span>
+          </div>`;
+        });
+        contentHtml += '</div>';
+      }
+
+      contentHtml += '</div>';
+    });
+  }
+
+  contentHtml += '</section>';
+
+  if (failures.length) {
+    contentHtml += '<section class="page-map-project"><div class="page-map-project-head"><h3>Warnings</h3></div>';
+    failures.forEach(item => {
+      contentHtml += `<div class="page-map-warning">${esc(item.scope)} · ${esc(item.message)}</div>`;
+    });
+    contentHtml += '</section>';
+  }
+
+  nav.innerHTML = navHtml;
+  content.innerHTML = contentHtml;
+}
+
+function openPageMapDialog() {
+  switchView('map');
+}
+
+function closePageMapDialog() {
+  switchView('changelog');
+}
+
+async function loadPageMap(force) {
+  const token = getToken();
+  const button = document.getElementById('pageMapRefresh');
+  const pageMapProjects = getPageMapProjects();
+  const results = [];
+  const failures = [];
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+  let currentUser = null;
+  let fileMetaDisabledMessage = '';
+
+  if (!token) {
+    setPageMapStatus('[NO TOKEN]', 'err');
+    renderPageMapEmpty('OPEN SETTINGS AND SAVE FIGMA TOKEN FIRST');
+    return;
+  }
+
+  if (!force && pageMapData) {
+    renderPageMap();
+    return;
+  }
+
+  if (button) button.disabled = true;
+  renderPageMapEmpty('LOADING PAGE MAP');
+  setPageMapStatus('[LOADING]', 'warn');
+
+  try {
+    try {
+      currentUser = normalizePageMapPerson(await figmaGet('/me', token));
+      if (currentUser?.avatar) {
+        ingestUserFromVersion({ id: currentUser.id, handle: currentUser.name, img_url: currentUser.avatar });
+      }
+    } catch (e) {
+      currentUser = null;
+    }
+
+    for (let i = 0; i < pageMapProjects.length; i++) {
+      const pageMapProject = pageMapProjects[i];
+      const projectId = pageMapProject.id;
+      setPageMapStatus(`[PROJECT ${i + 1} / ${pageMapProjects.length} · ${projectId}]`, 'warn');
+
+      let projData;
+      try {
+        projData = await figmaGet(`/projects/${projectId}/files`, token);
+      } catch (e) {
+        failures.push({ scope: `Project ${projectId}`, message: e.message || String(e) });
+        continue;
+      }
+
+      const files = projData.files || [];
+      const project = {
+        id: projectId,
+        name: projData.name || pageMapProject.name || `Project ${projectId}`,
+        files: [],
+      };
+
+      for (let j = 0; j < files.length; j++) {
+        const file = files[j];
+        setPageMapStatus(`[${project.name} · FILE ${j + 1} / ${files.length}]`, 'warn');
+
+        try {
+          const fileData = await figmaGet(`/files/${file.key}?depth=1`, token);
+          let metaFile = null;
+          let metaError = '';
+          if (!fileMetaDisabledMessage) {
+            try {
+              const metaData = await figmaGet(`/files/${file.key}/meta`, token);
+              metaFile = metaData.file || null;
+              [metaFile?.creator, metaFile?.last_touched_by].forEach(ingestUserFromVersion);
+            } catch (e) {
+              metaError = e.message || String(e);
+              if (isPageMapMetaScopeError(metaError)) fileMetaDisabledMessage = metaError;
+            }
+          } else {
+            metaError = fileMetaDisabledMessage;
+          }
+
+          const access = pageMapAccessFromResponses(fileData, metaFile, metaError);
+          const pages = (fileData.document?.children || [])
+            .filter(node => node.type === 'CANVAS')
+            .map(node => ({ id: node.id, name: node.name || 'Untitled Page' }));
+          project.files.push({
+            key: file.key,
+            name: file.name || fileData.name || metaFile?.name || file.key,
+            pages,
+            access,
+            creator: normalizePageMapPerson(metaFile?.creator),
+            lastTouchedBy: normalizePageMapPerson(metaFile?.last_touched_by),
+            currentUser: currentUser ? { ...currentUser } : null,
+          });
+        } catch (e) {
+          const message = e.message || String(e);
+          failures.push({ scope: `File ${file.name || file.key}`, message });
+          project.files.push({ key: file.key, name: file.name || file.key, pages: [], error: message });
+        }
+
+        if (j < files.length - 1) await delay(120);
+      }
+
+      results.push(project);
+      pageMapData = results.slice();
+      pageMapFailures = failures.slice();
+      savePageMapCache();
+      renderPageMap(pageMapData, pageMapFailures);
+      if (i < pageMapProjects.length - 1) await delay(180);
+    }
+
+    if (results.length) {
+      pageMapData = results;
+      pageMapFailures = failures;
+      savePageMapCache();
+      renderPageMap(pageMapData, pageMapFailures);
+    } else {
+      pageMapFailures = failures;
+      renderPageMap(pageMapData, pageMapFailures);
+    }
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+document.getElementById('settingsBackdrop').addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeSettings();
+  if (e.key === 'Enter' && (e.target.id === 'addNameInput' || e.target.id === 'addIdInput')) {
+    e.preventDefault();
+    addProject();
+    return;
+  }
+  if (e.key === 'Enter' && e.target.id === 'tokenInput') {
+    e.preventDefault();
+    saveAndClose();
+  }
+});
+
+document.getElementById('fileDialogBackdrop').addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeFileDialog();
+});
+
+function loadAllProjectsCache(metaText) {
+  const projects = getSavedProjects();
+  if (!projects.length) return;
+
+  allVersions = [];
+  allFiles = [];
+  let maxDays = 0;
+
+  projects.forEach(p => {
+    const cached = loadCache(p.id);
+    if (!cached) return;
+    cached.versions.forEach(v => { v.projectName = p.name; });
+    allVersions.push(...cached.versions);
+    cached.files.forEach(f => mergeFileEntry(f));
+    if (cached.days > maxDays) maxDays = cached.days;
+  });
+
+  if (!allVersions.length && !allFiles.length) return;
+
+  allVersions.sort((a, b) => b.createdAt - a.createdAt);
+  syncFileNamesFromVersions();
+  activeFileFilter = null;
+  activeUserFilter = null;
+  computeSessionDurations();
+  showSections();
+  renderStats(allFiles, maxDays || 30);
+  renderFilters();
+  renderUserFilters();
+  renderUserStats();
+  renderTimeline();
+  document.getElementById('headerMeta').textContent = metaText || `ALL PROJECTS / CACHED`;
+  hydrateAvatars(document.querySelector('.page'));
+  resolveAvatars(maxDays || 30);
+}
+
+async function autoFetchSavedProjects() {
+  const projects = getSavedProjects();
+  const token = getToken();
+  const days = getDays();
+  const fetchBtn = document.getElementById('fetchBtn');
+
+  if (!projects.length || !token) return;
+  if (autoFetchInFlight || fetchBtn.disabled) return;
+
+  const failures = [];
+  autoFetchInFlight = true;
+  fetchBtn.disabled = true;
+  hideError();
+
+  try {
+    for (let i = 0; i < projects.length; i++) {
+      const project = projects[i];
+      const projectLabel = project.name || 'PROJECT ' + project.id;
+      const statusLabel = projectLabel.length > 42 ? projectLabel.slice(0, 39) + '...' : projectLabel;
+
+      try {
+        const data = await fetchProjectChangelogData(project.id, token, days, progress => {
+          const prefix = `AUTO FETCHING ${i + 1} / ${projects.length} · ${statusLabel}`;
+          if (progress.phase === 'files') {
+            setStatus(`${prefix} · FILES`, true);
+          } else {
+            setStatus(`${prefix} · VERSIONS ${progress.completed} / ${progress.total}`, true);
+          }
+        });
+
+        saveProjectCache(project.id, days, data.versions, data.files);
+        updateSavedProjectName(project.id, data.rawProjectName);
+      } catch (e) {
+        failures.push({ project, error: e });
+        console.warn('Auto fetch failed for project', project.id, e);
+      }
+    }
+
+    saveLiveAvatarUrls();
+
+    if (selectedProjectId === null) {
+      loadAllProjectsCache(failures.length ? 'ALL PROJECTS / UPDATED PARTIAL' : 'ALL PROJECTS / UPDATED NOW');
+    }
+
+    if (failures.length) {
+      const failedAll = failures.length === projects.length;
+      showError(failedAll
+        ? `[AUTO FETCH FAILED: ${failures.length} PROJECT(S)]`
+        : `[AUTO FETCH PARTIAL: ${failures.length} PROJECT(S) FAILED]`);
+    }
+  } finally {
+    hideStatus();
+    fetchBtn.disabled = false;
+    autoFetchInFlight = false;
+  }
+}
+
+function startAutoFetchLoop() {
+  autoFetchSavedProjects();
+  if (autoFetchTimerId) clearInterval(autoFetchTimerId);
+  autoFetchTimerId = setInterval(autoFetchSavedProjects, AUTO_FETCH_INTERVAL_MS);
+}
+
+loadLiveAvatarUrls();
+loadPageAnalysisCache();
+loadPageMapCache();
+updateTokenStatus();
+renderProjectList();
+initPageMapResizer();
+initPlatformEmbedMode();
+loadAllProjectsCache();
+switchView(getInitialView());
+startAutoFetchLoop();
+</script>
+
+</body>
+</html>

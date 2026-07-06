@@ -12,9 +12,12 @@ import {
   ExternalLink,
   FileText,
   Folder,
+  Grid2X2,
+  Image as ImageIcon,
   KeyRound,
   Layers3,
   Library,
+  List,
   Lock,
   LogIn,
   LogOut,
@@ -29,6 +32,8 @@ import {
   SlidersHorizontal,
   Sparkles,
   Sun,
+  TextCursorInput,
+  Type,
   UserRound,
   Workflow,
   X,
@@ -106,7 +111,19 @@ const THEME_MODE_STORAGE_KEY = "vision-design-platform.theme-mode.ui3.ghostty.v2
 const ACTIVE_THEME_STORAGE_KEY = "vision-design-platform.active-theme.ui3.ghostty.v2";
 const DEFAULT_THEME_ID: ThemePresetId = "ghostty-carbon";
 const TEAM_ICON_SRC = `${import.meta.env.BASE_URL}team-icon.png`;
-const BRAND_GUIDELINE_PDF_SRC = `${import.meta.env.BASE_URL}brand-assets/viaim-visual-guidelines-260309-internal-draft.pdf`;
+const BRAND_GUIDELINE_PDF_SRC = publicAssetHref(
+  "brand-assets/viaim-visual-guidelines-260309-internal-draft.pdf",
+);
+const FIGMA_PROJECT_DASHBOARD_SRC = publicAssetHref(
+  "tools/figma-project-dashboard/figma-project-changelog.html",
+);
+
+function publicAssetHref(path: string) {
+  return `${import.meta.env.BASE_URL}${path
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/")}`;
+}
 
 const brandGuidelineAsset = {
   id: "viaim-visual-guidelines-260309",
@@ -132,6 +149,218 @@ const brandGuidelineVersions = [
     href: BRAND_GUIDELINE_PDF_SRC,
   },
 ];
+
+type LogoViewMode = "grid" | "list";
+
+type BrandLogoFormat = {
+  label: "SVG" | "PNG" | "PDF";
+  href: string;
+  fileName: string;
+  size: string;
+};
+
+type BrandLogoAsset = {
+  id: string;
+  title: string;
+  context: string;
+  usage: string;
+  dimensions: string;
+  previewHref: string;
+  formats: BrandLogoFormat[];
+};
+
+type BrandFontAsset = {
+  id: string;
+  label: string;
+  weight: number;
+  fileName: string;
+  href: string;
+  size: string;
+  role: string;
+};
+
+const brandLogoAssets: BrandLogoAsset[] = [
+  {
+    id: "brand-color",
+    title: "viaim logo BrandColor",
+    context: "brand color",
+    usage: "Primary logo for neutral and light surfaces.",
+    dimensions: "4710 x 1280 px",
+    previewHref: publicAssetHref("brand-assets/logos/viaim logo BrandColor.svg"),
+    formats: [
+      {
+        label: "SVG",
+        href: publicAssetHref("brand-assets/logos/viaim logo BrandColor.svg"),
+        fileName: "viaim logo BrandColor.svg",
+        size: "3.8 KB",
+      },
+      {
+        label: "PNG",
+        href: publicAssetHref("brand-assets/logos/viaim logo BrandColor.png"),
+        fileName: "viaim logo BrandColor.png",
+        size: "79 KB",
+      },
+      {
+        label: "PDF",
+        href: publicAssetHref("brand-assets/logos/viaim logo BrandColor.pdf"),
+        fileName: "viaim logo BrandColor.pdf",
+        size: "7.2 KB",
+      },
+    ],
+  },
+  {
+    id: "on-light",
+    title: "viaim logo onLight",
+    context: "on light",
+    usage: "Logo variant prepared for light backgrounds.",
+    dimensions: "4710 x 1280 px",
+    previewHref: publicAssetHref("brand-assets/logos/viaim logo onLight.svg"),
+    formats: [
+      {
+        label: "SVG",
+        href: publicAssetHref("brand-assets/logos/viaim logo onLight.svg"),
+        fileName: "viaim logo onLight.svg",
+        size: "3.8 KB",
+      },
+      {
+        label: "PNG",
+        href: publicAssetHref("brand-assets/logos/viaim logo onLight.png"),
+        fileName: "viaim logo onLight.png",
+        size: "68 KB",
+      },
+      {
+        label: "PDF",
+        href: publicAssetHref("brand-assets/logos/viaim logo onLight.pdf"),
+        fileName: "viaim logo onLight.pdf",
+        size: "7.1 KB",
+      },
+    ],
+  },
+  {
+    id: "on-dark",
+    title: "viaim logo onDark",
+    context: "on dark",
+    usage: "Logo variant prepared for dark backgrounds.",
+    dimensions: "4710 x 1280 px",
+    previewHref: publicAssetHref("brand-assets/logos/viaim logo onDark.svg"),
+    formats: [
+      {
+        label: "SVG",
+        href: publicAssetHref("brand-assets/logos/viaim logo onDark.svg"),
+        fileName: "viaim logo onDark.svg",
+        size: "3.8 KB",
+      },
+      {
+        label: "PNG",
+        href: publicAssetHref("brand-assets/logos/viaim logo onDark.png"),
+        fileName: "viaim logo onDark.png",
+        size: "73 KB",
+      },
+      {
+        label: "PDF",
+        href: publicAssetHref("brand-assets/logos/viaim logo onDark.pdf"),
+        fileName: "viaim logo onDark.pdf",
+        size: "7.1 KB",
+      },
+    ],
+  },
+];
+
+const brandFontAssets: BrandFontAsset[] = [
+  {
+    id: "misans-thin",
+    label: "MiSans Thin",
+    weight: 100,
+    fileName: "MiSans-Thin.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-Thin.otf"),
+    size: "6.4 MB",
+    role: "Hairline display",
+  },
+  {
+    id: "misans-extralight",
+    label: "MiSans ExtraLight",
+    weight: 200,
+    fileName: "MiSans-ExtraLight.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-ExtraLight.otf"),
+    size: "6.4 MB",
+    role: "Light display",
+  },
+  {
+    id: "misans-light",
+    label: "MiSans Light",
+    weight: 300,
+    fileName: "MiSans-Light.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-Light.otf"),
+    size: "6.3 MB",
+    role: "Soft body",
+  },
+  {
+    id: "misans-normal",
+    label: "MiSans Normal",
+    weight: 350,
+    fileName: "MiSans-Normal.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-Normal.otf"),
+    size: "6.3 MB",
+    role: "Neutral body",
+  },
+  {
+    id: "misans-regular",
+    label: "MiSans Regular",
+    weight: 400,
+    fileName: "MiSans-Regular.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-Regular.otf"),
+    size: "6.2 MB",
+    role: "Default body",
+  },
+  {
+    id: "misans-medium",
+    label: "MiSans Medium",
+    weight: 500,
+    fileName: "MiSans-Medium.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-Medium.otf"),
+    size: "6.2 MB",
+    role: "UI emphasis",
+  },
+  {
+    id: "misans-demibold",
+    label: "MiSans Demibold",
+    weight: 600,
+    fileName: "MiSans-Demibold.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-Demibold.otf"),
+    size: "6.2 MB",
+    role: "Section titles",
+  },
+  {
+    id: "misans-semibold",
+    label: "MiSans Semibold",
+    weight: 650,
+    fileName: "MiSans-Semibold.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-Semibold.otf"),
+    size: "6.2 MB",
+    role: "Strong emphasis",
+  },
+  {
+    id: "misans-bold",
+    label: "MiSans Bold",
+    weight: 700,
+    fileName: "MiSans-Bold.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-Bold.otf"),
+    size: "6.3 MB",
+    role: "Headline",
+  },
+  {
+    id: "misans-heavy",
+    label: "MiSans Heavy",
+    weight: 900,
+    fileName: "MiSans-Heavy.otf",
+    href: publicAssetHref("brand-assets/fonts/misans/MiSans-Heavy.otf"),
+    size: "6.3 MB",
+    role: "Hero weight",
+  },
+];
+
+const defaultFontPreviewText =
+  "viaim 品牌资产 / We Aim to Explore. / 让灵感、记录和知识更自然地流动。";
 
 const monoStack =
   "SF Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace";
@@ -400,7 +629,7 @@ type RouteSurface =
   | "open-design-workspace"
   | "ai-create"
   | "integration"
-  | "figma-status"
+  | "figma-project-dashboard"
   | "member-management"
   | "skill-library"
   | "skill-tuning"
@@ -686,49 +915,35 @@ const workspaceRoutes: WorkspaceRoute[] = [
     ],
   },
   {
-    id: "figma-projects.file-status",
+    id: "figma-projects.design-file-management",
     l1Id: "figma-projects",
-    l2Id: "file-status",
-    l2Label: "设计文件管理状态",
-    l2Note: "files / pages / changes",
-    defaultL3Id: "file-list",
+    l2Id: "design-file-management",
+    l2Label: "设计文件管理",
+    l2Note: "map / changelog",
+    defaultL3Id: "page-map",
     minimumRole: "designer",
-    status: "stub",
-    queue: "figma files",
-    quality: "draft",
-    workbenchLabel: "Figma 文件状态",
+    status: "integrated",
+    queue: "figma dashboard",
+    quality: "live",
+    workbenchLabel: "Figma 设计文件管理",
     workbenchDescription:
-      "用于承载 Figma 文件表格、项目状态分析、页面状态、变更记录和权限状态。",
-    surface: "figma-status",
+      "从 Figma Project Dashboard 导入的项目级文件管理工作台，保留项目导入、Page Map、版本变更和页面分析能力。",
+    surface: "figma-project-dashboard",
     inspectorSections: ["selection", "account", "properties", "status", "logs"],
     l3Packages: [
       {
-        id: "file-list",
-        label: "文件列表",
-        note: "files / owners",
+        id: "page-map",
+        label: "Map",
+        note: "projects / files / pages",
         kind: "project",
-        icon: Folder,
+        icon: Grid2X2,
       },
       {
-        id: "page-status",
-        label: "页面状态",
-        note: "pages / coverage",
-        kind: "project",
-        icon: Layers3,
-      },
-      {
-        id: "change-log",
-        label: "变更记录",
-        note: "diff / history",
+        id: "changelog",
+        label: "Changelog",
+        note: "versions / diff",
         kind: "project",
         icon: Archive,
-      },
-      {
-        id: "permission-status",
-        label: "权限状态",
-        note: "shares / risks",
-        kind: "project",
-        icon: ShieldCheck,
       },
     ],
   },
@@ -1583,6 +1798,10 @@ export function App() {
       return <SliceTool />;
     }
 
+    if (activeRoute.surface === "figma-project-dashboard") {
+      return <FigmaProjectDashboardWorkbench activePackage={activePackage} />;
+    }
+
     return <RoutePlaceholder route={activeRoute} activePackage={activePackage} />;
   }
 
@@ -1820,6 +2039,14 @@ type BrandResourceWorkbenchProps = {
 };
 
 function BrandResourceWorkbench({ activePackage }: BrandResourceWorkbenchProps) {
+  if (activePackage.id === "visual-assets") {
+    return <LogoAssetWorkbench />;
+  }
+
+  if (activePackage.id === "font-packages") {
+    return <FontPackageWorkbench />;
+  }
+
   if (activePackage.id !== "brand-guidelines") {
     return (
       <RoutePlaceholder
@@ -1906,6 +2133,241 @@ function BrandResourceWorkbench({ activePackage }: BrandResourceWorkbenchProps) 
             </a>
           </div>
         </object>
+      </section>
+    </div>
+  );
+}
+
+type FigmaProjectDashboardWorkbenchProps = {
+  activePackage: L3Package;
+};
+
+function FigmaProjectDashboardWorkbench({
+  activePackage,
+}: FigmaProjectDashboardWorkbenchProps) {
+  const view = activePackage.id === "changelog" ? "changelog" : "map";
+  const dashboardSrc = `${FIGMA_PROJECT_DASHBOARD_SRC}?embed=platform&view=${view}`;
+
+  return (
+    <div className="figmaDashboardWorkbench">
+      <iframe
+        key={view}
+        className="figmaDashboardFrame"
+        src={dashboardSrc}
+        title={`Figma project ${view}`}
+      />
+    </div>
+  );
+}
+
+function LogoAssetWorkbench() {
+  const [viewMode, setViewMode] = useState<LogoViewMode>("grid");
+  const formatCount = brandLogoAssets.reduce(
+    (count, asset) => count + asset.formats.length,
+    0,
+  );
+
+  return (
+    <div className="logoAssetWorkbench">
+      <section className="assetHeroPanel">
+        <span className="assetHeroIcon" aria-hidden="true">
+          <ImageIcon size={18} />
+        </span>
+        <div>
+          <span className="sectionKicker">logo collection</span>
+          <h2>viaim 单 Logo</h2>
+          <p>透明底 Logo 集合，默认使用 Photoshop 风格棋盘底检查边缘和浅色变体。</p>
+        </div>
+
+        <div className="assetHeroStats" aria-label="Logo collection stats">
+          <span>
+            <strong>{brandLogoAssets.length}</strong>
+            <small>variants</small>
+          </span>
+          <span>
+            <strong>{formatCount}</strong>
+            <small>files</small>
+          </span>
+          <span>
+            <strong>4710</strong>
+            <small>px wide</small>
+          </span>
+        </div>
+      </section>
+
+      <section className="assetLibraryPanel">
+        <header className="assetLibraryHeader">
+          <div>
+            <span className="sectionKicker">visual assets</span>
+            <h3>Logo 图片集合</h3>
+          </div>
+          <div className="modeSwitch assetModeSwitch" aria-label="Logo view mode">
+            <button
+              type="button"
+              data-active={viewMode === "grid"}
+              onClick={() => setViewMode("grid")}
+            >
+              <Grid2X2 size={14} />
+              平铺
+            </button>
+            <button
+              type="button"
+              data-active={viewMode === "list"}
+              onClick={() => setViewMode("list")}
+            >
+              <List size={14} />
+              列表
+            </button>
+          </div>
+        </header>
+
+        <div className="logoGallery" data-view={viewMode}>
+          {brandLogoAssets.map((asset) => (
+            <article className="logoAssetCard" key={asset.id}>
+              <div className="transparentPreview logoPreview">
+                <img src={asset.previewHref} alt={asset.title} />
+              </div>
+              <div className="logoAssetCopy">
+                <span>{asset.context}</span>
+                <h4>{asset.title}</h4>
+                <p>{asset.usage}</p>
+                <small>{asset.dimensions}</small>
+              </div>
+              <LogoFormatLinks formats={asset.formats} />
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+type LogoFormatLinksProps = {
+  formats: BrandLogoFormat[];
+};
+
+function LogoFormatLinks({ formats }: LogoFormatLinksProps) {
+  return (
+    <div className="assetFormatLinks">
+      {formats.map((format) => (
+        <a
+          href={format.href}
+          download={format.fileName}
+          key={format.fileName}
+          title={format.fileName}
+        >
+          <Download size={13} />
+          <span>{format.label}</span>
+          <small>{format.size}</small>
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function FontPackageWorkbench() {
+  const [selectedFontId, setSelectedFontId] = useState("misans-regular");
+  const [previewText, setPreviewText] = useState(defaultFontPreviewText);
+  const selectedFont =
+    brandFontAssets.find((font) => font.id === selectedFontId) ??
+    brandFontAssets[4];
+  const previewContent = previewText.trim() || defaultFontPreviewText;
+  const previewStyle = {
+    fontFamily: '"MiSansBrandPreview", var(--ui-font)',
+    fontWeight: selectedFont.weight,
+  } as React.CSSProperties;
+  const fontSamples = [
+    { label: "display", size: "42px", text: "viaim" },
+    { label: "headline", size: "28px", text: "We Aim to Explore." },
+    { label: "body", size: "16px", text: "实时记录、整理和理解每一次重要对话。" },
+  ];
+
+  return (
+    <div className="fontPackageWorkbench">
+      <section className="fontListPanel">
+        <header className="assetLibraryHeader">
+          <div>
+            <span className="sectionKicker">font package</span>
+            <h3>MiSans OTF</h3>
+          </div>
+          <span className="assetCountBadge">{brandFontAssets.length} weights</span>
+        </header>
+
+        <div className="fontWeightList">
+          {brandFontAssets.map((font) => (
+            <button
+              className="fontWeightButton"
+              type="button"
+              key={font.id}
+              data-active={font.id === selectedFont.id}
+              onClick={() => setSelectedFontId(font.id)}
+            >
+              <Type size={16} />
+              <span>
+                <strong>{font.label}</strong>
+                <small>{font.fileName} / {font.size}</small>
+              </span>
+              <i>{font.weight}</i>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="fontPreviewPanel">
+        <header className="fontPreviewHeader">
+          <div>
+            <span className="sectionKicker">type preview</span>
+            <h3>{selectedFont.label}</h3>
+          </div>
+          <a className="barButton" href={selectedFont.href} download={selectedFont.fileName}>
+            <Download size={14} />
+            <span>download otf</span>
+          </a>
+        </header>
+
+        <div className="fontPreviewControls">
+          <label className="fontPreviewInput">
+            <span>
+              <TextCursorInput size={14} />
+              预览文本
+            </span>
+            <textarea
+              className="fontPreviewTextarea"
+              value={previewText}
+              rows={3}
+              spellCheck={false}
+              onChange={(event) => setPreviewText(event.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className="fontPreviewStage" style={previewStyle}>
+          <span>{selectedFont.role}</span>
+          <p>{previewContent}</p>
+        </div>
+
+        <div className="fontSampleGrid" aria-label="Font size samples">
+          {fontSamples.map((sample) => (
+            <div className="fontSampleRow" key={sample.label}>
+              <span>{sample.label}</span>
+              <strong
+                style={{
+                  ...previewStyle,
+                  fontSize: sample.size,
+                }}
+              >
+                {sample.text}
+              </strong>
+            </div>
+          ))}
+        </div>
+
+        <div className="resourceMetaGrid fontMetaGrid">
+          <InspectorRow label="family" value="MiSans" />
+          <InspectorRow label="weight" value={`${selectedFont.weight}`} />
+          <InspectorRow label="file" value={selectedFont.fileName} />
+          <InspectorRow label="size" value={selectedFont.size} />
+        </div>
       </section>
     </div>
   );
