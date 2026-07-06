@@ -17,7 +17,7 @@ Set these when wiring real OAuth:
 
 ```bash
 VITE_FEISHU_APP_ID=cli_xxx
-VITE_FEISHU_REDIRECT_URI=http://localhost:5173/
+VITE_FEISHU_REDIRECT_URI=http://localhost:5173
 VITE_FEISHU_OAUTH_EXCHANGE_URL=http://localhost:8787/api/feishu/oauth/exchange
 ```
 
@@ -34,7 +34,7 @@ Content-Type: application/json
 
 {
   "code": "<feishu authorization code>",
-  "redirectUri": "http://localhost:5173/",
+  "redirectUri": "http://localhost:5173",
   "requestedRole": "designer"
 }
 ```
