@@ -22,6 +22,9 @@ type SliceResult = {
   fileName: string;
   originalWidth: number;
   originalHeight: number;
+  outputWidth: number;
+  outputHeight: number;
+  resized: boolean;
   columns: number;
   rows: number;
   slices: SliceItem[];
@@ -128,6 +131,43 @@ function isImageFile(file: File) {
   return /\.(avif|bmp|gif|jpe?g|png|tiff?|webp)$/i.test(file.name);
 }
 
+function getTargetWidthValue(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  const parsedValue = Number(trimmed);
+
+  return Number.isInteger(parsedValue) && parsedValue > 0
+    ? parsedValue
+    : Number.NaN;
+}
+
+function getOutputSize(width: number, height: number, targetWidth: number | null) {
+  if (targetWidth === null) {
+    return {
+      outputWidth: width,
+      outputHeight: height,
+      resized: false,
+    };
+  }
+
+  const scale = targetWidth / width;
+  const outputHeight = Math.floor(height * scale);
+
+  if (outputHeight < 1) {
+    throw new Error("缩放后高度小于 1px，请增大输出宽度");
+  }
+
+  return {
+    outputWidth: targetWidth,
+    outputHeight,
+    resized: true,
+  };
+}
+
 function downloadBlob(blob: Blob, fileName: string) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -149,25 +189,30 @@ async function createZip(slices: SliceItem[]) {
 
 async function sliceOneFile(
   file: File,
+  targetWidth: number | null,
   chunkWidth: number,
   chunkHeight: number,
   registerObjectUrl: (url: string) => void,
 ) {
   const image = await loadImage(file, registerObjectUrl);
-  const columns = Math.ceil(image.width / chunkWidth);
-  const rows = Math.ceil(image.height / chunkHeight);
+  const output = getOutputSize(image.width, image.height, targetWidth);
+  const columns = Math.ceil(output.outputWidth / chunkWidth);
+  const rows = Math.ceil(output.outputHeight / chunkHeight);
   const { mime, ext } = getFileExt(file);
   const baseName = file.name.replace(/\.[^.]+$/, "");
+  const outputBaseName = output.resized
+    ? `${baseName}_w${output.outputWidth}`
+    : baseName;
   const slices: SliceItem[] = [];
 
   for (let row = 0; row < rows; row += 1) {
     const top = row * chunkHeight;
-    const bottom = Math.min((row + 1) * chunkHeight, image.height);
+    const bottom = Math.min((row + 1) * chunkHeight, output.outputHeight);
     const partHeight = bottom - top;
 
     for (let column = 0; column < columns; column += 1) {
       const left = column * chunkWidth;
-      const right = Math.min((column + 1) * chunkWidth, image.width);
+      const right = Math.min((column + 1) * chunkWidth, output.outputWidth);
       const partWidth = right - left;
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d", { alpha: false });
@@ -178,12 +223,14 @@ async function sliceOneFile(
 
       canvas.width = partWidth;
       canvas.height = partHeight;
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
       context.drawImage(
         image.source,
-        left,
-        top,
-        partWidth,
-        partHeight,
+        (left * image.width) / output.outputWidth,
+        (top * image.height) / output.outputHeight,
+        (partWidth * image.width) / output.outputWidth,
+        (partHeight * image.height) / output.outputHeight,
         0,
         0,
         partWidth,
@@ -195,13 +242,16 @@ async function sliceOneFile(
       registerObjectUrl(previewUrl);
 
       slices.push({
-        name: `${baseName}_r${String(row + 1).padStart(2, "0")}-c${String(
-          column + 1,
-        ).padStart(2, "0")}_x${String(left).padStart(5, "0")}-${String(
-          right,
-        ).padStart(5, "0")}_y${String(top).padStart(5, "0")}-${String(
-          bottom,
-        ).padStart(5, "0")}.${ext}`,
+        name: `${outputBaseName}_r${String(row + 1).padStart(
+          2,
+          "0",
+        )}-c${String(column + 1).padStart(2, "0")}_x${String(left).padStart(
+          5,
+          "0",
+        )}-${String(right).padStart(5, "0")}_y${String(top).padStart(
+          5,
+          "0",
+        )}-${String(bottom).padStart(5, "0")}.${ext}`,
         blob,
         previewUrl,
         width: partWidth,
@@ -216,6 +266,9 @@ async function sliceOneFile(
     fileName: file.name,
     originalWidth: image.width,
     originalHeight: image.height,
+    outputWidth: output.outputWidth,
+    outputHeight: output.outputHeight,
+    resized: output.resized,
     columns,
     rows,
     slices,
@@ -225,6 +278,7 @@ async function sliceOneFile(
 export function SliceTool() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const objectUrlsRef = useRef<string[]>([]);
+  const [targetWidth, setTargetWidth] = useState("");
   const [chunkWidth, setChunkWidth] = useState(DEFAULT_CHUNK_SIZE);
   const [chunkHeight, setChunkHeight] = useState(DEFAULT_CHUNK_SIZE);
   const [files, setFiles] = useState<File[]>([]);
@@ -355,6 +409,13 @@ export function SliceTool() {
       return;
     }
 
+    const parsedTargetWidth = getTargetWidthValue(targetWidth);
+
+    if (Number.isNaN(parsedTargetWidth)) {
+      setStatus("invalid-target-width");
+      return;
+    }
+
     if (!Number.isInteger(chunkWidth) || chunkWidth <= 0) {
       setStatus("invalid-width");
       return;
@@ -375,6 +436,7 @@ export function SliceTool() {
       for (let index = 0; index < files.length; index += 1) {
         const result = await sliceOneFile(
           files[index],
+          parsedTargetWidth,
           chunkWidth,
           chunkHeight,
           registerObjectUrl,
@@ -445,6 +507,10 @@ export function SliceTool() {
       return `已忽略超过 ${formatFileSize(MAX_IMAGE_FILE_SIZE)} 的图片`;
     }
 
+    if (status === "invalid-target-width") {
+      return "输出宽度需为空或大于 0";
+    }
+
     if (status === "invalid-width") {
       return "最大宽度需要大于 0";
     }
@@ -496,6 +562,8 @@ export function SliceTool() {
                 将超宽或超长图片按固定最大宽高切成多张图片，方便导入 Figma。
               </p>
               <ol>
+                <li>输出宽度可留空；填写后会先等比缩放，再切片。</li>
+                <li>缩放后的高度会向下取整，不做四舍五入。</li>
                 <li>设置单张切片的最大宽度和最大高度，默认 4096 x 4096。</li>
                 <li>
                   点击 select images 或将图片拖入控制区，最多 {MAX_IMAGE_FILES} 张，
@@ -529,6 +597,17 @@ export function SliceTool() {
         onDrop={handleDrop}
       >
         <div className="sliceFieldGrid">
+          <label className="sliceField">
+            <span>输出宽度</span>
+            <input
+              min="1"
+              placeholder="原图"
+              step="1"
+              type="number"
+              value={targetWidth}
+              onChange={(event) => setTargetWidth(event.target.value)}
+            />
+          </label>
           <label className="sliceField">
             <span>最大宽度</span>
             <input
@@ -632,7 +711,13 @@ export function SliceTool() {
                     <strong>{result.fileName}</strong>
                     <span>
                       {formatPixels(result.originalWidth)} x{" "}
-                      {formatPixels(result.originalHeight)} /{" "}
+                      {formatPixels(result.originalHeight)}
+                      {result.resized
+                        ? ` -> ${formatPixels(result.outputWidth)} x ${formatPixels(
+                            result.outputHeight,
+                          )}（高度向下取整）`
+                        : ""}{" "}
+                      /{" "}
                       {formatSliceMode(result.rows, result.columns)} /{" "}
                       {result.slices.length} 张
                     </span>
