@@ -129,7 +129,6 @@ body,
 #root {
   min-width: 100%;
   min-height: 100%;
-  height: 100%;
   margin: 0;
 }
 
@@ -165,7 +164,6 @@ svg {
 .appShell {
   display: grid;
   grid-template-rows: 48px 40px minmax(0, 1fr);
-  height: 100vh;
   min-height: 100vh;
   overflow: hidden;
   background:
@@ -1655,7 +1653,6 @@ svg {
 .fontPackageWorkbench {
   display: grid;
   gap: 12px;
-  height: 100%;
   min-height: 0;
   padding: 16px;
 }
@@ -2016,12 +2013,16 @@ svg {
 .logoGallery {
   min-width: 0;
   min-height: 0;
+  max-height: max(320px, calc(100vh - 380px));
   overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .logoGallery[data-view="grid"] {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-auto-rows: max-content;
   align-content: start;
   gap: 8px;
   padding: 12px;
@@ -2029,6 +2030,8 @@ svg {
 
 .logoGallery[data-view="list"] {
   display: grid;
+  grid-auto-rows: max-content;
+  align-content: start;
 }
 
 .logoAssetCard {
@@ -2038,7 +2041,7 @@ svg {
 
 .logoGallery[data-view="grid"] .logoAssetCard {
   display: grid;
-  grid-template-rows: minmax(164px, 1fr) auto auto;
+  grid-template-rows: 164px auto auto;
 }
 
 .logoGallery[data-view="list"] .logoAssetCard {
@@ -3413,7 +3416,6 @@ svg {
 @media (max-width: 860px) {
   .appShell {
     grid-template-rows: auto auto minmax(0, 1fr);
-    height: auto;
     overflow: auto;
   }
 
@@ -3524,6 +3526,11 @@ svg {
   .logoGallery[data-view="list"] .assetFormatLinks {
     border-top: var(--stroke-width) solid var(--border);
     border-left: 0;
+  }
+
+  .logoGallery {
+    max-height: none;
+    overflow: visible;
   }
 
   .fontPreviewStage p {
