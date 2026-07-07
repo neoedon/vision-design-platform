@@ -1537,6 +1537,11 @@ svg {
   border-bottom: var(--stroke-width) solid var(--border);
 }
 
+.inspectorRow {
+  grid-template-columns: minmax(64px, 0.72fr) minmax(0, 1.28fr);
+  padding: 7px 10px;
+}
+
 .stateMatrixRow:last-child,
 .inspectorRow:last-child,
 .tokenPreview:last-child {
@@ -1552,6 +1557,13 @@ svg {
   font-size: 11px;
 }
 
+.inspectorRow span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .stateMatrixRow strong,
 .inspectorRow strong,
 .tokenPreview strong {
@@ -1563,6 +1575,12 @@ svg {
   font-family: var(--code-font);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
+  justify-self: end;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: right;
+  line-height: 1.25;
 }
 
 .canvasPreviewGrid {

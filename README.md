@@ -21,6 +21,11 @@ VITE_FEISHU_REDIRECT_URI=http://localhost:5173
 VITE_FEISHU_OAUTH_EXCHANGE_URL=http://localhost:8787/api/feishu/oauth/exchange
 ```
 
+During local development, if Vite falls back to another port such as
+`http://localhost:5174`, the frontend uses the current localhost origin as the
+OAuth redirect URI. Add that exact origin to the Feishu developer console
+redirect URL allowlist, or restart Vite on the allowlisted port.
+
 The frontend starts the Feishu authorization-code flow and consumes the `code`
 callback. `VITE_FEISHU_OAUTH_EXCHANGE_URL` must point to your own backend because
 the code-to-token exchange requires server-side credentials. Do not put the

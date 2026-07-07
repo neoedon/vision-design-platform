@@ -121,11 +121,12 @@
   }
   body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) max-content;
     align-items: center;
-    min-height: 40px;
-    padding: 6px 16px;
-    gap: 8px;
+    min-height: 48px;
+    padding: 8px 18px 8px 16px;
+    gap: 10px;
+    overflow: visible;
   }
   body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header h2 {
     position: absolute;
@@ -138,7 +139,8 @@
   body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header .embedded-actions {
     grid-column: 1;
     justify-self: end;
-    overflow: hidden;
+    max-width: 100%;
+    overflow: visible;
   }
   body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header .embedded-meta {
     max-width: min(42vw, 560px);
@@ -146,6 +148,11 @@
   body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header > div:last-child {
     grid-column: 2;
     min-width: max-content;
+    overflow: visible;
+  }
+  body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header .pill,
+  body[data-embedded="true"] .map-view .page-map-dialog > .file-dialog-header .token-status {
+    flex: 0 0 auto;
   }
   body[data-embedded="true"] .source-section .embedded-actions {
     flex-wrap: wrap;
@@ -525,6 +532,9 @@
     background: var(--interactive-subtle);
   }
   body[data-embedded="true"] .page-map-nav button {
+    display: flex;
+    align-items: center;
+    width: 100%;
     min-height: var(--platform-control-height);
     padding: 0 8px;
     border: var(--platform-stroke) solid transparent;
@@ -534,12 +544,46 @@
     text-transform: none;
   }
   body[data-embedded="true"] .page-map-nav-project {
-    margin-top: 4px;
+    margin-top: 12px;
+    padding: 8px 8px 8px 10px;
+    border-top: var(--platform-stroke) solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--platform-code-font) !important;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.35;
+  }
+  body[data-embedded="true"] .page-map-nav-project:first-of-type {
+    margin-top: 0;
+    border-top-color: transparent;
+  }
+  body[data-embedded="true"] .page-map-nav-project::before {
+    content: "@";
+    flex: 0 0 auto;
+    margin-right: 8px;
+    color: var(--interactive);
   }
   body[data-embedded="true"] .page-map-nav-file {
-    padding-left: 18px;
+    position: relative;
+    min-height: 22px;
+    margin: 2px 0 0 18px;
+    padding: 0 8px 0 14px;
+    color: var(--text-secondary);
+    font-family: var(--platform-ui-font) !important;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  body[data-embedded="true"] .page-map-nav-file::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 6px;
+    bottom: 6px;
+    width: var(--platform-stroke);
+    background: var(--border-visible);
   }
   body[data-embedded="true"] .page-map-count {
+    flex: 0 0 auto;
     margin-left: 6px;
     color: var(--text-disabled);
   }
@@ -1927,6 +1971,8 @@
   }
 
   .page-map-nav button {
+    display: flex;
+    align-items: center;
     width: 100%;
     border: none;
     background: transparent;
@@ -1947,8 +1993,22 @@
     font-size: 13px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    padding: 8px 8px;
-    margin-top: 6px;
+    padding: 10px 8px 8px;
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    color: var(--text-display);
+  }
+
+  .page-map-nav-project:first-of-type {
+    margin-top: 0;
+    border-top-color: transparent;
+  }
+
+  .page-map-nav-project::before {
+    content: "@";
+    flex: 0 0 auto;
+    margin-right: 8px;
+    color: var(--interactive);
   }
 
   .page-map-nav-project.active {
@@ -1957,9 +2017,22 @@
   }
 
   .page-map-nav-file {
+    position: relative;
     font-family: 'Space Grotesk', system-ui;
-    font-size: 14px;
-    padding: 6px 8px 6px 18px;
+    font-size: 13px;
+    padding: 5px 8px 5px 24px;
+    margin-left: 10px;
+    color: var(--text-secondary);
+  }
+
+  .page-map-nav-file::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--border-visible);
   }
 
   .page-map-count {

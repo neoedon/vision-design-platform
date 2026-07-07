@@ -241,6 +241,12 @@ function getFeishuRedirectUri() {
   );
 
   if (configuredRedirectUri) {
+    const localRedirectUri = getCurrentLocalRedirectUri(configuredRedirectUri);
+
+    if (localRedirectUri) {
+      return localRedirectUri;
+    }
+
     return configuredRedirectUri;
   }
 
@@ -248,6 +254,37 @@ function getFeishuRedirectUri() {
   currentUrl.hash = "";
   currentUrl.search = "";
   return currentUrl.toString();
+}
+
+function getCurrentLocalRedirectUri(configuredRedirectUri: string) {
+  if (!import.meta.env.DEV) {
+    return null;
+  }
+
+  try {
+    const configuredUrl = new URL(configuredRedirectUri);
+    const currentUrl = new URL(window.location.href);
+
+    if (
+      isLoopbackHost(configuredUrl.hostname) &&
+      isLoopbackHost(currentUrl.hostname) &&
+      configuredUrl.origin !== currentUrl.origin
+    ) {
+      return currentUrl.origin;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function isLoopbackHost(hostname: string) {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "[::1]"
+  );
 }
 
 function createOAuthState() {
