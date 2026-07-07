@@ -78,6 +78,7 @@ type ViewRecord = SnapshotRecord & {
 };
 
 type LoadState = "idle" | "loading" | "ready" | "error";
+type SyncState = "idle" | "syncing";
 type CountEntry = {
   label: string;
   count: number;
@@ -85,6 +86,8 @@ type CountEntry = {
 };
 
 const SNAPSHOT_HREF = `${import.meta.env.BASE_URL}data/feishu-base-snapshot.json`;
+const SYNC_API_HREF = "/api/design-projects/sync";
+const CAN_SYNC_DESIGN_PROJECTS = import.meta.env.DEV;
 
 const emptyDerivedRecord: DerivedRecord = {
   title: "未命名需求",
@@ -113,6 +116,7 @@ const emptyDerivedRecord: DerivedRecord = {
 export function DesignProjectsWorkbench() {
   const [snapshot, setSnapshot] = useState<FeishuBaseSnapshot | null>(null);
   const [loadState, setLoadState] = useState<LoadState>("idle");
+  const [syncState, setSyncState] = useState<SyncState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -141,6 +145,39 @@ export function DesignProjectsWorkbench() {
       setErrorMessage(error instanceof Error ? error.message : "snapshot load failed");
     }
   }, []);
+
+  const syncAndLoadSnapshot = useCallback(async () => {
+    if (!CAN_SYNC_DESIGN_PROJECTS) {
+      await loadSnapshot();
+      return;
+    }
+
+    setSyncState("syncing");
+    setLoadState("loading");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(SYNC_API_HREF, {
+        method: "POST",
+        cache: "no-store",
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok?: boolean;
+        message?: string;
+      } | null;
+
+      if (!response.ok || !payload?.ok) {
+        throw new Error(payload?.message ?? `sync ${response.status}`);
+      }
+
+      await loadSnapshot();
+    } catch (error) {
+      setLoadState(snapshot ? "ready" : "error");
+      setErrorMessage(error instanceof Error ? error.message : "design project sync failed");
+    } finally {
+      setSyncState("idle");
+    }
+  }, [loadSnapshot, snapshot]);
 
   useEffect(() => {
     void loadSnapshot();
@@ -237,8 +274,11 @@ export function DesignProjectsWorkbench() {
           <span>
             <strong>{snapshot?.source.title ?? "设计项目需求提报系统"}</strong>
             <small>
-              {snapshot?.source.tableName ?? "设计项目需求提报"} / one-way snapshot /
-              {" "}{formatSyncTime(snapshot?.syncedAt)}
+              {syncState === "syncing"
+                ? "正在从 Feishu Base 拉取最新数据..."
+                : errorMessage && snapshot
+                  ? `同步失败：${errorMessage}`
+                  : `${snapshot?.source.tableName ?? "设计项目需求提报"} / one-way snapshot / ${formatSyncTime(snapshot?.syncedAt)}`}
             </small>
           </span>
         </div>
@@ -261,11 +301,17 @@ export function DesignProjectsWorkbench() {
           <button
             className="barButton"
             type="button"
-            disabled={loadState === "loading"}
-            onClick={() => void loadSnapshot()}
+            aria-busy={syncState === "syncing"}
+            disabled={loadState === "loading" || syncState === "syncing"}
+            title={
+              CAN_SYNC_DESIGN_PROJECTS
+                ? "从 Feishu Base 拉取最新数据"
+                : "刷新已发布的静态快照"
+            }
+            onClick={() => void syncAndLoadSnapshot()}
           >
-            <RefreshCw size={13} />
-            refresh
+            <RefreshCw className={syncState === "syncing" ? "syncSpin" : undefined} size={13} />
+            {syncState === "syncing" ? "syncing" : "refresh"}
           </button>
         </div>
       </section>

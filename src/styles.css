@@ -164,6 +164,7 @@ svg {
 .appShell {
   display: grid;
   grid-template-rows: 48px 40px minmax(0, 1fr);
+  height: 100vh;
   min-height: 100vh;
   overflow: hidden;
   background:
@@ -451,6 +452,16 @@ svg {
 .barButton:disabled,
 .primaryButton:disabled {
   opacity: 0.5;
+}
+
+.syncSpin {
+  animation: sync-spin 860ms linear infinite;
+}
+
+@keyframes sync-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .primaryButton {
@@ -822,6 +833,7 @@ svg {
   grid-template-rows: 40px 44px 40px 206px minmax(0, 1fr);
   height: 100%;
   min-height: 0;
+  overflow: hidden;
   color: var(--text);
   background: var(--bg);
 }
@@ -1186,6 +1198,7 @@ svg {
   display: grid;
   grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
   min-height: 0;
+  overflow: hidden;
 }
 
 .designProjectListPanel,
@@ -1222,8 +1235,11 @@ svg {
 }
 
 .designProjectList {
+  height: 100%;
   min-height: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 6px;
 }
 
@@ -3415,6 +3431,7 @@ svg {
 
 @media (max-width: 860px) {
   .appShell {
+    height: 100vh;
     grid-template-rows: auto auto minmax(0, 1fr);
     overflow: auto;
   }
@@ -3485,6 +3502,7 @@ svg {
   }
 
   .designProjectListPanel {
+    max-height: 42vh;
     min-height: 320px;
     border-right: 0;
     border-bottom: var(--stroke-width) solid var(--border);

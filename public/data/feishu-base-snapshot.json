@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "generatedBy": "scripts/sync-feishu-design-projects.mjs",
-  "syncedAt": "2026-07-06T11:26:20.115Z",
+  "syncedAt": "2026-07-07T04:36:26.878Z",
   "source": {
     "title": "设计项目需求提报系统",
     "wikiUrl": "",
@@ -17,17 +17,9 @@
   },
   "fields": [
     {
-      "id": "fldaQMsddn",
-      "name": "需求目标及背景 - 必填项*",
-      "type": "text",
-      "style": {
-        "type": "plain"
-      }
-    },
-    {
-      "id": "fld7qDxI71",
-      "name": "需求附件 - Attachment",
-      "type": "attachment"
+      "id": "fldJir5aTh",
+      "name": "父任务",
+      "type": "link"
     },
     {
       "id": "fldtaH1877",
@@ -38,19 +30,17 @@
       }
     },
     {
-      "id": "fldth8ipDp",
-      "name": "需求名称 - Requirement Description * 必填项",
-      "type": "text",
-      "style": {
-        "type": "plain"
-      }
+      "id": "fldjHSBfJj",
+      "name": "交付 - Supplier",
+      "type": "user",
+      "multiple": true
     },
     {
-      "id": "fldE3UjhOP",
-      "name": "项目背景与目标：为什么要这么设计？",
+      "id": "fldL6vG16C",
+      "name": "需求文档描述 - Link * 必填项",
       "type": "text",
       "style": {
-        "type": "plain"
+        "type": "url"
       }
     },
     {
@@ -60,6 +50,45 @@
       "style": {
         "format": "yyyy/MM/dd"
       }
+    },
+    {
+      "id": "fldaQMsddn",
+      "name": "需求目标及背景 - 必填项*",
+      "type": "text",
+      "style": {
+        "type": "plain"
+      }
+    },
+    {
+      "id": "fldhsV8KMX",
+      "name": "目标受众与投放渠道：设计给谁看？在哪里看？",
+      "type": "text",
+      "style": {
+        "type": "plain"
+      }
+    },
+    {
+      "id": "fldqNrk8vZ",
+      "name": "视觉量级",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        {
+          "hue": "Blue",
+          "lightness": "Lighter",
+          "name": "高标准"
+        },
+        {
+          "hue": "Orange",
+          "lightness": "Lighter",
+          "name": "中等要求"
+        },
+        {
+          "hue": "Wathet",
+          "lightness": "Lighter",
+          "name": "快速产出"
+        }
+      ]
     },
     {
       "id": "fld5gXrZdq",
@@ -80,17 +109,104 @@
       ]
     },
     {
-      "id": "fldhsV8KMX",
-      "name": "目标受众与投放渠道：设计给谁看？在哪里看？",
+      "id": "fldwRx8x4W",
+      "name": "备注 - Notice",
       "type": "text",
       "style": {
         "type": "plain"
       }
     },
     {
+      "id": "fldaRpEQSo",
+      "name": "创建时间",
+      "type": "datetime",
+      "style": {
+        "format": "yyyy/MM/dd"
+      }
+    },
+    {
+      "id": "fldNckWuFo",
+      "name": "是否完成 - Status",
+      "type": "checkbox"
+    },
+    {
+      "id": "fldqU1VQT4",
+      "name": "指定对接设计",
+      "type": "user",
+      "multiple": true
+    },
+    {
       "id": "fldqM1UJFJ",
       "name": "交付文件 - Delivery documents",
       "type": "attachment"
+    },
+    {
+      "id": "fldpJrK1By",
+      "name": "视觉参考 - Reference",
+      "type": "attachment"
+    },
+    {
+      "id": "fldxrIaBff",
+      "name": "哪个产品 - Which Product？(可多选",
+      "type": "select",
+      "multiple": true,
+      "options": [
+        {
+          "hue": "Blue",
+          "lightness": "Lighter",
+          "name": "RecDot / Pro 2"
+        },
+        {
+          "hue": "Turquoise",
+          "lightness": "Lighter",
+          "name": "NoteKit / Kit"
+        },
+        {
+          "hue": "Orange",
+          "lightness": "Lighter",
+          "name": "OpenNote / Air 2"
+        },
+        {
+          "hue": "Wathet",
+          "lightness": "Lighter",
+          "name": "Recdot 2 / Pro 3"
+        },
+        {
+          "hue": "Yellow",
+          "lightness": "Lighter",
+          "name": "viaim Connect / Mate"
+        },
+        {
+          "hue": "Red",
+          "lightness": "Lighter",
+          "name": "viaim Aura"
+        },
+        {
+          "hue": "Purple",
+          "lightness": "Lighter",
+          "name": "全量产品"
+        },
+        {
+          "hue": "Green",
+          "lightness": "Lighter",
+          "name": "nano+"
+        },
+        {
+          "hue": "Carmine",
+          "lightness": "Lighter",
+          "name": "viaim2.0（智能体耳机）"
+        },
+        {
+          "hue": "Lime",
+          "lightness": "Lighter",
+          "name": "智能体Pro&智能体Air"
+        },
+        {
+          "hue": "Gray",
+          "lightness": "Lighter",
+          "name": "智能体Pro"
+        }
+      ]
     },
     {
       "id": "fldi7mg1Km",
@@ -176,115 +292,9 @@
       ]
     },
     {
-      "id": "fldNckWuFo",
-      "name": "是否完成 - Status",
+      "id": "fldBltjDoh",
+      "name": "任务已自动创建",
       "type": "checkbox"
-    },
-    {
-      "id": "fldJir5aTh",
-      "name": "父任务",
-      "type": "link"
-    },
-    {
-      "id": "fldxrIaBff",
-      "name": "哪个产品 - Which Product？(可多选",
-      "type": "select",
-      "multiple": true,
-      "options": [
-        {
-          "hue": "Blue",
-          "lightness": "Lighter",
-          "name": "RecDot / Pro 2"
-        },
-        {
-          "hue": "Turquoise",
-          "lightness": "Lighter",
-          "name": "NoteKit / Kit"
-        },
-        {
-          "hue": "Orange",
-          "lightness": "Lighter",
-          "name": "OpenNote / Air 2"
-        },
-        {
-          "hue": "Wathet",
-          "lightness": "Lighter",
-          "name": "Recdot 2 / Pro 3"
-        },
-        {
-          "hue": "Yellow",
-          "lightness": "Lighter",
-          "name": "viaim Connect / Mate"
-        },
-        {
-          "hue": "Red",
-          "lightness": "Lighter",
-          "name": "viaim Aura"
-        },
-        {
-          "hue": "Purple",
-          "lightness": "Lighter",
-          "name": "全量产品"
-        },
-        {
-          "hue": "Green",
-          "lightness": "Lighter",
-          "name": "nano+"
-        },
-        {
-          "hue": "Carmine",
-          "lightness": "Lighter",
-          "name": "viaim2.0（智能体耳机）"
-        },
-        {
-          "hue": "Lime",
-          "lightness": "Lighter",
-          "name": "智能体Pro&智能体Air"
-        },
-        {
-          "hue": "Gray",
-          "lightness": "Lighter",
-          "name": "智能体Pro"
-        }
-      ]
-    },
-    {
-      "id": "fldaQdgDGO",
-      "name": "优先级 - Priority * 必填项",
-      "type": "select",
-      "multiple": false,
-      "options": [
-        {
-          "hue": "Red",
-          "lightness": "Dark",
-          "name": "紧急-重要"
-        },
-        {
-          "hue": "Blue",
-          "lightness": "Lighter",
-          "name": "高"
-        },
-        {
-          "hue": "Orange",
-          "lightness": "Lighter",
-          "name": "中"
-        },
-        {
-          "hue": "Yellow",
-          "lightness": "Lighter",
-          "name": "待定"
-        },
-        {
-          "hue": "Turquoise",
-          "lightness": "Lighter",
-          "name": "常规需求"
-        }
-      ]
-    },
-    {
-      "id": "fldpJrK1By",
-      "name": "视觉参考 - Reference",
-      "type": "attachment"
     },
     {
       "id": "fld7UlKq19",
@@ -350,31 +360,68 @@
       ]
     },
     {
+      "id": "fld3htifi6",
+      "name": "需求方 - Proposer",
+      "type": "user",
+      "multiple": true
+    },
+    {
       "id": "fldHKc0udm",
       "name": "创建任务",
       "type": "not_support",
       "reason": "field type is not supported yet"
     },
     {
-      "id": "fldqNrk8vZ",
-      "name": "视觉量级",
+      "id": "fld7qDxI71",
+      "name": "需求附件 - Attachment",
+      "type": "attachment"
+    },
+    {
+      "id": "fldth8ipDp",
+      "name": "需求名称 - Requirement Description * 必填项",
+      "type": "text",
+      "style": {
+        "type": "plain"
+      }
+    },
+    {
+      "id": "fldE3UjhOP",
+      "name": "项目背景与目标：为什么要这么设计？",
+      "type": "text",
+      "style": {
+        "type": "plain"
+      }
+    },
+    {
+      "id": "fldaQdgDGO",
+      "name": "优先级 - Priority * 必填项",
       "type": "select",
       "multiple": false,
       "options": [
         {
+          "hue": "Red",
+          "lightness": "Dark",
+          "name": "紧急-重要"
+        },
+        {
           "hue": "Blue",
           "lightness": "Lighter",
-          "name": "高标准"
+          "name": "高"
         },
         {
           "hue": "Orange",
           "lightness": "Lighter",
-          "name": "中等要求"
+          "name": "中"
         },
         {
-          "hue": "Wathet",
+          "hue": "Yellow",
           "lightness": "Lighter",
-          "name": "快速产出"
+          "name": "待定"
+        },
+        {
+          "hue": "Turquoise",
+          "lightness": "Lighter",
+          "name": "常规需求"
         }
       ]
     },
@@ -385,57 +432,11 @@
       "style": {
         "type": "plain"
       }
-    },
-    {
-      "id": "fldqU1VQT4",
-      "name": "指定对接设计",
-      "type": "user",
-      "multiple": true
-    },
-    {
-      "id": "fldL6vG16C",
-      "name": "需求文档描述 - Link * 必填项",
-      "type": "text",
-      "style": {
-        "type": "url"
-      }
-    },
-    {
-      "id": "fldaRpEQSo",
-      "name": "创建时间",
-      "type": "datetime",
-      "style": {
-        "format": "yyyy/MM/dd"
-      }
-    },
-    {
-      "id": "fldwRx8x4W",
-      "name": "备注 - Notice",
-      "type": "text",
-      "style": {
-        "type": "plain"
-      }
-    },
-    {
-      "id": "fldBltjDoh",
-      "name": "任务已自动创建",
-      "type": "checkbox"
-    },
-    {
-      "id": "fld3htifi6",
-      "name": "需求方 - Proposer",
-      "type": "user",
-      "multiple": true
-    },
-    {
-      "id": "fldjHSBfJj",
-      "name": "交付 - Supplier",
-      "type": "user",
-      "multiple": true
     }
   ],
   "ignoredFields": [
     {
+      "id": "fldHKc0udm",
       "name": "创建任务",
       "reason": "UNSUPPORTED: not_support field cannot be read through OpenAPI."
     }
@@ -14799,7 +14800,7 @@
       "id": "recvo6PG4116G2",
       "recordId": "recvo6PG4116G2",
       "fields": {
-        "需求名称 - Requirement Description * 必填项": "7.7大促物料需求",
+        "需求名称 - Requirement Description * 必填项": "电商渠道主图",
         "需求方 - Proposer": [
           "周佼佼"
         ],
@@ -14829,7 +14830,7 @@
           "魏婷婷"
         ],
         "数字尺寸 - Size": "",
-        "交付时间 - Deadline * 必填项": "",
+        "交付时间 - Deadline * 必填项": "2026-07-09 00:00:00",
         "备注 - Notice": "",
         "哪个产品 - Which Product？(可多选": [
           "RecDot / Pro 2",
@@ -14837,7 +14838,7 @@
         ]
       },
       "derived": {
-        "title": "7.7大促物料需求",
+        "title": "电商渠道主图",
         "completed": false,
         "status": "未完成",
         "priority": "常规需求",
@@ -14854,7 +14855,7 @@
         "visualScale": "未设置",
         "size": "",
         "createdAt": "2026-07-01 16:46:33",
-        "deadline": "",
+        "deadline": "2026-07-09 00:00:00",
         "document": "[003-viaim东南亚设计需求表](https://scn0k9s27txk.feishu.cn/sheets/OhvtsijkghP1yBtkKJkcHIE6nEe)",
         "background": "例：新马泰货架电商7.7大促活动物料",
         "audience": "例：电商平台站内活动物料；数码产品受众群体",
@@ -15211,14 +15212,80 @@
         "notice": "",
         "attachmentCount": 0
       }
+    },
+    {
+      "id": "recvoEDl7RWnQd",
+      "recordId": "recvoEDl7RWnQd",
+      "fields": {
+        "需求名称 - Requirement Description * 必填项": "电商渠道主图设计",
+        "需求方 - Proposer": [
+          "杨晶晶"
+        ],
+        "媒介 - Media (可多选": "",
+        "需求附件 - Attachment": "",
+        "渠道 - Channel": "",
+        "优先级 - Priority * 必填项": [
+          "常规需求"
+        ],
+        "需求目标及背景 - 必填项*": "",
+        "创建时间": "2026-07-07 11:28:41",
+        "任务已自动创建": "",
+        "衡量成功的指标": "智能体产品点击转化提升",
+        "项目背景与目标：为什么要这么设计？": "修改测试智能体文案主图，测试录音卖点，提升转化",
+        "目标受众与投放渠道：设计给谁看？在哪里看？": "电商渠道用户",
+        "需求部门": "",
+        "交付 - Supplier": "",
+        "父任务": "",
+        "需求文档描述 - Link * 必填项": "[Docs](https://if1wxpii67.feishu.cn/wiki/Vz7lwLtz5ibjQGk023ccHwFlnXf)",
+        "是否完成 - Status": false,
+        "视觉参考 - Reference": "",
+        "交付文件 - Delivery documents": "",
+        "视觉量级": "",
+        "指定对接设计": [
+          "魏婷婷"
+        ],
+        "数字尺寸 - Size": "",
+        "交付时间 - Deadline * 必填项": "2026-07-09 00:00:00",
+        "备注 - Notice": "",
+        "哪个产品 - Which Product？(可多选": [
+          "Recdot 2 / Pro 3",
+          "OpenNote / Air 2"
+        ]
+      },
+      "derived": {
+        "title": "电商渠道主图设计",
+        "completed": false,
+        "status": "未完成",
+        "priority": "常规需求",
+        "proposer": "杨晶晶",
+        "supplier": "未设置",
+        "assignee": "魏婷婷",
+        "department": "未设置",
+        "channel": [],
+        "product": [
+          "Recdot 2 / Pro 3",
+          "OpenNote / Air 2"
+        ],
+        "medium": [],
+        "visualScale": "未设置",
+        "size": "",
+        "createdAt": "2026-07-07 11:28:41",
+        "deadline": "2026-07-09 00:00:00",
+        "document": "[Docs](https://if1wxpii67.feishu.cn/wiki/Vz7lwLtz5ibjQGk023ccHwFlnXf)",
+        "background": "修改测试智能体文案主图，测试录音卖点，提升转化",
+        "audience": "电商渠道用户",
+        "successMetric": "智能体产品点击转化提升",
+        "notice": "",
+        "attachmentCount": 0
+      }
     }
   ],
   "summary": {
-    "totalRecords": 206,
+    "totalRecords": 207,
     "completedRecords": 192,
-    "openRecords": 14,
+    "openRecords": 15,
     "byPriority": {
-      "常规需求": 64,
+      "常规需求": 65,
       "高": 60,
       "中": 13,
       "紧急-重要": 58,
@@ -15238,7 +15305,7 @@
       "效果营销部": 8,
       "GTM": 1,
       "营销策略部": 2,
-      "未设置": 2
+      "未设置": 3
     },
     "byChannel": {
       "整合营销 - 投放": 2,
