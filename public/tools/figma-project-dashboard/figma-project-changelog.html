@@ -334,6 +334,15 @@
     text-transform: none;
     font-variant-caps: normal;
   }
+  body[data-embedded="true"] .page-map-access-chip,
+  body[data-embedded="true"] .page-map-user-chip {
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+  }
   body[data-embedded="true"] .pill:hover,
   body[data-embedded="true"] .project-tag:hover,
   body[data-embedded="true"] .file-link:hover,
@@ -2066,10 +2075,12 @@
     border-radius: 4px;
     padding: 2px 6px;
     background: var(--black);
-    max-width: 220px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
   }
 
   .page-map-access-chip.primary {
@@ -2093,10 +2104,12 @@
     border-radius: 999px;
     padding: 1px 6px;
     background: var(--surface);
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
   }
 
   .page-map-user-chip.primary {

@@ -416,6 +416,7 @@ svg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
   gap: 7px;
   height: var(--control-height);
   padding: 0 10px;
@@ -425,6 +426,7 @@ svg {
   font-size: 11px;
   font-variant-caps: all-small-caps;
   letter-spacing: 0;
+  line-height: 1;
   white-space: nowrap;
 }
 
@@ -452,7 +454,6 @@ svg {
 }
 
 .primaryButton {
-  height: var(--control-height-large);
   min-width: 132px;
   color: var(--accent-on);
   border-color: var(--accent-border);
@@ -2823,6 +2824,7 @@ svg {
 
 .sliceTool {
   display: grid;
+  align-content: start;
   gap: 12px;
   width: 100%;
   min-height: 100%;
