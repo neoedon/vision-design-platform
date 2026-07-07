@@ -129,6 +129,7 @@ body,
 #root {
   min-width: 100%;
   min-height: 100%;
+  height: 100%;
   margin: 0;
 }
 
@@ -164,6 +165,7 @@ svg {
 .appShell {
   display: grid;
   grid-template-rows: 48px 40px minmax(0, 1fr);
+  height: 100vh;
   min-height: 100vh;
   overflow: hidden;
   background:
@@ -1653,7 +1655,8 @@ svg {
 .fontPackageWorkbench {
   display: grid;
   gap: 12px;
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
   padding: 16px;
 }
 
@@ -1921,7 +1924,13 @@ svg {
 .fontListPanel,
 .fontPreviewPanel {
   min-width: 0;
+  min-height: 0;
   overflow: hidden;
+}
+
+.assetLibraryPanel {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
 }
 
 .fontListPanel {
@@ -1967,8 +1976,47 @@ svg {
   flex: 0 0 auto;
 }
 
+.assetCategoryTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: var(--stroke-width) solid var(--border);
+  background: var(--surface-soft);
+}
+
+.assetCategoryTabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--control-height);
+  padding: 0 9px;
+  color: var(--text-secondary);
+  border: var(--stroke-width) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.assetCategoryTabs button:hover,
+.assetCategoryTabs button[data-active="true"] {
+  color: var(--text);
+  border-color: var(--accent-border);
+  background: var(--nav-active-bg);
+}
+
+.assetCategoryTabs small {
+  color: var(--muted);
+  font-family: var(--code-font);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
 .logoGallery {
   min-width: 0;
+  min-height: 0;
+  overflow: auto;
 }
 
 .logoGallery[data-view="grid"] {
@@ -3365,6 +3413,7 @@ svg {
 @media (max-width: 860px) {
   .appShell {
     grid-template-rows: auto auto minmax(0, 1fr);
+    height: auto;
     overflow: auto;
   }
 

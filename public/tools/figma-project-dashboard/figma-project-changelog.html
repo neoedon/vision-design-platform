@@ -464,7 +464,9 @@
   body[data-embedded="true"] .settings-add-project input:focus,
   body[data-embedded="true"] .add-inline input:focus {
     border-color: var(--interactive);
-    box-shadow: 0 0 0 2px var(--interactive-subtle);
+    box-shadow: none;
+    outline: 2px solid var(--interactive-subtle);
+    outline-offset: 1px;
   }
   body[data-embedded="true"] input::placeholder,
   body[data-embedded="true"] .page-map-search::placeholder,
@@ -511,6 +513,19 @@
   }
   body[data-embedded="true"] .page-map-search-wrap {
     margin-bottom: 12px;
+    height: var(--platform-control-height-large);
+  }
+  body[data-embedded="true"] .page-map-search {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--platform-control-height-large);
+    min-height: var(--platform-control-height-large);
+    padding: 0 36px 0 10px;
+    line-height: calc(var(--platform-control-height-large) - 2px);
+    -webkit-appearance: none;
+    appearance: none;
+    vertical-align: middle;
   }
   body[data-embedded="true"] .page-map-search-clear {
     right: 4px;
@@ -544,8 +559,8 @@
     text-transform: none;
   }
   body[data-embedded="true"] .page-map-nav-project {
-    margin-top: 12px;
-    padding: 8px 8px 8px 10px;
+    margin-top: 14px;
+    padding: 10px 8px 8px 10px;
     border-top: var(--platform-stroke) solid var(--border);
     color: var(--text-primary);
     font-family: var(--platform-code-font) !important;
@@ -554,14 +569,8 @@
     line-height: 1.35;
   }
   body[data-embedded="true"] .page-map-nav-project:first-of-type {
-    margin-top: 0;
-    border-top-color: transparent;
-  }
-  body[data-embedded="true"] .page-map-nav-project::before {
-    content: "@";
-    flex: 0 0 auto;
-    margin-right: 8px;
-    color: var(--interactive);
+    margin-top: 8px;
+    border-top-color: var(--border);
   }
   body[data-embedded="true"] .page-map-nav-file {
     position: relative;
@@ -1994,21 +2003,14 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     padding: 10px 8px 8px;
-    margin-top: 12px;
+    margin-top: 14px;
     border-top: 1px solid var(--border);
     color: var(--text-display);
   }
 
   .page-map-nav-project:first-of-type {
-    margin-top: 0;
-    border-top-color: transparent;
-  }
-
-  .page-map-nav-project::before {
-    content: "@";
-    flex: 0 0 auto;
-    margin-right: 8px;
-    color: var(--interactive);
+    margin-top: 8px;
+    border-top-color: var(--border);
   }
 
   .page-map-nav-project.active {

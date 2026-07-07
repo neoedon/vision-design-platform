@@ -129,7 +129,7 @@ const FIGMA_PROJECT_DASHBOARD_SRC = publicAssetHref(
 function publicAssetHref(path: string) {
   return `${import.meta.env.BASE_URL}${path
     .split("/")
-    .map((part) => encodeURIComponent(part))
+    .map((part) => encodeURIComponent(part).replace(/%2B/g, "+"))
     .join("/")}`;
 }
 
@@ -158,13 +158,14 @@ const brandGuidelineVersions = [
   },
 ];
 
+type LogoCategoryId = "single" | "combined" | "app";
 type LogoViewMode = "grid" | "list";
 
 type BrandLogoFormat = {
   label: "SVG" | "PNG" | "PDF";
   href: string;
   fileName: string;
-  size: string;
+  size?: string;
 };
 
 type BrandLogoAsset = {
@@ -175,6 +176,19 @@ type BrandLogoAsset = {
   dimensions: string;
   previewHref: string;
   formats: BrandLogoFormat[];
+};
+
+type BrandLogoCategory = {
+  id: LogoCategoryId;
+  label: string;
+  title: string;
+  kicker: string;
+  summary: string;
+  stat: {
+    value: string;
+    label: string;
+  };
+  assets: BrandLogoAsset[];
 };
 
 type BrandFontAsset = {
@@ -271,6 +285,183 @@ const brandLogoAssets: BrandLogoAsset[] = [
         size: "7.1 KB",
       },
     ],
+  },
+];
+
+const COMBINED_LOGO_FOLDER = "brand-assets/logos/combined";
+const APP_LOGO_FOLDER = "brand-assets/logos/app";
+
+function makeLogoFormat(
+  folder: string,
+  baseName: string,
+  label: BrandLogoFormat["label"],
+  size?: string,
+): BrandLogoFormat {
+  const extension = label.toLowerCase();
+  const fileName = `${baseName}.${extension}`;
+
+  return {
+    label,
+    href: publicAssetHref(`${folder}/${fileName}`),
+    fileName,
+    size,
+  };
+}
+
+function makeLogoAsset({
+  baseName,
+  context,
+  dimensions,
+  folder,
+  id,
+  previewFormat = "SVG",
+  title,
+  usage,
+  formats = ["SVG", "PNG"],
+}: {
+  baseName: string;
+  context: string;
+  dimensions: string;
+  folder: string;
+  id: string;
+  previewFormat?: BrandLogoFormat["label"];
+  title: string;
+  usage: string;
+  formats?: Array<BrandLogoFormat["label"]>;
+}): BrandLogoAsset {
+  const previewFileName = `${baseName}.${previewFormat.toLowerCase()}`;
+
+  return {
+    id,
+    title,
+    context,
+    usage,
+    dimensions,
+    previewHref: publicAssetHref(`${folder}/${previewFileName}`),
+    formats: formats.map((format) => makeLogoFormat(folder, baseName, format)),
+  };
+}
+
+const comboLogoSloganDimensions = [
+  "1910 x 699 px",
+  "1910 x 699 px",
+  "1910 x 699 px",
+  "1910 x 699 px",
+  "1900 x 842 px",
+  "1900 x 842 px",
+  "1900 x 891 px",
+  "1900 x 891 px",
+];
+
+const comboLogoSloganAssets: BrandLogoAsset[] = comboLogoSloganDimensions.map(
+  (dimensions, index) => {
+    const order = String(index + 1).padStart(2, "0");
+    const baseName = `组合 logo+slogan ${order}`;
+
+    return makeLogoAsset({
+      id: `logo-slogan-${order}`,
+      title: baseName,
+      context: "logo + slogan",
+      usage: "viaim logo and slogan lockup.",
+      dimensions,
+      folder: COMBINED_LOGO_FOLDER,
+      baseName,
+    });
+  },
+);
+
+const partnerLogoBaseNames = [
+  ...["viaim+xunfei", ...Array.from({ length: 7 }, (_, index) => `viaim+xunfei-${index + 1}`)].map(
+    (baseName) => ({
+      baseName,
+      context: "viaim + xunfei",
+      dimensions: "2406 x 444 px",
+      usage: "viaim and xunfei co-brand lockup.",
+    }),
+  ),
+  ...["viaim+weilai", ...Array.from({ length: 7 }, (_, index) => `viaim+weilai-${index + 1}`)].map(
+    (baseName) => ({
+      baseName,
+      context: "viaim + weilai",
+      dimensions: "2545 x 444 px",
+      usage: "viaim and weilai co-brand lockup.",
+    }),
+  ),
+];
+
+const partnerLogoAssets: BrandLogoAsset[] = partnerLogoBaseNames.map((item) =>
+  makeLogoAsset({
+    id: item.baseName,
+    title: item.baseName,
+    context: item.context,
+    usage: item.usage,
+    dimensions: item.dimensions,
+    folder: COMBINED_LOGO_FOLDER,
+    baseName: item.baseName,
+  }),
+);
+
+const appLogoAssets: BrandLogoAsset[] = [
+  makeLogoAsset({
+    id: "viaim-app-logo",
+    title: "viaim App Icon",
+    context: "viaim app logo",
+    usage: "Primary viaim app logo image.",
+    dimensions: "1024 x 1024 px",
+    folder: APP_LOGO_FOLDER,
+    baseName: "App Icon",
+    previewFormat: "PNG",
+    formats: ["PNG"],
+  }),
+  makeLogoAsset({
+    id: "app-icon",
+    title: "App icon",
+    context: "app icon",
+    usage: "App icon source image.",
+    dimensions: "1536 x 1536 px",
+    folder: APP_LOGO_FOLDER,
+    baseName: "icon",
+    previewFormat: "PNG",
+    formats: ["PNG"],
+  }),
+];
+
+const brandLogoCategories: BrandLogoCategory[] = [
+  {
+    id: "single",
+    label: "单 Logo",
+    title: "viaim 单 Logo",
+    kicker: "logo collection",
+    summary: "透明底 Logo 集合，默认使用 Photoshop 风格棋盘底检查边缘和浅色变体。",
+    stat: {
+      value: "4710",
+      label: "px wide",
+    },
+    assets: brandLogoAssets,
+  },
+  {
+    id: "combined",
+    label: "组合 Logo",
+    title: "组合 Logo",
+    kicker: "lockup collection",
+    summary: "包含 logo+slogan 组合，以及 viaim 与 xunfei / weilai 的联合品牌组合。",
+    stat: {
+      value: "3",
+      label: "sets",
+    },
+    assets: [...comboLogoSloganAssets, ...partnerLogoAssets],
+  },
+  {
+    id: "app",
+    label: "App Logo",
+    title: "两个 App Logo",
+    kicker: "app logo",
+    summary: "展示 viaim app logo 与 app icon 两张应用图标源文件。",
+    stat: {
+      value: "2",
+      label: "icons",
+    },
+    assets: appLogoAssets,
   },
 ];
 
@@ -2368,8 +2559,13 @@ function FigmaProjectDashboardWorkbench({
 }
 
 function LogoAssetWorkbench() {
+  const [activeCategoryId, setActiveCategoryId] =
+    useState<LogoCategoryId>("single");
   const [viewMode, setViewMode] = useState<LogoViewMode>("grid");
-  const formatCount = brandLogoAssets.reduce(
+  const activeCategory =
+    brandLogoCategories.find((category) => category.id === activeCategoryId) ??
+    brandLogoCategories[0];
+  const formatCount = activeCategory.assets.reduce(
     (count, asset) => count + asset.formats.length,
     0,
   );
@@ -2381,14 +2577,14 @@ function LogoAssetWorkbench() {
           <ImageIcon size={18} />
         </span>
         <div>
-          <span className="sectionKicker">logo collection</span>
-          <h2>viaim 单 Logo</h2>
-          <p>透明底 Logo 集合，默认使用 Photoshop 风格棋盘底检查边缘和浅色变体。</p>
+          <span className="sectionKicker">{activeCategory.kicker}</span>
+          <h2>{activeCategory.title}</h2>
+          <p>{activeCategory.summary}</p>
         </div>
 
         <div className="assetHeroStats" aria-label="Logo collection stats">
           <span>
-            <strong>{brandLogoAssets.length}</strong>
+            <strong>{activeCategory.assets.length}</strong>
             <small>variants</small>
           </span>
           <span>
@@ -2396,8 +2592,8 @@ function LogoAssetWorkbench() {
             <small>files</small>
           </span>
           <span>
-            <strong>4710</strong>
-            <small>px wide</small>
+            <strong>{activeCategory.stat.value}</strong>
+            <small>{activeCategory.stat.label}</small>
           </span>
         </div>
       </section>
@@ -2428,8 +2624,22 @@ function LogoAssetWorkbench() {
           </div>
         </header>
 
+        <div className="assetCategoryTabs" aria-label="Logo categories">
+          {brandLogoCategories.map((category) => (
+            <button
+              type="button"
+              key={category.id}
+              data-active={category.id === activeCategory.id}
+              onClick={() => setActiveCategoryId(category.id)}
+            >
+              <span>{category.label}</span>
+              <small>{category.assets.length}</small>
+            </button>
+          ))}
+        </div>
+
         <div className="logoGallery" data-view={viewMode}>
-          {brandLogoAssets.map((asset) => (
+          {activeCategory.assets.map((asset) => (
             <article className="logoAssetCard" key={asset.id}>
               <div className="transparentPreview logoPreview">
                 <img src={asset.previewHref} alt={asset.title} />
@@ -2465,7 +2675,7 @@ function LogoFormatLinks({ formats }: LogoFormatLinksProps) {
         >
           <Download size={13} />
           <span>{format.label}</span>
-          <small>{format.size}</small>
+          {format.size ? <small>{format.size}</small> : null}
         </a>
       ))}
     </div>
@@ -3347,8 +3557,15 @@ function AuthDialog({
     account?.role ?? "designer",
   );
   const oauthSetup = getFeishuOAuthSetup();
+  const canUseFeishuOAuth =
+    oauthSetup.hasAppId && oauthSetup.hasExchangeEndpoint;
 
   function submitSignIn() {
+    if (!canUseFeishuOAuth) {
+      onSignIn(selectedRole);
+      return;
+    }
+
     const feishuOAuthUrl = buildFeishuOAuthUrl(selectedRole);
 
     if (feishuOAuthUrl) {
@@ -3390,7 +3607,7 @@ function AuthDialog({
               {oauthSetup.hasAppId
                 ? oauthSetup.hasExchangeEndpoint
                   ? "Feishu OAuth is configured."
-                  : "Feishu OAuth app is configured. Token exchange endpoint is missing."
+                  : "Feishu OAuth app is configured, but token exchange is missing. Demo login will be used locally."
                 : "Feishu OAuth app id is missing. Demo login is still available."}
             </span>
             <small>{oauthSetup.redirectUri}</small>
@@ -3430,10 +3647,24 @@ function AuthDialog({
               <span>sign out</span>
             </button>
           ) : (
-            <button className="primaryButton" type="button" onClick={submitSignIn}>
-              <KeyRound size={15} />
-              <span>{oauthSetup.hasAppId ? "continue with feishu" : "use feishu demo"}</span>
-            </button>
+            <>
+              <button className="primaryButton" type="button" onClick={submitSignIn}>
+                {canUseFeishuOAuth ? <KeyRound size={15} /> : <UserRound size={15} />}
+                <span>
+                  {canUseFeishuOAuth ? "continue with feishu" : "use feishu demo"}
+                </span>
+              </button>
+              {canUseFeishuOAuth ? (
+                <button
+                  className="barButton"
+                  type="button"
+                  onClick={() => onSignIn(selectedRole)}
+                >
+                  <UserRound size={15} />
+                  <span>use demo</span>
+                </button>
+              ) : null}
+            </>
           )}
         </footer>
       </section>
