@@ -116,6 +116,7 @@ type ThemePalette = Pick<
 const THEME_STORAGE_KEY = "vision-design-platform.theme-configs.ui3.ghostty.v2";
 const THEME_MODE_STORAGE_KEY = "vision-design-platform.theme-mode.ui3.ghostty.v2";
 const ACTIVE_THEME_STORAGE_KEY = "vision-design-platform.active-theme.ui3.ghostty.v2";
+const NAVIGATION_STORAGE_KEY = "vision-design-platform.navigation-state.ui3.v1";
 const DEFAULT_THEME_ID: ThemePresetId = "ghostty-carbon";
 const TEAM_ICON_SRC = `${import.meta.env.BASE_URL}team-icon.png`;
 const BRAND_GUIDELINE_PDF_SRC = publicAssetHref(
@@ -699,7 +700,7 @@ const primaryDomains: Array<{
   { id: "brand-assets", label: "viaim 品牌资产", icon: Library },
   { id: "toolbox", label: "工具箱", icon: Workflow },
   { id: "open-design", label: "OpenDesign", icon: Sparkles },
-  { id: "figma-projects", label: "Figma 项目", icon: Layers3 },
+  { id: "figma-projects", label: "设计项目", icon: Layers3 },
   { id: "skill-platform", label: "Skill 平台", icon: KeyRound },
   { id: "design-daily", label: "设计日报", icon: BarChart3 },
   { id: "system", label: "系统设置", icon: ShieldCheck },
@@ -952,7 +953,7 @@ const workspaceRoutes: WorkspaceRoute[] = [
     id: "figma-projects.design-file-management",
     l1Id: "figma-projects",
     l2Id: "design-file-management",
-    l2Label: "设计文件管理",
+    l2Label: "Figma 项目",
     l2Note: "map / changelog",
     defaultL3Id: "page-map",
     minimumRole: "designer",
@@ -1429,6 +1430,71 @@ function getActivePackage(route: WorkspaceRoute, packageId?: string) {
   );
 }
 
+type WorkspaceNavigationState = {
+  activeRouteId: string;
+  activePackageByRoute: Record<string, string>;
+};
+
+function getDefaultNavigationState(): WorkspaceNavigationState {
+  return {
+    activeRouteId: workspaceRoutes[0].id,
+    activePackageByRoute: {},
+  };
+}
+
+function isRouteId(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    workspaceRoutes.some((route) => route.id === value)
+  );
+}
+
+function isPackageIdForRoute(routeId: string, packageId: unknown): packageId is string {
+  const route = workspaceRoutes.find((item) => item.id === routeId);
+
+  return (
+    typeof packageId === "string" &&
+    Boolean(route?.l3Packages.some((item) => item.id === packageId))
+  );
+}
+
+function loadNavigationState(): WorkspaceNavigationState {
+  const fallbackState = getDefaultNavigationState();
+  const raw = window.localStorage.getItem(NAVIGATION_STORAGE_KEY);
+
+  if (!raw) {
+    return fallbackState;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<WorkspaceNavigationState>;
+    const activeRouteId = isRouteId(parsed.activeRouteId)
+      ? parsed.activeRouteId
+      : fallbackState.activeRouteId;
+    const activePackageByRoute: Record<string, string> = {};
+
+    if (
+      parsed.activePackageByRoute &&
+      typeof parsed.activePackageByRoute === "object" &&
+      !Array.isArray(parsed.activePackageByRoute)
+    ) {
+      Object.entries(parsed.activePackageByRoute).forEach(([routeId, packageId]) => {
+        if (isRouteId(routeId) && isPackageIdForRoute(routeId, packageId)) {
+          activePackageByRoute[routeId] = packageId;
+        }
+      });
+    }
+
+    return {
+      activeRouteId,
+      activePackageByRoute,
+    };
+  } catch {
+    window.localStorage.removeItem(NAVIGATION_STORAGE_KEY);
+    return fallbackState;
+  }
+}
+
 function resolveThemeMode(mode: ThemeMode) {
   if (mode !== "system") {
     return mode;
@@ -1683,10 +1749,9 @@ function makeThemeStyle(config: ThemeConfig) {
 }
 
 export function App() {
-  const [activeRouteId, setActiveRouteId] = useState(workspaceRoutes[0].id);
-  const [activePackageByRoute, setActivePackageByRoute] = useState<
-    Record<string, string>
-  >({});
+  const [navigationState, setNavigationState] =
+    useState<WorkspaceNavigationState>(() => loadNavigationState());
+  const { activeRouteId, activePackageByRoute } = navigationState;
   const [account, setAccount] = useState<FeishuAccount | null>(() =>
     loadFeishuAccount(),
   );
@@ -1749,6 +1814,13 @@ export function App() {
   useEffect(() => {
     window.localStorage.setItem(THEME_MODE_STORAGE_KEY, themeMode);
   }, [themeMode]);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      NAVIGATION_STORAGE_KEY,
+      JSON.stringify(navigationState),
+    );
+  }, [navigationState]);
 
   const activeRoute = useMemo(() => getRouteById(activeRouteId), [activeRouteId]);
   const activeDomain = activeRoute.l1Id;
@@ -1826,17 +1898,34 @@ export function App() {
 
   function changeDomain(domainId: L1DomainId) {
     const nextRoute = getFirstRouteForDomain(domainId);
-    setActiveRouteId(nextRoute.id);
+    setNavigationState((previous) => ({
+      ...previous,
+      activeRouteId: nextRoute.id,
+    }));
   }
 
   function changeRoute(routeId: string) {
-    setActiveRouteId(routeId);
+    if (!isRouteId(routeId)) {
+      return;
+    }
+
+    setNavigationState((previous) => ({
+      ...previous,
+      activeRouteId: routeId,
+    }));
   }
 
   function changePackage(packageId: string) {
-    setActivePackageByRoute((previous) => ({
+    if (!isPackageIdForRoute(activeRoute.id, packageId)) {
+      return;
+    }
+
+    setNavigationState((previous) => ({
       ...previous,
-      [activeRoute.id]: packageId,
+      activePackageByRoute: {
+        ...previous.activePackageByRoute,
+        [activeRoute.id]: packageId,
+      },
     }));
   }
 
